@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "token": "2035899794:AAHZiPpZOr6ikBNGsqc7Cv7FO9Hb7mflgnQ"
+      },
+      "distributionName": ""
+    },
+    "Test": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "token": "2035899794:AAHZiPpZOr6ikBNGsqc7Cv7FO9Hb7mflgnQ"
+      }
+    },
+    "Release": {
+      "commandName": "Project"
+    }
+  }
+}
