@@ -50,10 +50,21 @@ public class MessageHandler
 
     private async Task ShowDaily()
     {
-        string today = Data.GetDaily(Data.ServerTime)?.Definition ?? "неизвестность";
-        string tomorrow = Data.GetDaily(Data.ServerTime.AddDays(1))?.Definition ?? "неизвестность";
+        string? today = Data.GetDaily(Data.ServerTime)?.Definition;
+        string? tomorrow = Data.GetDaily(Data.ServerTime.AddDays(1))?.Definition;
 
-        await SendMessage($"Сегодня ежа в {today}, а завтра в {tomorrow}");
+        if (today == null)
+        {
+            await SendMessage("Пока хз, что по еже.");
+        }
+        else if (tomorrow == null)
+        {
+            await SendMessage($"Сегодня ежа: {today}.");
+        }
+        else
+        {
+            await SendMessage($"Сегодня ежа: {today}, а завтра: {tomorrow}.");
+        }
     }
 
     async Task SayMurr()
@@ -91,7 +102,7 @@ public class MessageHandler
 
     private async Task ShowNorth()
     {
-        await SendMessage($"Расписание ивентов в СЗ (боги): {Data.GetNorth(Data.ServerTime)}");
+        await SendMessage($"Расписание ивентов в СЗ:\n— войско богов: {Data.GetNorth(Data.ServerTime, NorthArmy.Gods)}\n— армия севера: {Data.GetNorth(Data.ServerTime, NorthArmy.North)}");
     }
 
     private async Task ShowAgenda(DateTime dateTime)
@@ -108,10 +119,21 @@ public class MessageHandler
         };
 
         var builder = new StringBuilder()
-            .AppendLine(GetDaytimeGreeting(Data.ServerTime))
-            .AppendFormat("Ежа в <b>{0}</b>.", Data.GetDaily(dateTime)?.Definition ?? "неизвестность")
+            .AppendLine(GetDaytimeGreeting(Data.ServerTime));
+
+        var daily = Data.GetDaily(dateTime)?.Definition;
+        if (daily != null)
+        {
+            builder
+                .AppendFormat("Ежа: <b>{0}</b>.", daily)
+                .AppendLine();
+        }
+
+        builder
+            .AppendLine("Северные земли:")
+            .AppendFormat("— войско богов: <b>{0}</b>.", Data.GetNorth(dateTime, NorthArmy.Gods))
             .AppendLine()
-            .AppendFormat("Северные земли (боги): <b>{0}</b>.", Data.GetNorth(dateTime))
+            .AppendFormat("— армия севера: <b>{0}</b>.", Data.GetNorth(dateTime, NorthArmy.North))
             .AppendLine()
             .AppendFormat("Ивенты {0}:", dowG);
 
