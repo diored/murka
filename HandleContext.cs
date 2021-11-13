@@ -1,5 +1,11 @@
-﻿using Telegram.Bot;
+﻿using DioRed.Murka.Core;
+
+using Telegram.Bot;
 
 namespace DioRed.Murka.TelegramBot;
 
-public record HandleContext(ITelegramBotClient BotClient, long ChatId, CancellationToken CancellationToken);
+public record HandleContext(
+    ITelegramBotClient BotClient,
+    long ChatId,
+    IDataSource DataSource,
+    CancellationToken CancellationToken);

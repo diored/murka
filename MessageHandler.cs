@@ -19,6 +19,8 @@ public class MessageHandler
         _context = context;
     }
 
+    private IDataSource Data => _context.DataSource;
+
     public async Task Handle(string message, ClientData clientData)
     {
         Task? task = message switch
@@ -184,7 +186,7 @@ public class MessageHandler
         await _context.BotClient.SendTextMessageAsync(_context.ChatId, "Чем помочь?", replyMarkup: replyMarkup, cancellationToken: _context.CancellationToken);
     }
 
-    private string GetDaytimeGreeting(DateTime dateTime)
+    private static string GetDaytimeGreeting(DateTime dateTime)
     {
         return dateTime.Hour switch
         {

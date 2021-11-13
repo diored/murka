@@ -15,15 +15,19 @@ public class ChatClient
 
     private readonly ClientData _clientData;
 
-    public ChatClient(long chatId)
+    private readonly IDataSource _dataSource;
+
+    public ChatClient(long chatId, IDataSource dataSource)
     {
         _chatId = chatId;
+        _dataSource = dataSource;
+
         _clientData = new ClientData();
     }
 
     public async Task HandleMessage(ITelegramBotClient botClient, string message, CancellationToken cancellationToken)
     {
-        var context = new HandleContext(botClient, _chatId, cancellationToken);
+        var context = new HandleContext(botClient, _chatId, _dataSource, cancellationToken);
         await new MessageHandler(context).Handle(message, _clientData);
 
         CheckAgendaSubscription(botClient, cancellationToken);
@@ -42,15 +46,16 @@ public class ChatClient
 
             _ = Task.Run(async () =>
             {
-                var context = new HandleContext(botClient, _chatId, cancellationToken);
+                var context = new HandleContext(botClient, _chatId, _dataSource, cancellationToken);
                 var messageHandler = new MessageHandler(context);
 
                 while (true)
                 {
                     // Time to next noon
-                    DateTime scheduleTo = Data.ServerTime.Date.AddDays(1).AddSeconds(5);
+                    DateTime serverTime = _dataSource.ServerTime;
+                    DateTime scheduleTo = serverTime.Date.AddDays(1).AddSeconds(5);
 
-                    TimeSpan interval = scheduleTo - Data.ServerTime;
+                    TimeSpan interval = scheduleTo - serverTime;
                     if (interval.TotalDays > 1)
                     {
                         interval -= TimeSpan.FromDays(1);

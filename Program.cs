@@ -11,14 +11,15 @@ IConfigurationRoot _configuration = new ConfigurationBuilder()
 	.AddEnvironmentVariables()
 	.Build();
 
-Data.Load(_configuration);
 
 string token = _configuration["token"];
 var bot = new TelegramBotClient(token);
 
 using var cts = new CancellationTokenSource();
 
-bot.StartReceiving<BotUpdateHandler>(cancellationToken: cts.Token);
+var dataSource = new ConfigDataSource(_configuration);
+var updateHandler = new BotUpdateHandler(dataSource);
+bot.StartReceiving(updateHandler, cancellationToken: cts.Token);
 
 Console.WriteLine("Bot is started.");
 Console.WriteLine("Press ENTER to stop the bot.");

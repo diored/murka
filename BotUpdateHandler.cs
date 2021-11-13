@@ -14,6 +14,12 @@ public class BotUpdateHandler : IUpdateHandler
 {
     private string? _botName;
     private readonly ConcurrentDictionary<long, ChatClient> _chatClients = new();
+    private readonly IDataSource _dataSource;
+
+    public BotUpdateHandler(IDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
 
     public UpdateType[]? AllowedUpdates => null;
 
@@ -44,7 +50,7 @@ public class BotUpdateHandler : IUpdateHandler
     private async Task HandleTextMessage(ITelegramBotClient botClient, Message updateMessage, CancellationToken cancellationToken)
     {        
         _botName ??= "@" + await GetBotName(botClient, cancellationToken);
-        string message = updateMessage.Text!.TrimEnd(_botName).TrimStart(_botName + " ");
+        string message = TrimBotName(updateMessage.Text!, _botName);
 
         ChatClient chatClient = GetChatClient(updateMessage);
         await chatClient.HandleMessage(botClient, message, cancellationToken);
@@ -77,14 +83,21 @@ public class BotUpdateHandler : IUpdateHandler
 
     private ChatClient GetChatClient(Message updateMessage)
     {
-        // 321948894
         long chatId = updateMessage.Chat?.Id ?? updateMessage.From!.Id;
 
         if (!_chatClients.ContainsKey(chatId))
         {
-            _chatClients.TryAdd(chatId, new ChatClient(chatId));
+            _chatClients.TryAdd(chatId, new ChatClient(chatId, _dataSource));
         }
 
         return _chatClients[chatId];
+    }
+
+    private static string TrimBotName(string message, string botName)
+    {
+        Index start = message.StartsWith(botName + " ") ? botName.Length + 1 : 0;
+        Index end = message.EndsWith(botName) ? ^botName.Length : ^0;
+
+        return message[start..end];
     }
 }
