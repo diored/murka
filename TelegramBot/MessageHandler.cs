@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
@@ -29,8 +30,8 @@ public class MessageHandler
             "/promo" or "промокоды" => ShowPromocodes(),
             "/sea" or "море" => ShowSea(),
             "/north" or "север" => ShowNorth(),
-            "/agenda" or "сводка" => ShowAgenda(Data.ServerTime),
-            "/tomorrow" or "завтра" => ShowAgenda(Data.ServerTime.AddDays(1)),
+            "/agenda" or "сводка" => ShowAgenda(ServerTime.GetCurrent()),
+            "/tomorrow" or "завтра" => ShowAgenda(ServerTime.GetCurrent().AddDays(1)),
             "/events" or "ивенты" => ShowEvents(),
             "/murka" or "мурка" => StartDialog(),
             _ => null
@@ -42,18 +43,18 @@ public class MessageHandler
             return;
         }
 
-        if (Data.MurrTriggers.Any(mt => mt.IsMatch(message)) &&
-            !(Data.ServerTime - clientData.LatestGreeting < TimeSpan.FromMinutes(1)))
+        if (_murrTriggers.Any(mt => mt.IsMatch(message)) &&
+            !(ServerTime.GetCurrent() - clientData.LatestGreeting < TimeSpan.FromMinutes(1)))
         {
-            clientData.LatestGreeting = Data.ServerTime;
+            clientData.LatestGreeting = ServerTime.GetCurrent();
             await SayMurr();
         }
     }
 
     private async Task ShowDaily()
     {
-        string? today = Data.GetDaily(Data.ServerTime)?.Definition;
-        string? tomorrow = Data.GetDaily(Data.ServerTime.AddDays(1))?.Definition;
+        string? today = Data.GetDaily(ServerTime.GetCurrent())?.Definition;
+        string? tomorrow = Data.GetDaily(ServerTime.GetCurrent().AddDays(1))?.Definition;
 
         if (today == null)
         {
@@ -76,7 +77,7 @@ public class MessageHandler
 
     async Task ShowPromocodes()
     {
-        Promocode[] activePromocodes = Data.GetActivePromocodes(Data.ServerTime);
+        Promocode[] activePromocodes = Data.GetActivePromocodes(ServerTime.GetCurrent());
 
         if (activePromocodes.Any())
         {
@@ -104,7 +105,7 @@ public class MessageHandler
 
     private async Task ShowNorth()
     {
-        await SendMessage($"Расписание ивентов в СЗ:\n— войско богов: {Data.GetNorth(Data.ServerTime, NorthArmy.Gods)}\n— армия севера: {Data.GetNorth(Data.ServerTime, NorthArmy.North)}");
+        await SendMessage($"Расписание ивентов в СЗ:\n— войско богов: {Data.GetNorth(ServerTime.GetCurrent(), NorthArmy.Gods)}\n— армия севера: {Data.GetNorth(ServerTime.GetCurrent(), NorthArmy.North)}");
     }
 
     private async Task ShowAgenda(DateTime dateTime)
@@ -121,7 +122,7 @@ public class MessageHandler
         };
 
         var builder = new StringBuilder()
-            .AppendLine(GetDaytimeGreeting(Data.ServerTime));
+            .AppendLine(GetDaytimeGreeting(ServerTime.GetCurrent()));
 
         var daily = Data.GetDaily(dateTime)?.Definition;
         if (daily != null)
@@ -163,9 +164,9 @@ public class MessageHandler
     private async Task ShowEvents()
     {
         var builder = new StringBuilder()
-            .AppendFormat("<b>Текущие ивенты</b> (на {0:yyyy-MM-dd}) <b>:</b>", Data.ServerTime);
+            .AppendFormat("<b>Текущие ивенты</b> (на {0:yyyy-MM-dd}) <b>:</b>", ServerTime.GetCurrent());
 
-        foreach (var evt in Data.GetActiveEvents(Data.ServerTime))
+        foreach (var evt in Data.GetActiveEvents(ServerTime.GetCurrent()))
         {
             builder
                 .AppendLine()
@@ -206,4 +207,12 @@ public class MessageHandler
     {
         await _context.BotClient.SendPhotoAsync(_context.ChatId, new InputOnlineFile(url), cancellationToken: _context.CancellationToken);
     }
+
+    private static readonly Regex[] _murrTriggers =
+    {
+        new Regex("привет", RegexOptions.IgnoreCase),
+        new Regex("доброе утро", RegexOptions.IgnoreCase),
+        new Regex("добрый день", RegexOptions.IgnoreCase),
+        new Regex("добрый вечер", RegexOptions.IgnoreCase)
+    };
 }

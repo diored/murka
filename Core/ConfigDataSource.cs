@@ -2,8 +2,6 @@
 
 using Microsoft.Extensions.Configuration;
 
-using System.Text.RegularExpressions;
-
 namespace DioRed.Murka.Core;
 
 public class ConfigDataSource : IDataSource
@@ -15,15 +13,14 @@ public class ConfigDataSource : IDataSource
         _configuration = configuration;
     }
 
-    public Regex[] MurrTriggers { get; } =
+    public Event[] GetActiveEvents(DateTime dateTime)
     {
-        new Regex("привет", RegexOptions.IgnoreCase),
-        new Regex("доброе утро", RegexOptions.IgnoreCase),
-        new Regex("добрый день", RegexOptions.IgnoreCase),
-        new Regex("добрый вечер", RegexOptions.IgnoreCase)
-    };
-
-    public DateTime ServerTime => DateTime.UtcNow.AddHours(3); // Moscow time zone UTC+3
+        return _configuration.GetSection("events").GetChildren()
+            .Select(x => new Event(x["Name"], DateTime.Parse(x["Ends"])))
+            .Where(e => e.Ends >= dateTime)
+            .OrderBy(e => e.Ends)
+            .ToArray();
+    }
 
     public Promocode[] GetActivePromocodes(DateTime dateTime)
     {
@@ -36,25 +33,11 @@ public class ConfigDataSource : IDataSource
             .ToArray();
     }
 
-    public string GetNorth(DateTime dateTime, NorthArmy army)
+    public Daily? GetDaily(DateTime dateTime)
     {
-        DayOfWeek dayOfWeek = dateTime.DayOfWeek;
-        if (dayOfWeek == DayOfWeek.Tuesday)
-        {
-            return "Ледяной штурм";
-        }
-
-        var godsEvents = GetNorthEventForGods(dayOfWeek);
-        var events = (army == NorthArmy.Gods)
-            ? godsEvents
-            : Enumerable.Range(16, 8).Except(godsEvents).ToArray();
-
-        return string.Join(", ", events.Select(e => $"{e}:00"));
-    }
-
-    public string GetRandomGreeting()
-    {
-        return GetRandomItem(_greetings);
+        string key = $"daily:{dateTime:MM:dd}";
+        string dailyKey = _configuration[key];
+        return dailyKey != null ? _dailies[dailyKey] : null;
     }
 
     public IEnumerable<string> GetDayEvents(DateTime dateTime)
@@ -104,38 +87,26 @@ public class ConfigDataSource : IDataSource
         yield return "Триумф драконов (17:00, 19:00, 21:00)";
     }
 
-    public Daily? GetDaily(DateTime dateTime)
+    public string GetNorth(DateTime dateTime, NorthArmy army)
     {
-        string key = $"daily:{dateTime:MM:dd}";
-        string dailyKey = _configuration[key];
-        return dailyKey != null ? _dailies[dailyKey] : null;
+        DayOfWeek dayOfWeek = dateTime.DayOfWeek;
+        if (dayOfWeek == DayOfWeek.Tuesday)
+        {
+            return "Ледяной штурм";
+        }
+
+        var godsEvents = GetNorthEventForGods(dayOfWeek);
+        var events = (army == NorthArmy.Gods)
+            ? godsEvents
+            : Enumerable.Range(16, 8).Except(godsEvents).ToArray();
+
+        return string.Join(", ", events.Select(e => $"{e}:00"));
     }
 
-    public Event[] GetActiveEvents(DateTime dateTime)
+    public string GetRandomGreeting()
     {
-        return _configuration.GetSection("events").GetChildren()
-            .Select(x => new Event(x["Name"], DateTime.Parse(x["Ends"])))
-            .Where(e => e.Ends >= dateTime)
-            .OrderBy(e => e.Ends)
-            .ToArray();
+        return GetRandomItem(_greetings);
     }
-
-    private static readonly IDictionary<string, Daily> _dailies = new Dictionary<string, Daily>
-    {
-        ["weapon"] = new("weapon", "Оружие (ПВ2 — ПП — МИ — ГШ)"),
-        ["armor"] = new("armor", "Доспех (ПВ1 — СЦ — ХХ 4-1 — ХХ 4-2)"),
-        ["relic"] = new("relic", "Реликвия (ХС — ЛА — ДР)")
-    };
-
-    private static readonly string[] _greetings =
-    {
-        "Привет! =)",
-        "Мяу :-)",
-        ",,,==(^.^)==,,,",
-        "Рада видеть ;)",
-        "И вам здравствуйте!",
-        "Мурр"
-    };
 
     private static int[] GetNorthEventForGods(DayOfWeek dayOfWeek)
     {
@@ -162,4 +133,21 @@ public class ConfigDataSource : IDataSource
 
         return items[Random.Shared.Next(items.Count)];
     }
+
+    private static readonly IDictionary<string, Daily> _dailies = new Dictionary<string, Daily>
+    {
+        ["weapon"] = new("weapon", "Оружие (ПВ2 / ПП / МИ / ГШ)"),
+        ["armor"] = new("armor", "Доспех (ПВ1 / СЦ / ХХ 4-1 / ХХ 4-2)"),
+        ["relic"] = new("relic", "Реликвия (ХС / ЛА / ДР)")
+    };
+
+    private static readonly string[] _greetings =
+    {
+        "Привет! =)",
+        "Мяу :-)",
+        ",,,==(^.^)==,,,",
+        "Рада видеть ;)",
+        "И вам здравствуйте!",
+        "Мурр"
+    };
 }

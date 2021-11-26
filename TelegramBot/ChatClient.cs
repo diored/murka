@@ -52,7 +52,7 @@ public class ChatClient
                 while (true)
                 {
                     // Time to next noon
-                    DateTime serverTime = _dataSource.ServerTime;
+                    DateTime serverTime = ServerTime.GetCurrent();
                     DateTime scheduleTo = serverTime.Date.AddDays(1).AddSeconds(5);
 
                     TimeSpan interval = scheduleTo - serverTime;

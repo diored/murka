@@ -11,13 +11,12 @@ IConfigurationRoot _configuration = new ConfigurationBuilder()
 	.AddEnvironmentVariables()
 	.Build();
 
-
 string token = _configuration["token"];
 var bot = new TelegramBotClient(token);
 
-using var cts = new CancellationTokenSource();
+var cts = new CancellationTokenSource();
 
-var dataSource = new ConfigDataSource(_configuration);
+var dataSource = new ApiDataSource(new Uri(_configuration["api"]));
 var updateHandler = new BotUpdateHandler(dataSource);
 bot.StartReceiving(updateHandler, cancellationToken: cts.Token);
 
