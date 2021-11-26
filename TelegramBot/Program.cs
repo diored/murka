@@ -26,7 +26,6 @@ Console.WriteLine("Press CTRL+C to stop the bot.");
 Console.CancelKeyPress += (_, _) =>
 {
     cts.Cancel();
-    cts.Cancel();
     Console.WriteLine("Bot was stopped.");
 };
 
