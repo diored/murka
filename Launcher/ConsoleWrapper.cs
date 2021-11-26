@@ -8,7 +8,7 @@ namespace DioRed.Murka.Launcher;
 
 public partial class ConsoleWrapper : UserControl
 {
-    private readonly CancellationTokenSource _cts = new();
+    private CancellationTokenSource? _cts;
 
     private bool _isRunning;
 
@@ -40,6 +40,7 @@ public partial class ConsoleWrapper : UserControl
             .WithValidation(CommandResultValidation.None);
 
         IsRunning = true;
+        _cts = new CancellationTokenSource();
 
         try
         {
@@ -70,7 +71,7 @@ public partial class ConsoleWrapper : UserControl
 
     public void Stop()
     {
-        _cts.Cancel();
+        _cts?.Cancel();
         logList.Items.Add(new LogItem("Stopped", LogItemType.System));
 
         IsRunning = false;

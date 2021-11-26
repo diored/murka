@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace DioRed.Murka.Launcher;
 
 public partial class MainForm : Form
@@ -5,6 +7,20 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
+    }
+
+    public MainForm(IConfiguration configuration)
+        :this()
+    {
+        LoadWrapperAppProperties(serverWrapper, configuration.GetSection("wrappers:server"));
+        LoadWrapperAppProperties(botWrapper, configuration.GetSection("wrappers:bot"));
+    }
+
+    private void LoadWrapperAppProperties(ConsoleWrapper wrapper, IConfigurationSection configurationSection)
+    {
+        wrapper.AppPath = configurationSection["path"];
+        wrapper.AppArguments = configurationSection["args"] ?? string.Empty;
+        wrapper.AppProcessName = configurationSection["processName"];
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

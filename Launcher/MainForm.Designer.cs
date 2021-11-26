@@ -56,9 +56,6 @@ partial class MainForm
             // 
             // serverWrapper
             // 
-            this.serverWrapper.AppArguments = "--urls https://localhost:5111";
-            this.serverWrapper.AppPath = "C:\\Programs\\MurkaApi\\Api.exe";
-            this.serverWrapper.AppProcessName = "Api";
             this.serverWrapper.Dock = System.Windows.Forms.DockStyle.Fill;
             this.serverWrapper.Font = new System.Drawing.Font("PT Mono", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.serverWrapper.Location = new System.Drawing.Point(0, 0);
@@ -69,9 +66,6 @@ partial class MainForm
             // 
             // botWrapper
             // 
-            this.botWrapper.AppArguments = "";
-            this.botWrapper.AppPath = "C:\\Programs\\MurkaBot\\TelegramBot.exe";
-            this.botWrapper.AppProcessName = "TelegramBot";
             this.botWrapper.Dock = System.Windows.Forms.DockStyle.Fill;
             this.botWrapper.Font = new System.Drawing.Font("PT Mono", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.botWrapper.Location = new System.Drawing.Point(0, 0);
