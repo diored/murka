@@ -69,7 +69,7 @@
             this.stopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(23, 22);
-            this.stopButton.Text = "toolStripButton2";
+            this.stopButton.Text = "Stop";
             // 
             // clearButton
             // 
@@ -100,6 +100,7 @@
             // 
             this.logList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logList.FormattingEnabled = true;
+            this.logList.HorizontalScrollbar = true;
             this.logList.ItemHeight = 15;
             this.logList.Location = new System.Drawing.Point(0, 25);
             this.logList.Name = "logList";

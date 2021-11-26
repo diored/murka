@@ -56,6 +56,9 @@ partial class MainForm
             // 
             // serverWrapper
             // 
+            this.serverWrapper.AppArguments = "";
+            this.serverWrapper.AppPath = "";
+            this.serverWrapper.AppProcessName = null;
             this.serverWrapper.Dock = System.Windows.Forms.DockStyle.Fill;
             this.serverWrapper.Font = new System.Drawing.Font("PT Mono", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.serverWrapper.Location = new System.Drawing.Point(0, 0);
@@ -66,6 +69,9 @@ partial class MainForm
             // 
             // botWrapper
             // 
+            this.botWrapper.AppArguments = "";
+            this.botWrapper.AppPath = "";
+            this.botWrapper.AppProcessName = null;
             this.botWrapper.Dock = System.Windows.Forms.DockStyle.Fill;
             this.botWrapper.Font = new System.Drawing.Font("PT Mono", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.botWrapper.Location = new System.Drawing.Point(0, 0);
@@ -83,6 +89,7 @@ partial class MainForm
             this.Name = "MainForm";
             this.Text = "Murka bot Launcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

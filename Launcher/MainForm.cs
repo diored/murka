@@ -54,4 +54,10 @@ public partial class MainForm : Form
             }
         } while (result == DialogResult.Retry);
     }
+
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+        serverWrapper.StartAsync();
+        botWrapper.StartAsync();
+    }
 }
