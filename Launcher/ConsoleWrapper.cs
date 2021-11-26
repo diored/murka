@@ -36,11 +36,11 @@ public partial class ConsoleWrapper : UserControl
     {
         var cmd = Cli.Wrap(AppPath)
             .WithArguments(AppArguments)
-            //.WithStandardInputPipe(PipeSource.Null)
+            .WithWorkingDirectory(Path.GetDirectoryName(AppPath))
             .WithValidation(CommandResultValidation.None);
 
         IsRunning = true;
-        await cmd.ExecuteAsync();
+
         try
         {
             await foreach (var cmdEvent in cmd.ListenAsync(_cts.Token))
