@@ -83,8 +83,6 @@ public class ConfigDataSource : IDataSource
         {
             yield return "Клан-холл";
         }
-
-        yield return "Триумф драконов (17:00, 19:00, 21:00)";
     }
 
     public string GetNorth(DateTime dateTime, NorthArmy army)

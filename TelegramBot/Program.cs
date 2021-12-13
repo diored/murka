@@ -1,35 +1,44 @@
 ﻿using DioRed.Murka.Core;
 using DioRed.Murka.TelegramBot;
+using DioRed.TelegramBot;
 
 using Microsoft.Extensions.Configuration;
 
 using Telegram.Bot;
 
-IConfigurationRoot _configuration = new ConfigurationBuilder()
+IConfigurationRoot configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddUserSecrets("3371d872-5073-497e-817e-7f06e7a254a9")
     .AddEnvironmentVariables()
     .Build();
 
-string token = _configuration["token"];
-var bot = new TelegramBotClient(token);
+ApiDataSource dataSource = new(new Uri(configuration["api"]));
+using CancellationTokenSource cts = new();
 
-var cts = new CancellationTokenSource();
+TelegramBotClient bot = new(configuration["token"]);
 
-var dataSource = new ApiDataSource(new Uri(_configuration["api"]));
-var updateHandler = new BotUpdateHandler(dataSource);
+var updateHandler = new BotUpdateHandler(chat =>
+{
+    MurkaChatClient chatClient = new(chat, dataSource);
+    chatClient.ConfigureJobs(bot, cts.Token);
+    return chatClient;
+});
+
 bot.StartReceiving(updateHandler, cancellationToken: cts.Token);
 
-Console.WriteLine("Bot is started.");
-Console.WriteLine("Press CTRL+C to stop the bot.");
+Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
 
 Console.CancelKeyPress += (_, _) =>
 {
     cts.Cancel();
     Console.WriteLine("Bot was stopped.");
+    Environment.Exit(0);
 };
 
-while (!cts.IsCancellationRequested)
+await Task.Run(async () =>
 {
-    await Task.Delay(int.MaxValue, cts.Token);
-}
+    while (!cts.IsCancellationRequested)
+    {
+        await Task.Delay(TimeSpan.FromMinutes(1));
+    }
+}, cts.Token);

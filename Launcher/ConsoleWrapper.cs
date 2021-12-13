@@ -30,14 +30,18 @@ public partial class ConsoleWrapper : UserControl
 
     public string AppPath { get; set; }
     public string AppArguments { get; set; }
-    public string AppProcessName { get; set; }
+    public string? AppProcessName { get; set; }
 
     public async Task StartAsync()
     {
-        var cmd = Cli.Wrap(AppPath)
-            .WithArguments(AppArguments)
-            .WithWorkingDirectory(Path.GetDirectoryName(AppPath))
-            .WithValidation(CommandResultValidation.None);
+        Command cmd = Cli.Wrap(AppPath).WithArguments(AppArguments);
+
+        if (AppPath is not null)
+        {
+            cmd = cmd.WithWorkingDirectory(Path.GetDirectoryName(AppPath)!);
+        }
+
+        cmd = cmd.WithValidation(CommandResultValidation.None);
 
         IsRunning = true;
         _cts = new CancellationTokenSource();
@@ -133,7 +137,7 @@ public partial class ConsoleWrapper : UserControl
         }
     }
 
-    private void logList_DrawItem(object sender, DrawItemEventArgs e)
+    private void logList_DrawItem(object? sender, DrawItemEventArgs e)
     {
         if (e.Index == -1) return;
 
@@ -152,7 +156,7 @@ public partial class ConsoleWrapper : UserControl
             _ => Brushes.Black
         };
 
-        e.Graphics.DrawString(text, e.Font, myBrush, e.Bounds, StringFormat.GenericDefault);
+        e.Graphics.DrawString(text, e.Font ?? Font, myBrush, e.Bounds, StringFormat.GenericDefault);
 
         e.DrawFocusRectangle();
     }

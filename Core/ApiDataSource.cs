@@ -60,7 +60,7 @@ public class ApiDataSource : IDataSource
         return Get<string>("randomGreeting");
     }
 
-    private TResult Get<TResult>(string method, params string[] args)
+    private TResult? Get<TResult>(string method, params string[] args)
     {
         var result = Task.Run(async () =>
         {
@@ -71,6 +71,11 @@ public class ApiDataSource : IDataSource
 
             return await _httpClient.GetStringAsync(path);
         }).GetAwaiter().GetResult();
+
+        if (string.IsNullOrEmpty(result))
+        {
+            return default;
+        }
 
         return JsonSerializer.Deserialize<TResult>(result, _jsonSerializerOptions) ?? default;
     }
