@@ -1,10 +1,8 @@
-﻿using DioRed.Murka.Core;
+﻿using System.Text;
+
 using DioRed.Murka.TelegramBot;
-using DioRed.TelegramBot;
 
 using Microsoft.Extensions.Configuration;
-
-using Telegram.Bot;
 
 IConfigurationRoot configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -12,19 +10,15 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-ApiDataSource dataSource = new(new Uri(configuration["api"]));
+Console.OutputEncoding = Encoding.UTF8;
+
+MurkaBot bot = new(configuration);
 using CancellationTokenSource cts = new();
 
-TelegramBotClient bot = new(configuration["token"]);
+bot.InfoMessage += (_, e) => Console.WriteLine(e.Message);
+bot.Error += (_, e) => Console.WriteLine(e.Message);
 
-var updateHandler = new BotUpdateHandler(chat =>
-{
-    MurkaChatClient chatClient = new(chat, dataSource);
-    chatClient.ConfigureJobs(bot, cts.Token);
-    return chatClient;
-});
-
-bot.StartReceiving(updateHandler, cancellationToken: cts.Token);
+await bot.StartAsync(cts.Token);
 
 Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
 

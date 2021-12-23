@@ -3,6 +3,7 @@ using CliWrap.EventStream;
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 
 namespace DioRed.Murka.Launcher;
 
@@ -18,9 +19,6 @@ public partial class ConsoleWrapper : UserControl
         AppArguments = string.Empty;
 
         InitializeComponent();
-
-        logList.DrawMode = DrawMode.OwnerDrawFixed;
-        logList.DrawItem += new DrawItemEventHandler(logList_DrawItem);
 
         startButton.Click += async (_, _) => await StartAsync();
         stopButton.Click += (_, _) => Stop();
@@ -48,7 +46,7 @@ public partial class ConsoleWrapper : UserControl
 
         try
         {
-            await foreach (var cmdEvent in cmd.ListenAsync(_cts.Token))
+            await foreach (var cmdEvent in cmd.ListenAsync(Encoding.UTF8, _cts.Token))
             {
                 var logItem = cmdEvent switch
                 {
@@ -65,7 +63,7 @@ public partial class ConsoleWrapper : UserControl
 
                 if (logItem is not null)
                 {
-                    logList.Items.Add(logItem);
+                    Log(logItem);
                 }
             }
         }
@@ -76,14 +74,14 @@ public partial class ConsoleWrapper : UserControl
     public void Stop()
     {
         _cts?.Cancel();
-        logList.Items.Add(new LogItem("Stopped", LogItemType.System));
+        Log(new LogItem("Stopped", LogItemType.System));
 
         IsRunning = false;
     }
 
     public void ClearLog()
     {
-        logList.Items.Clear();
+        logOutput.Clear();
     }
 
     public void Kill()
@@ -91,7 +89,7 @@ public partial class ConsoleWrapper : UserControl
         foreach (var process in GetAppProcesses())
         {
             process.Kill();
-            logList.Items.Add(new LogItem($"Process {process.Id} was killed", LogItemType.System));
+            Log(new LogItem($"Process {process.Id} was killed", LogItemType.System));
         }
     }
 
@@ -137,27 +135,32 @@ public partial class ConsoleWrapper : UserControl
         }
     }
 
-    private void logList_DrawItem(object? sender, DrawItemEventArgs e)
+    //private void logList_DrawItem(object? sender, DrawItemEventArgs e)
+    //{
+    //    if (e.Index == -1) return;
+
+    //    e.DrawBackground();
+
+    //    var item = logList.Items[e.Index];
+
+    //    (string text, LogItemType type) = item is LogItem logItem
+    //        ? (logItem.Text, logItem.Type)
+    //        : (item.ToString()!, LogItemType.Output);
+
+    //    Brush myBrush = type switch
+    //    {
+    //        LogItemType.Error => Brushes.Red,
+    //        LogItemType.System => Brushes.Blue,
+    //        _ => Brushes.Black
+    //    };
+
+    //    e.Graphics.DrawString(text, e.Font ?? Font, myBrush, e.Bounds, StringFormat.GenericDefault);
+
+    //    e.DrawFocusRectangle();
+    //}
+
+    private void Log(LogItem logItem)
     {
-        if (e.Index == -1) return;
-
-        e.DrawBackground();
-
-        var item = logList.Items[e.Index];
-
-        (string text, LogItemType type) = item is LogItem logItem
-            ? (logItem.Text, logItem.Type)
-            : (item.ToString()!, LogItemType.Output);
-
-        Brush myBrush = type switch
-        {
-            LogItemType.Error => Brushes.Red,
-            LogItemType.System => Brushes.Blue,
-            _ => Brushes.Black
-        };
-
-        e.Graphics.DrawString(text, e.Font ?? Font, myBrush, e.Bounds, StringFormat.GenericDefault);
-
-        e.DrawFocusRectangle();
+        logOutput.Text += logItem.Text + Environment.NewLine;
     }
 }

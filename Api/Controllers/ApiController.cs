@@ -1,3 +1,5 @@
+using Azure.Data.Tables;
+
 using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 
@@ -11,10 +13,22 @@ namespace DioRed.Murka.Api;
 public class ApiController : ControllerBase
 {
     private readonly IDataSource _dataSource;
+    private readonly TableClient _chatMembersTable;
+    private readonly TableClient _promocodesTable;
 
-    public ApiController(IDataSource dataSource)
+    public ApiController(IDataSource dataSource, IConfiguration configuration)
     {
         _dataSource = dataSource;
+
+        string storageUri = configuration["data:uri"];
+        string accountName = configuration["data:account"];
+        string storageAccountKey = configuration["data:key"];
+
+        Uri endpoint = new(storageUri);
+        TableSharedKeyCredential credential = new(accountName, storageAccountKey);
+
+        _chatMembersTable = new(endpoint, "Chats", credential);
+        _promocodesTable = new(endpoint, "Promocodes", credential);
     }
 
     [HttpGet("activeEvents/{dateTime}")]
@@ -26,11 +40,14 @@ public class ApiController : ControllerBase
     [HttpGet("activePromocodes/{dateTime}")]
     public Promocode[] GetActivePromocodes(DateTime dateTime)
     {
-        return _dataSource.GetActivePromocodes(dateTime);
+        return _promocodesTable
+            .Query<TableEntities.Promocode>(p => p.ValidTo > dateTime)
+            .Select(entity => new Promocode(entity.ValidTo, entity.RowKey, entity.Content))
+            .ToArray();
     }
 
     [HttpGet("daily/{dateTime}")]
-    public Daily? GetDaily(DateTime dateTime)
+    public Daily GetDaily(DateTime dateTime)
     {
         return _dataSource.GetDaily(dateTime);
     }

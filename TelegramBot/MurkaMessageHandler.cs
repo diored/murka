@@ -3,7 +3,8 @@ using System.Text.RegularExpressions;
 
 using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
-using DioRed.TelegramBot;
+using DioRed.Vermilion;
+using DioRed.Vermilion.Attributes;
 
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -15,35 +16,36 @@ public class MurkaMessageHandler : MessageHandler
     public MurkaMessageHandler(MessageContext messageContext)
         : base(messageContext)
     {
-        Chat = (MurkaChatClient)messageContext.Chat;
+        MurkaChat = (MurkaChatClient)messageContext.ChatClient;
     }
 
-    public MurkaChatClient Chat { get; }
+    public MurkaChatClient MurkaChat { get; }
 
     [BotCommand("^(/daily|ежа)$")]
-    public async Task ShowDaily()
+    public async Task ShowDailyAsync()
     {
-        string? today = Chat.DataSource.GetDaily(ServerTime.GetCurrent())?.Definition;
-        string? tomorrow = Chat.DataSource.GetDaily(ServerTime.GetCurrent().AddDays(1))?.Definition;
+        DateTime serverTime = ServerTime.GetCurrent();
+        Daily today = MurkaChat.DataSource.GetDaily(serverTime);
+        Daily tomorrow = MurkaChat.DataSource.GetDaily(serverTime.AddDays(1));
 
-        if (today == null)
+        if (string.IsNullOrEmpty(today.Code))
         {
-            await SendMessage("Пока хз, что по еже.");
+            await SendTextAsync("Пока хз, что по еже.");
         }
-        else if (tomorrow == null)
+        else if (string.IsNullOrEmpty(tomorrow.Code))
         {
-            await SendMessage($"Сегодня ежа: {today}.");
+            await SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>).");
         }
         else
         {
-            await SendMessage($"Сегодня ежа: {today}, а завтра: {tomorrow}.");
+            await SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>), а завтра в {tomorrow.Definition} (<b>{tomorrow.Code}</b>).");
         }
     }
 
     [BotCommand("^(/promo|промокоды)$")]
-    public async Task ShowPromocodes()
+    public async Task ShowPromocodesAsync()
     {
-        Promocode[] activePromocodes = Chat.DataSource.GetActivePromocodes(ServerTime.GetCurrent());
+        Promocode[] activePromocodes = MurkaChat.DataSource.GetActivePromocodes(ServerTime.GetCurrent());
 
         if (activePromocodes.Any())
         {
@@ -53,75 +55,77 @@ public class MurkaMessageHandler : MessageHandler
             {
                 builder
                     .AppendLine()
-                    .AppendFormat("<code>{0}</code> (до {1}) — {2}", promocode.Code, promocode.ValidTo, promocode.Content);
+                    .AppendFormat("<code>{0}</code> (до {1}) — {2}", promocode.Code, ServerTime.GetServerTime(promocode.ValidTo), promocode.Content);
             }
 
-            await SendMessage(builder.ToString(), formatted: true);
+            await SendHtmlAsync(builder.ToString());
         }
         else
         {
-            await SendMessage("Активных промокодов нет");
+            await SendTextAsync("Активных промокодов нет");
         }
     }
 
-    public async Task GreetAdmin()
+    [BotCommand("^(/admin|админ)$")]
+    [AdminOnly]
+    public async Task GreetAdminAsync()
     {
         //if (_context.ChatType == ChatType.Private)
-        await SendMessage("Hi admin =^.^=");
+        await SendTextAsync("Hi admin =^.^=");
     }
 
     [BotCommand("привет|доброе утро|добрый день|добрый вечер", RegexOptions.IgnoreCase)]
-    public async Task SayMurr()
+    public async Task SayMurrAsync()
     {
-        if (!(ServerTime.GetCurrent() - ((MurkaChatClient)MessageContext.Chat).LatestGreeting < TimeSpan.FromMinutes(1)))
+        if (!(ServerTime.GetCurrent() - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(1)))
         {
-            ((MurkaChatClient)MessageContext.Chat).LatestGreeting = ServerTime.GetCurrent();
-            await SendMessage(Chat.DataSource.GetRandomGreeting());
+            MurkaChat.LatestGreeting = ServerTime.GetCurrent();
+            await SendTextAsync(MurkaChat.DataSource.GetRandomGreeting());
         }
     }
 
     [BotCommand("^(/sea|море)$")]
-    public async Task ShowSea()
+    public async Task ShowSeaAsync()
     {
-        await SendPhoto("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
+        await SendPhotoAsync("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
     }
 
     [BotCommand("^(/north|север)$")]
-    public async Task ShowNorth()
+    public async Task ShowNorthAsync()
     {
-        await SendMessage($"Расписание ивентов в СЗ:\n— войско богов: {Chat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.Gods)}\n— армия севера: {Chat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.North)}");
+        await SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {MurkaChat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.Gods)}\n— армия севера: {MurkaChat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.North)}");
     }
 
     [BotCommand("^(/agenda|сводка)$")]
-    public async Task ShowAgenda()
+    public async Task ShowAgendaAsync()
     {
-        await ShowAgendaFor(ServerTime.GetCurrent());
+        await ShowAgendaForAsync(ServerTime.GetCurrent());
     }
 
     [BotCommand("^(/tomorrow|завтра)$")]
-    public async Task ShowAgendaTomorrow()
+    public async Task ShowAgendaTomorrowAsync()
     {
-        await ShowAgendaFor(ServerTime.GetCurrent().AddDays(1));
+        await ShowAgendaForAsync(ServerTime.GetCurrent().AddDays(1));
     }
 
     [BotCommand("^(/events|ивенты)$")]
-    public async Task ShowEvents()
+    public async Task ShowEventsAsync()
     {
         var builder = new StringBuilder()
             .AppendFormat("<b>Текущие ивенты</b> (на {0:yyyy-MM-dd}) <b>:</b>", ServerTime.GetCurrent());
 
-        foreach (var evt in Chat.DataSource.GetActiveEvents(ServerTime.GetCurrent()))
+        foreach (var evt in MurkaChat.DataSource.GetActiveEvents(ServerTime.GetCurrent()))
         {
             builder
                 .AppendLine()
                 .AppendFormat("{0} — <i>до {1}</i>", evt.Name, evt.Ends.ToString("yyyy-MM-dd HH:mm"));
         }
 
-        await SendMessage(builder.ToString(), formatted: true);
+        await SendHtmlAsync(builder.ToString());
     }
 
     [BotCommand("^(/murka|мурка)$")]
-    public async Task StartDialog()
+    public async Task StartDialogAsync()
     {
         IReplyMarkup replyMarkup = new InlineKeyboardMarkup(new[]
         {
@@ -129,10 +133,10 @@ public class MurkaMessageHandler : MessageHandler
                 new InlineKeyboardButton("север") { CallbackData = "север" }
             });
 
-        await MessageContext.Bot.SendTextMessageAsync(MessageContext.Chat.Chat.Id, "Чем помочь?", replyMarkup: replyMarkup);
+        await MessageContext.BotClient.SendTextMessageAsync(MurkaChat.Chat.Id, "Чем помочь?", replyMarkup: replyMarkup);
     }
 
-    private async Task ShowAgendaFor(DateTime dateTime)
+    private async Task ShowAgendaForAsync(DateTime dateTime)
     {
         string dowG = dateTime.DayOfWeek switch
         {
@@ -148,7 +152,7 @@ public class MurkaMessageHandler : MessageHandler
         var builder = new StringBuilder()
             .AppendLine(GetDaytimeGreeting(ServerTime.GetCurrent()));
 
-        var daily = Chat.DataSource.GetDaily(dateTime)?.Definition;
+        var daily = MurkaChat.DataSource.GetDaily(dateTime)?.Definition;
         if (daily != null)
         {
             builder
@@ -158,13 +162,13 @@ public class MurkaMessageHandler : MessageHandler
 
         builder
             .AppendLine("Северные земли:")
-            .AppendFormat("— войско богов: <b>{0}</b>.", Chat.DataSource.GetNorth(dateTime, NorthArmy.Gods))
+            .AppendFormat("— войско богов: <b>{0}</b>.", MurkaChat.DataSource.GetNorth(dateTime, NorthArmy.Gods))
             .AppendLine()
-            .AppendFormat("— армия севера: <b>{0}</b>.", Chat.DataSource.GetNorth(dateTime, NorthArmy.North))
+            .AppendFormat("— армия севера: <b>{0}</b>.", MurkaChat.DataSource.GetNorth(dateTime, NorthArmy.North))
             .AppendLine()
             .AppendFormat("Ивенты {0}:", dowG);
 
-        var dayEvents = Chat.DataSource.GetDayEvents(dateTime).ToList();
+        var dayEvents = MurkaChat.DataSource.GetDayEvents(dateTime).ToList();
 
         if (dayEvents.Any())
         {
@@ -182,7 +186,7 @@ public class MurkaMessageHandler : MessageHandler
 
         var message = builder.ToString();
 
-        await SendMessage(message, formatted: true);
+        await SendHtmlAsync(message);
     }
 
     private static string GetDaytimeGreeting(DateTime dateTime)

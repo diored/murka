@@ -34,7 +34,7 @@
             this.clearButton = new System.Windows.Forms.ToolStripButton();
             this.killButton = new System.Windows.Forms.ToolStripButton();
             this.titleLabel = new System.Windows.Forms.ToolStripLabel();
-            this.logList = new System.Windows.Forms.ListBox();
+            this.logOutput = new System.Windows.Forms.TextBox();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,22 +96,22 @@
             this.titleLabel.Name = "titleLabel";
             this.titleLabel.Size = new System.Drawing.Size(0, 22);
             // 
-            // logList
+            // logOutput
             // 
-            this.logList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logList.FormattingEnabled = true;
-            this.logList.HorizontalScrollbar = true;
-            this.logList.ItemHeight = 15;
-            this.logList.Location = new System.Drawing.Point(0, 25);
-            this.logList.Name = "logList";
-            this.logList.Size = new System.Drawing.Size(314, 170);
-            this.logList.TabIndex = 2;
+            this.logOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logOutput.Location = new System.Drawing.Point(0, 25);
+            this.logOutput.Multiline = true;
+            this.logOutput.Name = "logOutput";
+            this.logOutput.ReadOnly = true;
+            this.logOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.logOutput.Size = new System.Drawing.Size(314, 170);
+            this.logOutput.TabIndex = 2;
             // 
             // ConsoleWrapper
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.logList);
+            this.Controls.Add(this.logOutput);
             this.Controls.Add(this.toolStrip);
             this.Name = "ConsoleWrapper";
             this.Size = new System.Drawing.Size(314, 195);
@@ -128,7 +128,7 @@
         private ToolStripButton stopButton;
         private ToolStripButton clearButton;
         private ToolStripButton killButton;
-        private ListBox logList;
         private ToolStripLabel titleLabel;
+        private TextBox logOutput;
     }
 }

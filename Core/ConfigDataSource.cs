@@ -1,4 +1,6 @@
-﻿using DioRed.Murka.Core.Entities;
+﻿using System.Globalization;
+
+using DioRed.Murka.Core.Entities;
 
 using Microsoft.Extensions.Configuration;
 
@@ -24,20 +26,18 @@ public class ConfigDataSource : IDataSource
 
     public Promocode[] GetActivePromocodes(DateTime dateTime)
     {
-        var today = DateOnly.FromDateTime(dateTime);
-
         return _configuration.GetSection("promo").GetChildren()
-            .Select(x => new Promocode(DateOnly.Parse(x["ValidTo"]), x.Key, x["Content"]))
-            .Where(p => p.ValidTo >= today)
+            .Select(x => new Promocode(DateTime.ParseExact(x["ValidTo"], "yyyy-MM-dd", CultureInfo.InvariantCulture), x.Key, x["Content"]))
+            .Where(p => p.ValidTo >= dateTime)
             .OrderBy(p => p.ValidTo)
             .ToArray();
     }
 
-    public Daily? GetDaily(DateTime dateTime)
+    public Daily GetDaily(DateTime dateTime)
     {
         string key = $"daily:{dateTime:MM:dd}";
         string dailyKey = _configuration[key];
-        return dailyKey != null ? _dailies[dailyKey] : null;
+        return dailyKey != null ? _dailies[dailyKey] : Daily.Empty;
     }
 
     public IEnumerable<string> GetDayEvents(DateTime dateTime)
@@ -134,9 +134,9 @@ public class ConfigDataSource : IDataSource
 
     private static readonly IDictionary<string, Daily> _dailies = new Dictionary<string, Daily>
     {
-        ["weapon"] = new("weapon", "Оружие (ПВ2 / ПП / МИ / ГШ)"),
-        ["armor"] = new("armor", "Доспех (ПВ1 / СЦ / ХХ 4-1 / ХХ 4-2)"),
-        ["relic"] = new("relic", "Реликвия (ХС / ЛА / ДР)")
+        ["weapon"] = new("Оружие", "ПВ2 (Аурогон) / ПП / МИ / ГШ"),
+        ["armor"] = new("Доспех", "ПВ1 (Чернокрыл) / СЦ / ХХ 4-1 / ХХ 4-2"),
+        ["relic"] = new("Реликвия", "ХС / ЛА / ДР")
     };
 
     private static readonly string[] _greetings =

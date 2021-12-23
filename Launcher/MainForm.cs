@@ -4,16 +4,19 @@ namespace DioRed.Murka.Launcher;
 
 public partial class MainForm : Form
 {
+    private readonly bool _autoStart;
+
     public MainForm()
     {
         InitializeComponent();
     }
 
-    public MainForm(IConfiguration configuration)
+    public MainForm(IConfiguration configuration, bool autoStart)
         :this()
     {
         LoadWrapperAppProperties(serverWrapper, configuration.GetSection("wrappers:server"));
         LoadWrapperAppProperties(botWrapper, configuration.GetSection("wrappers:bot"));
+        _autoStart = autoStart;
     }
 
     private void LoadWrapperAppProperties(ConsoleWrapper wrapper, IConfigurationSection configurationSection)
@@ -57,7 +60,10 @@ public partial class MainForm : Form
 
     private void MainForm_Load(object sender, EventArgs e)
     {
-        serverWrapper.StartAsync();
-        botWrapper.StartAsync();
+        if (_autoStart)
+        {
+            serverWrapper.StartAsync();
+            botWrapper.StartAsync();
+        }
     }
 }

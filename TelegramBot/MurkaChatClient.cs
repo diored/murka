@@ -1,5 +1,5 @@
 ﻿using DioRed.Murka.Core;
-using DioRed.TelegramBot;
+using DioRed.Vermilion;
 
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -10,7 +10,6 @@ namespace DioRed.Murka.TelegramBot;
 public class MurkaChatClient : IChatClient
 {
     private string? _botName;
-    private Job? _agendaJob;
 
     public MurkaChatClient(Chat chat, IDataSource dataSource)
     {
@@ -19,38 +18,34 @@ public class MurkaChatClient : IChatClient
     }
 
     public Chat Chat { get; }
+
     public IDataSource DataSource { get; }
 
     public DateTime? LatestGreeting { get; set; }
 
-    public void ConfigureJobs(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    public async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        _agendaJob = Job.SetupDaily(ct => CheckAgendaSubscription(botClient, ct), TimeSpan.FromHours(21));
+        MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
+        await handler.HandleAsync(callbackQuery.Data!);
     }
 
-    public async Task HandleCallbackQueryMessage(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken)
-    {
-        MurkaMessageHandler handler = GetMessageHandler(botClient, cancellationToken);
-        await handler.Handle(callbackQuery.Data);
-    }
-
-    public async Task HandleMessage(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    public async Task HandleMessageAsync(Bot bot, Message message, CancellationToken cancellationToken)
     {
         if (message!.Type == MessageType.Text &&
             message.From?.IsBot == false)
         {
-            _botName ??= "@" + await GetBotName(botClient, cancellationToken);
+            _botName ??= "@" + await GetBotNameAsync(bot.BotClient, cancellationToken);
             string messageText = TrimBotName(message.Text!, _botName);
 
-            MurkaMessageHandler handler = GetMessageHandler(botClient, cancellationToken);
-            await handler.Handle(messageText);
+            MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
+            await handler.HandleAsync(messageText);
         }
     }
 
-    private async Task CheckAgendaSubscription(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    public async Task ShowAgendaAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
         MurkaMessageHandler handler = GetMessageHandler(botClient, cancellationToken);
-        await handler.Handle("/agenda");
+        await handler.HandleAsync("/agenda");
     }
 
     private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
@@ -58,7 +53,7 @@ public class MurkaChatClient : IChatClient
         return new(new MessageContext(botClient, this, cancellationToken));
     }
 
-    private static async Task<string> GetBotName(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    private static async Task<string> GetBotNameAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
         return (await botClient.GetMeAsync(cancellationToken)).Username!;
     }

@@ -40,9 +40,9 @@ public class ApiDataSource : IDataSource
         return Get<Promocode[]>("activePromocodes", dateTime.ToString("s"));
     }
 
-    public Daily? GetDaily(DateTime dateTime)
+    public Daily GetDaily(DateTime dateTime)
     {
-        return Get<Daily?>("daily", dateTime.ToString("s"));
+        return Get<Daily>("daily", dateTime.ToString("s"));
     }
 
     public IEnumerable<string> GetDayEvents(DateTime dateTime)
@@ -60,9 +60,10 @@ public class ApiDataSource : IDataSource
         return Get<string>("randomGreeting");
     }
 
-    private TResult? Get<TResult>(string method, params string[] args)
+    private TResult Get<TResult>(string method, params string[] args)
+        where TResult: notnull
     {
-        var result = Task.Run(async () =>
+        var stringResult = Task.Run(async () =>
         {
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -72,12 +73,19 @@ public class ApiDataSource : IDataSource
             return await _httpClient.GetStringAsync(path);
         }).GetAwaiter().GetResult();
 
-        if (string.IsNullOrEmpty(result))
+        TResult? result = default;
+
+        if (!string.IsNullOrEmpty(stringResult))
         {
-            return default;
+            result = JsonSerializer.Deserialize<TResult>(stringResult, _jsonSerializerOptions);
         }
 
-        return JsonSerializer.Deserialize<TResult>(result, _jsonSerializerOptions) ?? default;
+        if (result == null)
+        {
+            throw new InvalidOperationException("Empty result returned");
+        }
+
+        return result;
     }
 
     private DateTime GetDateTime(string method, params string[] args)
