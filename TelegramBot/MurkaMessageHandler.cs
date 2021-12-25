@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
+using DioRed.Murka.Common;
 using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
@@ -25,8 +26,8 @@ public class MurkaMessageHandler : MessageHandler
     public async Task ShowDailyAsync()
     {
         DateTime serverTime = ServerTime.GetCurrent();
-        Daily today = MurkaChat.DataSource.GetDaily(serverTime);
-        Daily tomorrow = MurkaChat.DataSource.GetDaily(serverTime.AddDays(1));
+        Daily today = MurkaChat.Logic.GetDaily(serverTime);
+        Daily tomorrow = MurkaChat.Logic.GetDaily(serverTime.AddDays(1));
 
         if (string.IsNullOrEmpty(today.Code))
         {
@@ -45,7 +46,9 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand("^(/promo|промокоды)$")]
     public async Task ShowPromocodesAsync()
     {
-        Promocode[] activePromocodes = MurkaChat.DataSource.GetActivePromocodes(ServerTime.GetCurrent());
+        DateTime serverTime = ServerTime.GetCurrent();
+
+        ICollection<Promocode> activePromocodes = MurkaChat.Logic.GetActivePromocodes(serverTime);
 
         if (activePromocodes.Any())
         {
@@ -80,7 +83,7 @@ public class MurkaMessageHandler : MessageHandler
         if (!(ServerTime.GetCurrent() - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(1)))
         {
             MurkaChat.LatestGreeting = ServerTime.GetCurrent();
-            await SendTextAsync(MurkaChat.DataSource.GetRandomGreeting());
+            await SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
         }
     }
 
@@ -93,7 +96,9 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand("^(/north|север)$")]
     public async Task ShowNorthAsync()
     {
-        await SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {MurkaChat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.Gods)}\n— армия севера: {MurkaChat.DataSource.GetNorth(ServerTime.GetCurrent(), NorthArmy.North)}");
+        Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerTime.GetCurrent());
+
+        await SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
     }
 
     [BotCommand("^(/agenda|сводка)$")]
@@ -111,10 +116,12 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand("^(/events|ивенты)$")]
     public async Task ShowEventsAsync()
     {
-        var builder = new StringBuilder()
-            .AppendFormat("<b>Текущие ивенты</b> (на {0:yyyy-MM-dd}) <b>:</b>", ServerTime.GetCurrent());
+        DateTime serverTime = ServerTime.GetCurrent();
 
-        foreach (var evt in MurkaChat.DataSource.GetActiveEvents(ServerTime.GetCurrent()))
+        var builder = new StringBuilder()
+            .AppendFormat("<b>Текущие ивенты</b> (на {0:yyyy-MM-dd}) <b>:</b>", serverTime);
+
+        foreach (var evt in MurkaChat.Logic.GetActiveEvents(serverTime))
         {
             builder
                 .AppendLine()
@@ -152,7 +159,7 @@ public class MurkaMessageHandler : MessageHandler
         var builder = new StringBuilder()
             .AppendLine(GetDaytimeGreeting(ServerTime.GetCurrent()));
 
-        var daily = MurkaChat.DataSource.GetDaily(dateTime)?.Definition;
+        var daily = MurkaChat.Logic.GetDaily(dateTime)?.Definition;
         if (daily != null)
         {
             builder
@@ -160,15 +167,17 @@ public class MurkaMessageHandler : MessageHandler
                 .AppendLine();
         }
 
+        Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerTime.GetCurrent());
+
         builder
             .AppendLine("Северные земли:")
-            .AppendFormat("— войско богов: <b>{0}</b>.", MurkaChat.DataSource.GetNorth(dateTime, NorthArmy.Gods))
+            .AppendFormat("— войско богов: <b>{0}</b>.", northlands.Gods)
             .AppendLine()
-            .AppendFormat("— армия севера: <b>{0}</b>.", MurkaChat.DataSource.GetNorth(dateTime, NorthArmy.North))
+            .AppendFormat("— армия севера: <b>{0}</b>.", northlands.North)
             .AppendLine()
             .AppendFormat("Ивенты {0}:", dowG);
 
-        var dayEvents = MurkaChat.DataSource.GetDayEvents(dateTime).ToList();
+        var dayEvents = MurkaChat.Logic.GetDayEvents(dateTime).ToList();
 
         if (dayEvents.Any())
         {

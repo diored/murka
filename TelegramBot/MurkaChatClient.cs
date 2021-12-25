@@ -1,4 +1,5 @@
 ﻿using DioRed.Murka.Core;
+using DioRed.Murka.Core.Contracts;
 using DioRed.Vermilion;
 
 using Telegram.Bot;
@@ -11,15 +12,15 @@ public class MurkaChatClient : IChatClient
 {
     private string? _botName;
 
-    public MurkaChatClient(Chat chat, IDataSource dataSource)
+    public MurkaChatClient(Chat chat, ILogic logic)
     {
         Chat = chat;
-        DataSource = dataSource;
+        Logic = logic;
     }
 
     public Chat Chat { get; }
 
-    public IDataSource DataSource { get; }
+    public ILogic Logic { get; }
 
     public DateTime? LatestGreeting { get; set; }
 

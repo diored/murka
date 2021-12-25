@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace DioRed.Murka.Core;
+namespace DioRed.Murka.Common;
 
 public class DateOnlyConverter : JsonConverter<DateOnly>
 {

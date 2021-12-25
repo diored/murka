@@ -1,4 +1,4 @@
-﻿namespace DioRed.Murka.Core;
+﻿namespace DioRed.Murka.Common;
 
 public static class ServerTime
 {

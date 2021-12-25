@@ -7,9 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBot", "TelegramBot\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{CC2353B7-09D3-4EF9-A733-61242420197C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{8EF01FE8-6E6F-4F33-8F0F-CC23F1A19731}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Launcher", "Launcher\Launcher.csproj", "{2D480628-93FC-4A58-9722-9F29B78C3F51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage.AzureTables", "Storage.AzureTables\Storage.AzureTables.csproj", "{31A5E77D-C720-4AB6-8F80-831B244507E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Entities", "Core.Entities\Core.Entities.csproj", "{29A99544-C049-4650-A97E-FFEEDC867208}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Contracts", "Core.Contracts\Core.Contracts.csproj", "{70C5FD6B-54BC-4914-A11F-7E424EB0C706}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{25E9A95F-4281-47C9-94A4-07B183006EA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage.Contracts", "Storage.Contracts\Storage.Contracts.csproj", "{6DFE7405-E000-47DD-AFA5-EE8926CB6281}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +33,30 @@ Global
 		{CC2353B7-09D3-4EF9-A733-61242420197C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC2353B7-09D3-4EF9-A733-61242420197C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC2353B7-09D3-4EF9-A733-61242420197C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EF01FE8-6E6F-4F33-8F0F-CC23F1A19731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EF01FE8-6E6F-4F33-8F0F-CC23F1A19731}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EF01FE8-6E6F-4F33-8F0F-CC23F1A19731}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EF01FE8-6E6F-4F33-8F0F-CC23F1A19731}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D480628-93FC-4A58-9722-9F29B78C3F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D480628-93FC-4A58-9722-9F29B78C3F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D480628-93FC-4A58-9722-9F29B78C3F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D480628-93FC-4A58-9722-9F29B78C3F51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31A5E77D-C720-4AB6-8F80-831B244507E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31A5E77D-C720-4AB6-8F80-831B244507E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31A5E77D-C720-4AB6-8F80-831B244507E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31A5E77D-C720-4AB6-8F80-831B244507E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29A99544-C049-4650-A97E-FFEEDC867208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29A99544-C049-4650-A97E-FFEEDC867208}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29A99544-C049-4650-A97E-FFEEDC867208}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29A99544-C049-4650-A97E-FFEEDC867208}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70C5FD6B-54BC-4914-A11F-7E424EB0C706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70C5FD6B-54BC-4914-A11F-7E424EB0C706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70C5FD6B-54BC-4914-A11F-7E424EB0C706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70C5FD6B-54BC-4914-A11F-7E424EB0C706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25E9A95F-4281-47C9-94A4-07B183006EA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25E9A95F-4281-47C9-94A4-07B183006EA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25E9A95F-4281-47C9-94A4-07B183006EA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25E9A95F-4281-47C9-94A4-07B183006EA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DFE7405-E000-47DD-AFA5-EE8926CB6281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DFE7405-E000-47DD-AFA5-EE8926CB6281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DFE7405-E000-47DD-AFA5-EE8926CB6281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DFE7405-E000-47DD-AFA5-EE8926CB6281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿namespace DioRed.Murka.Core.Entities;
 
-public enum NorthArmy
+public enum Army
 {
     North,
     Gods
