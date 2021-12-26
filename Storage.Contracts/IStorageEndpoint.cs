@@ -5,4 +5,5 @@ public interface IStorageEndpoint
     IPromocodesStorage Promocodes { get; }
     IEventsStorage Events { get; }
     IDailiesStorage Dailies { get; }
+    IChatsStorage Chats { get; }
 }

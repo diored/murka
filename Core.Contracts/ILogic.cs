@@ -11,4 +11,7 @@ public interface ILogic
     ICollection<string> GetDayEvents(DateTime dateTime);
     Northlands GetNorthLands(DateTime dateTime);
     string GetRandomGreeting();
+    ICollection<ChatInfo> GetChats();
+    void AddChat(ChatInfo chatInfo);
+    void RemoveChat(ChatInfo chatInfo);
 }

@@ -62,7 +62,9 @@ public partial class MainForm : Form
     {
         if (_autoStart)
         {
-            serverWrapper.StartAsync();
+            // Disable server autostart 'cause it's not used now.
+            // serverWrapper.StartAsync();
+
             botWrapper.StartAsync();
         }
     }

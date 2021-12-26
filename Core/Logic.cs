@@ -112,6 +112,21 @@ public class Logic : ILogic
         return GetRandomItem(_greetings);
     }
 
+    public ICollection<ChatInfo> GetChats()
+    {
+        return _storageEndpoint.Chats.GetTelegramChats();
+    }
+
+    public void AddChat(ChatInfo chatInfo)
+    {
+        _storageEndpoint.Chats.Add(chatInfo);
+    }
+
+    public void RemoveChat(ChatInfo chatInfo)
+    {
+        _storageEndpoint.Chats.Remove(chatInfo);
+    }
+
     private static T GetRandomItem<T>(IList<T> items)
     {
         if (items is null)

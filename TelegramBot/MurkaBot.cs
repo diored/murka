@@ -1,21 +1,41 @@
-﻿using DioRed.Murka.Core;
-using DioRed.Murka.Core.Contracts;
+﻿using DioRed.Murka.Core.Contracts;
+using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
 using Microsoft.Extensions.Configuration;
-
-using Telegram.Bot;
 
 namespace DioRed.Murka.TelegramBot;
 
 public class MurkaBot : Bot
 {
-    public MurkaBot(IConfiguration configuration)
-        : base(CreateConfiguration(configuration))
+    private readonly ILogic _logic;
+
+    public MurkaBot(IConfiguration configuration, ILogic logic, CancellationToken cancellationToken)
+        : base(CreateConfiguration(configuration, logic), cancellationToken)
     {
-        Job.SetupDaily(this, () => Broadcast(DailyAgenda, CancellationToken), TimeSpan.FromHours(21));
-        //Job.SetupDaily(this, () => Cleanup(), TimeSpan.FromHours(21.05));
-        //Job.SetupOneTime(this, () => Broadcast(ConnectionTest, CancellationToken), DateTime.UtcNow.AddSeconds(15));
+        _logic = logic;
+
+        Job.SetupDaily(this, () => DailyRoutine(), TimeSpan.FromHours(21));
+    }
+
+    public async Task ReconnectToChats()
+    {
+        ICollection<ChatInfo> chats = _logic.GetChats();
+
+        foreach (ChatInfo chat in chats)
+        {
+            bool result = await ConnectToChatAsync(long.Parse(chat.Id));
+            if (!result)
+            {
+                _logic.RemoveChat(chat);
+            }
+        }
+    }
+
+    private async Task DailyRoutine()
+    {
+        _logic.Cleanup();
+        await Broadcast(DailyAgenda);
     }
 
     private async Task DailyAgenda(IChatClient chatClient, CancellationToken token)
@@ -23,24 +43,11 @@ public class MurkaBot : Bot
         await ((MurkaChatClient)chatClient).ShowAgendaAsync(BotClient, token);
     }
 
-    private async Task ConnectionTest(IChatClient chatClient, CancellationToken token)
+    private static BotConfiguration CreateConfiguration(IConfiguration configuration, ILogic logic)
     {
-        await BotClient.SendTextMessageAsync(chatClient.Chat.Id, "Проверка связи", cancellationToken: token);
-    }
-
-    private Task Cleanup()
-    {
-        throw new NotImplementedException();
-    }
-
-    private static BotConfiguration CreateConfiguration(IConfiguration configuration)
-    {
-        ILogic logic = new Logic(configuration);
-
         return new BotConfiguration(
             configuration["token"],
-            chat => new MurkaChatClient(chat, logic),
-            configuration.GetSection("reconnectToChats").Get<long[]>()
+            chat => new MurkaChatClient(chat, logic)
         );
     }
 }

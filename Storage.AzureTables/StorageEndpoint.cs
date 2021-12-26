@@ -13,9 +13,11 @@ public class StorageEndpoint : IStorageEndpoint
         Promocodes = new PromocodesStorage(storageClient.Table("Promocodes"));
         Events = new EventsStorage(storageClient.Table("Events"));
         Dailies = new DailiesStorage(storageClient.Table("Dailies"));
+        Chats = new ChatsStorage(storageClient.Table("Chats"));
     }
 
     public IPromocodesStorage Promocodes { get; }
     public IEventsStorage Events { get; }
     public IDailiesStorage Dailies { get; }
+    public IChatsStorage Chats { get; }
 }
