@@ -3,17 +3,15 @@ using DioRed.Murka.Core.Entities;
 using DioRed.Murka.Storage.AzureTables;
 using DioRed.Murka.Storage.Contracts;
 
-using Microsoft.Extensions.Configuration;
-
 namespace DioRed.Murka.Core;
 
 public class Logic : ILogic
 {
     private readonly IStorageEndpoint _storageEndpoint;
 
-    public Logic(IConfiguration configuration)
+    public Logic(AzureTablesCredentials credentials)
     {
-        _storageEndpoint = new StorageEndpoint(configuration["data:account"], configuration["data:key"]);
+        _storageEndpoint = new StorageEndpoint(credentials.Account, credentials.Key);
     }
 
     public void Cleanup()

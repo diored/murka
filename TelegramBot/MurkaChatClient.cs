@@ -1,5 +1,4 @@
-﻿using DioRed.Murka.Core;
-using DioRed.Murka.Core.Contracts;
+﻿using DioRed.Murka.Core.Contracts;
 using DioRed.Vermilion;
 
 using Telegram.Bot;

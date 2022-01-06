@@ -30,7 +30,7 @@ public class EventsStorage : IEventsStorage
         TableEntity entity = new()
         {
             PartitionKey = "RU",
-            RowKey = Guid.NewGuid().ToString(),
+            RowKey = NewId(),
             Name = @event.Name,
             Ends = @event.Ends
         };
@@ -50,6 +50,11 @@ public class EventsStorage : IEventsStorage
         {
             _tableClient.DeleteEntity(entity.PartitionKey, entity.RowKey);
         }
+    }
+
+    private static string NewId()
+    {
+        return Guid.NewGuid().ToString()[^12..];
     }
 
     private class TableEntity : BaseTableEntity

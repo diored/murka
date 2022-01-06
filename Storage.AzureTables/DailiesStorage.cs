@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
 
 using DioRed.Common.AzureStorage;
 using DioRed.Murka.Core.Entities;
@@ -17,11 +18,28 @@ public class DailiesStorage : IDailiesStorage
 
     public Daily Get(DateTime dateTime)
     {
-        TableEntity entity = _tableClient
-            .GetEntity<TableEntity>(dateTime.Month.ToString(), dateTime.Day.ToString())
-            .Value;
+        string partitionKey = dateTime.Month.ToString("D2");
+        string rowKey = dateTime.Day.ToString("D2");
 
-        return _dailies[entity.Code];
+        try
+        {
+            TableEntity entity = _tableClient
+                .GetEntity<TableEntity>(partitionKey, rowKey)
+                .Value;
+
+            if (_dailies.TryGetValue(entity.Code, out Daily? daily))
+            {
+                return daily;
+            }
+            else
+            {
+                return new Daily(entity.Code, $"Unknown {entity.Code} daily");
+            }
+        }
+        catch (RequestFailedException)
+        {
+            return Daily.Empty;
+        }
     }
 
     private static readonly Dictionary<string, Daily> _dailies = new()

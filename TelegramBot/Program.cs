@@ -4,23 +4,26 @@ using DioRed.Murka.Core;
 using DioRed.Murka.Core.Contracts;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.TelegramBot;
+using DioRed.Murka.TelegramBot.Configuration;
 
 using Microsoft.Extensions.Configuration;
 
 using Telegram.Bot.Types.Enums;
 
-IConfigurationRoot configuration = new ConfigurationBuilder()
+IConfigurationRoot configurationRoot = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddUserSecrets("3371d872-5073-497e-817e-7f06e7a254a9")
     .AddEnvironmentVariables()
     .Build();
 
+MurkaConfiguration configuration = configurationRoot.Get<MurkaConfiguration>();
+
 Console.OutputEncoding = Encoding.UTF8;
 
-ILogic logic = new Logic(configuration);
+ILogic logic = new Logic(configuration.Azure);
 CancellationTokenSource cts = new();
 
-MurkaBot bot = new(configuration, logic, cts.Token);
+MurkaBot bot = new(configuration.BotToken, logic, cts.Token);
 
 bot.InfoMessage += (_, e) => Console.WriteLine(e.Message);
 bot.Error += (_, e) => Console.WriteLine(e.Message);

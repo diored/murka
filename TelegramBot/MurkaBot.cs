@@ -2,16 +2,14 @@
 using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
-using Microsoft.Extensions.Configuration;
-
 namespace DioRed.Murka.TelegramBot;
 
 public class MurkaBot : Bot
 {
     private readonly ILogic _logic;
 
-    public MurkaBot(IConfiguration configuration, ILogic logic, CancellationToken cancellationToken)
-        : base(CreateConfiguration(configuration, logic), cancellationToken)
+    public MurkaBot(string botToken, ILogic logic, CancellationToken cancellationToken)
+        : base(CreateConfiguration(botToken, logic), cancellationToken)
     {
         _logic = logic;
 
@@ -43,10 +41,10 @@ public class MurkaBot : Bot
         await ((MurkaChatClient)chatClient).ShowAgendaAsync(BotClient, token);
     }
 
-    private static BotConfiguration CreateConfiguration(IConfiguration configuration, ILogic logic)
+    private static BotConfiguration CreateConfiguration(string botToken, ILogic logic)
     {
         return new BotConfiguration(
-            configuration["token"],
+            botToken,
             chat => new MurkaChatClient(chat, logic)
         );
     }
