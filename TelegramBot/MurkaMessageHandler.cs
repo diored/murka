@@ -17,6 +17,8 @@ public class MurkaMessageHandler : MessageHandler
         : base(messageContext)
     {
         MurkaChat = (MurkaChatClient)messageContext.ChatClient;
+
+        ChatWriter.OnException += ChatWriter_OnException;
     }
 
     public MurkaChatClient MurkaChat { get; }
@@ -30,15 +32,15 @@ public class MurkaMessageHandler : MessageHandler
 
         if (string.IsNullOrEmpty(today.Code))
         {
-            await SendTextAsync("Пока хз, что по еже.");
+            await ChatWriter.SendTextAsync("Пока хз, что по еже.");
         }
         else if (string.IsNullOrEmpty(tomorrow.Code))
         {
-            await SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>).");
+            await ChatWriter.SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>).");
         }
         else
         {
-            await SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>), а завтра в {tomorrow.Definition} (<b>{tomorrow.Code}</b>).");
+            await ChatWriter.SendHtmlAsync($"Сегодня ежа в {today.Definition} (<b>{today.Code}</b>), а завтра в {tomorrow.Definition} (<b>{tomorrow.Code}</b>).");
         }
     }
 
@@ -60,11 +62,11 @@ public class MurkaMessageHandler : MessageHandler
                     .AppendFormat("<code>{0}</code> (до {1}) — {2}", promocode.Code, ServerTime.GetServerTime(promocode.ValidTo), promocode.Content);
             }
 
-            await SendHtmlAsync(builder.ToString());
+            await ChatWriter.SendHtmlAsync(builder.ToString());
         }
         else
         {
-            await SendTextAsync("Активных промокодов нет");
+            await ChatWriter.SendTextAsync("Активных промокодов нет");
         }
     }
 
@@ -73,7 +75,7 @@ public class MurkaMessageHandler : MessageHandler
     public async Task GreetAdminAsync()
     {
         //if (_context.ChatType == ChatType.Private)
-        await SendTextAsync("Hi admin =^.^=");
+        await ChatWriter.SendTextAsync("Hi admin =^.^=");
     }
 
     [BotCommand("привет|доброе утро|добрый день|добрый вечер", RegexOptions.IgnoreCase)]
@@ -82,14 +84,14 @@ public class MurkaMessageHandler : MessageHandler
         if (!(ServerTime.GetCurrent() - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(1)))
         {
             MurkaChat.LatestGreeting = ServerTime.GetCurrent();
-            await SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
+            await ChatWriter.SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
         }
     }
 
     [BotCommand("^(/sea|море)$")]
     public async Task ShowSeaAsync()
     {
-        await SendPhotoAsync("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
+        await ChatWriter.SendPhotoAsync("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
     }
 
     [BotCommand("^(/north|север)$")]
@@ -97,7 +99,7 @@ public class MurkaMessageHandler : MessageHandler
     {
         Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerTime.GetCurrent());
 
-        await SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
+        await ChatWriter.SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
     }
 
     [BotCommand("^(/agenda|сводка)$")]
@@ -127,7 +129,7 @@ public class MurkaMessageHandler : MessageHandler
                 .AppendFormat("{0} — <i>до {1}</i>", evt.Name, evt.Ends.ToString("yyyy-MM-dd HH:mm"));
         }
 
-        await SendHtmlAsync(builder.ToString());
+        await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
     [BotCommand("^(/murka|мурка)$")]
@@ -194,7 +196,7 @@ public class MurkaMessageHandler : MessageHandler
 
         var message = builder.ToString();
 
-        await SendHtmlAsync(message);
+        await ChatWriter.SendHtmlAsync(message);
     }
 
     private static string GetDaytimeGreeting(DateTime dateTime)
@@ -206,5 +208,15 @@ public class MurkaMessageHandler : MessageHandler
             < 18 => "Добрый день! =^.^=",
             >= 18 => "Добрый вечер! =^.^="
         };
+    }
+
+    private void ChatWriter_OnException(Exception ex)
+    {
+        MurkaChat.Logic.Log("error", "Error occurred in chat", exception: ex);
+
+        if (ex.Message.Contains("kicked"))
+        {
+            MurkaChat.Logic.RemoveChat(MurkaChat.Chat.ToChatInfo());
+        }
     }
 }

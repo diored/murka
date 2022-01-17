@@ -22,11 +22,19 @@ public class MurkaBot : Bot
 
         foreach (ChatInfo chat in chats)
         {
-            bool result = await ConnectToChatAsync(long.Parse(chat.Id));
-            if (!result)
-            {
-                _logic.RemoveChat(chat);
-            }
+            await ReconnectToChatAsync(chat);
+        }
+    }
+
+    private async Task ReconnectToChatAsync(ChatInfo chat)
+    {
+        try
+        {
+            await ConnectToChatAsync(long.Parse(chat.Id));
+        }
+        catch (Exception ex) when (ex.Message.Contains("kicked"))
+        {
+            _logic.RemoveChat(chat);
         }
     }
 

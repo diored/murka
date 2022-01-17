@@ -7,6 +7,10 @@
 	<RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="DioRed.Common.AzureStorage" Version="1.0.1" />
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Core.Entities\Core.Entities.csproj" />
   </ItemGroup>

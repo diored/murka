@@ -26,7 +26,7 @@ public class MurkaChatClient : IChatClient
     public async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
         MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-        await handler.HandleAsync(callbackQuery.Data!);
+        await HandleCommand(handler, callbackQuery.Data!);
     }
 
     public async Task HandleMessageAsync(Bot bot, Message message, CancellationToken cancellationToken)
@@ -38,19 +38,24 @@ public class MurkaChatClient : IChatClient
             string messageText = TrimBotName(message.Text!, _botName);
 
             MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-            await handler.HandleAsync(messageText);
+            await HandleCommand(handler, messageText);
         }
     }
 
     public async Task ShowAgendaAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
         MurkaMessageHandler handler = GetMessageHandler(botClient, cancellationToken);
-        await handler.HandleAsync("/agenda");
+        await handler.ShowAgendaAsync();
     }
 
     private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
         return new(new MessageContext(botClient, this, cancellationToken));
+    }
+
+    private async Task HandleCommand(MurkaMessageHandler handler, string command)
+    {
+        await handler.HandleAsync(command);
     }
 
     private static async Task<string> GetBotNameAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)

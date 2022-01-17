@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.3.0" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.4.0" />
     <PackageReference Include="DioRed.Common.AzureStorage" Version="1.0.1" />
   </ItemGroup>
 

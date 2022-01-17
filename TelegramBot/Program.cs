@@ -32,12 +32,7 @@ await bot.ReconnectToChats();
 
 bot.ChatClientAdded += (_, e) =>
 {
-    var chatInfo = new ChatInfo(
-        Id: e.Chat.Id.ToString(),
-        Type: "Telegram" + e.Chat.Type,
-        Title: e.Chat.Type == ChatType.Private
-            ? $"{e.Chat.FirstName} {e.Chat.LastName}".Trim()
-            : e.Chat.Title ?? string.Empty);
+    var chatInfo = e.Chat.ToChatInfo();
 
     logic.AddChat(chatInfo);
 };

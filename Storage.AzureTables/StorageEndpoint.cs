@@ -14,10 +14,12 @@ public class StorageEndpoint : IStorageEndpoint
         Events = new EventsStorage(storageClient.Table("Events"));
         Dailies = new DailiesStorage(storageClient.Table("Dailies"));
         Chats = new ChatsStorage(storageClient.Table("Chats"));
+        Log = new LogStorage(storageClient.Table("Log"));
     }
 
     public IPromocodesStorage Promocodes { get; }
     public IEventsStorage Events { get; }
     public IDailiesStorage Dailies { get; }
     public IChatsStorage Chats { get; }
+    public ILogStorage Log { get; }
 }

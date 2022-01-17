@@ -16,8 +16,23 @@ public class Logic : ILogic
 
     public void Cleanup()
     {
-        _storageEndpoint.Promocodes.RemoveOutdated();
-        _storageEndpoint.Events.RemoveOutdated();
+        const string level = "cleanup";
+
+        Log(level, "Storage cleanup started");
+
+        var removed = _storageEndpoint.Promocodes.RemoveOutdated();
+        if (removed.Any())
+        {
+            Log(level, $"Outdated promocodes removed", removed);
+        }
+
+        removed = _storageEndpoint.Events.RemoveOutdated();
+        if (removed.Any())
+        {
+            Log(level, $"Outdated events removed", removed);
+        }
+
+        Log(level, "Storage cleanup finished");
     }
 
     public ICollection<Event> GetActiveEvents(DateTime dateTime)
@@ -117,12 +132,43 @@ public class Logic : ILogic
 
     public void AddChat(ChatInfo chatInfo)
     {
-        _storageEndpoint.Chats.Add(chatInfo);
+        const string level = "chat";
+
+        try
+        {
+            _storageEndpoint.Chats.Add(chatInfo);
+
+            Log(level, "Chat added", chatInfo);
+        }
+        catch (Exception ex)
+        {
+            Log(level, "Chat adding failed", chatInfo, ex);
+
+            throw;
+        }
     }
 
     public void RemoveChat(ChatInfo chatInfo)
     {
-        _storageEndpoint.Chats.Remove(chatInfo);
+        const string level = "chat";
+
+        try
+        {
+            _storageEndpoint.Chats.Remove(chatInfo);
+
+            Log(level, "Chat removed", chatInfo);
+        }
+        catch (Exception ex)
+        {
+            Log(level, "Chat removing failed", chatInfo, ex);
+
+            throw;
+        }
+    }
+
+    public void Log(string level, string message, object? argumentObject = null, Exception? exception = null)
+    {
+        _storageEndpoint.Log.Log(level, message, argumentObject, exception);
     }
 
     private static T GetRandomItem<T>(IList<T> items)

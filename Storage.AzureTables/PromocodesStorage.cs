@@ -38,7 +38,7 @@ public class PromocodesStorage : IPromocodesStorage
         _tableClient.AddEntity(entity);
     }
 
-    public void RemoveOutdated()
+    public BaseTableEntity[] RemoveOutdated()
     {
         DateTime dateTime = ServerTime.GetCurrent();
 
@@ -50,6 +50,8 @@ public class PromocodesStorage : IPromocodesStorage
         {
             _tableClient.DeleteEntity(entity.PartitionKey, entity.RowKey);
         }
+
+        return entitiesToRemove;
     }
 
     private class TableEntity : BaseTableEntity

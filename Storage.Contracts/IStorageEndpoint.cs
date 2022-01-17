@@ -6,4 +6,5 @@ public interface IStorageEndpoint
     IEventsStorage Events { get; }
     IDailiesStorage Dailies { get; }
     IChatsStorage Chats { get; }
+    ILogStorage Log { get; }
 }
