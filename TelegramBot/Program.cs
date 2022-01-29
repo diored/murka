@@ -2,13 +2,10 @@
 
 using DioRed.Murka.Core;
 using DioRed.Murka.Core.Contracts;
-using DioRed.Murka.Core.Entities;
 using DioRed.Murka.TelegramBot;
 using DioRed.Murka.TelegramBot.Configuration;
 
 using Microsoft.Extensions.Configuration;
-
-using Telegram.Bot.Types.Enums;
 
 IConfigurationRoot configurationRoot = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
