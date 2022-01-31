@@ -21,19 +21,7 @@ ILogic logic = new Logic(configuration.Azure);
 CancellationTokenSource cts = new();
 
 MurkaBot bot = new(configuration.BotToken, logic, cts.Token);
-
-bot.InfoMessage += (_, e) => Console.WriteLine(e.Message);
-bot.Error += (_, e) => Console.WriteLine(e.Message);
-
-await bot.ReconnectToChats();
-
-bot.ChatClientAdded += (_, e) =>
-{
-    var chatInfo = e.Chat.ToChatInfo();
-
-    logic.AddChat(chatInfo);
-};
-
+bot.AddLogger(new ConsoleLogger());
 bot.StartReceiving();
 
 Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");

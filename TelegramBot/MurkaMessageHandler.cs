@@ -212,11 +212,13 @@ public class MurkaMessageHandler : MessageHandler
 
     private void ChatWriter_OnException(Exception ex)
     {
-        MurkaChat.Logic.Log("error", "Error occurred in chat", exception: ex);
+        ChatInfo chat = MurkaChat.Chat.ToChatInfo();
 
-        if (ex.Message.Contains("kicked"))
+        MurkaChat.Logic.Log("error", "Error occurred in chat", chat, ex);
+
+        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
         {
-            MurkaChat.Logic.RemoveChat(MurkaChat.Chat.ToChatInfo());
+            MurkaChat.Logic.RemoveChat(chat);
         }
     }
 }
