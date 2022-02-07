@@ -132,6 +132,13 @@ public class MurkaMessageHandler : MessageHandler
         await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
+    [BotCommand("^(/calendar|календарь)$")]
+    public async Task ShowCalendarAsync()
+    {
+        BinaryData photo = MurkaChat.Logic.GetCalendar();
+        await ChatWriter.SendPhotoAsync(photo.ToStream());
+    }
+
     [BotCommand("^(/murka|мурка)$")]
     public async Task StartDialogAsync()
     {

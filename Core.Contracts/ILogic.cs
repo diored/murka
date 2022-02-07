@@ -15,5 +15,5 @@ public interface ILogic
     void AddChat(ChatInfo chatInfo);
     void RemoveChat(ChatInfo chatInfo);
     void Log(string level, string message, object? argumentObject = null, Exception? exception = null);
-
+    BinaryData GetCalendar();
 }

@@ -1,4 +1,6 @@
-﻿namespace DioRed.Murka.Storage.Contracts;
+﻿using DioRed.Murka.Storage.Contracts;
+
+namespace DioRed.Murka.Core;
 
 public interface IStorageEndpoint
 {
@@ -7,4 +9,5 @@ public interface IStorageEndpoint
     IDailiesStorage Dailies { get; }
     IChatsStorage Chats { get; }
     ILogStorage Log { get; }
+    IImageStorage Images { get; }
 }

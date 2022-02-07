@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Core.Contracts\Core.Contracts.csproj" />
     <ProjectReference Include="..\Core.Entities\Core.Entities.csproj" />
+    <ProjectReference Include="..\Storage.AzureBlobs\Storage.AzureBlobs.csproj" />
     <ProjectReference Include="..\Storage.AzureTables\Storage.AzureTables.csproj" />
   </ItemGroup>
 

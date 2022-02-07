@@ -1,7 +1,5 @@
 ﻿using DioRed.Murka.Core.Contracts;
 using DioRed.Murka.Core.Entities;
-using DioRed.Murka.Storage.AzureTables;
-using DioRed.Murka.Storage.Contracts;
 
 namespace DioRed.Murka.Core;
 
@@ -169,6 +167,11 @@ public class Logic : ILogic
     public void Log(string level, string message, object? argumentObject = null, Exception? exception = null)
     {
         _storageEndpoint.Log.Log(level, message, argumentObject, exception);
+    }
+
+    public BinaryData GetCalendar()
+    {
+        return _storageEndpoint.Images.Get("daily.png");
     }
 
     private static T GetRandomItem<T>(IList<T> items)

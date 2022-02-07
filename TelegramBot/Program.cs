@@ -7,6 +7,8 @@ using DioRed.Murka.TelegramBot.Configuration;
 
 using Microsoft.Extensions.Configuration;
 
+Console.OutputEncoding = Encoding.UTF8;
+
 IConfigurationRoot configurationRoot = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddUserSecrets("3371d872-5073-497e-817e-7f06e7a254a9")
@@ -14,8 +16,6 @@ IConfigurationRoot configurationRoot = new ConfigurationBuilder()
     .Build();
 
 MurkaConfiguration configuration = configurationRoot.Get<MurkaConfiguration>();
-
-Console.OutputEncoding = Encoding.UTF8;
 
 ILogic logic = new Logic(configuration.Azure);
 CancellationTokenSource cts = new();
