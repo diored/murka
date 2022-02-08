@@ -9,16 +9,21 @@ namespace DioRed.Murka.TelegramBot;
 
 public class MurkaChatClient : IChatClient
 {
+    private readonly IChatWriter _globalWriter;
+
     private string? _botName;
 
-    public MurkaChatClient(Chat chat, ILogic logic)
+    public MurkaChatClient(Chat chat, long adminId, ILogic logic, IChatWriter globalWriter)
     {
         Chat = chat;
+        IsAdmin = chat.Type == ChatType.Private && chat.Id == adminId;
         Logic = logic;
+
+        _globalWriter = globalWriter;
     }
 
     public Chat Chat { get; }
-
+    public bool IsAdmin { get; }
     public ILogic Logic { get; }
 
     public DateTime? LatestGreeting { get; set; }
@@ -26,7 +31,7 @@ public class MurkaChatClient : IChatClient
     public async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
         MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-        await HandleCommand(handler, callbackQuery.Data!);
+        await HandleCommand(callbackQuery.Data!, handler);
     }
 
     public async Task HandleMessageAsync(Bot bot, Message message, CancellationToken cancellationToken)
@@ -38,7 +43,7 @@ public class MurkaChatClient : IChatClient
             string messageText = TrimBotName(message.Text!, _botName);
 
             MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-            await HandleCommand(handler, messageText);
+            await HandleCommand(messageText, handler);
         }
     }
 
@@ -48,14 +53,14 @@ public class MurkaChatClient : IChatClient
         await handler.ShowAgendaAsync();
     }
 
-    private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    private async Task HandleCommand(string command, MurkaMessageHandler handler)
     {
-        return new(new MessageContext(botClient, this, cancellationToken));
+        await handler.HandleAsync(command, IsAdmin);
     }
 
-    private async Task HandleCommand(MurkaMessageHandler handler, string command)
+    private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
-        await handler.HandleAsync(command);
+        return new(new MessageContext(botClient, this, cancellationToken), _globalWriter);
     }
 
     private static async Task<string> GetBotNameAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)

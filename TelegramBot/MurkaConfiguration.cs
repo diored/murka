@@ -1,9 +1,10 @@
 ﻿using DioRed.Murka.Core;
+using DioRed.Vermilion;
 
 namespace DioRed.Murka.TelegramBot.Configuration;
 
-internal class MurkaConfiguration
+public class MurkaConfiguration : BotConfiguration
 {
-    public string BotToken { get; set; } = default!;
     public AzureTablesCredentials Azure { get; set; } = default!;
+    public long AdminId { get; set; } = default!;
 }

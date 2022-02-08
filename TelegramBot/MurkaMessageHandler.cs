@@ -13,17 +13,21 @@ namespace DioRed.Murka.TelegramBot;
 
 public class MurkaMessageHandler : MessageHandler
 {
-    public MurkaMessageHandler(MessageContext messageContext)
+    public MurkaMessageHandler(MessageContext messageContext, IChatWriter globalWriter)
         : base(messageContext)
     {
         MurkaChat = (MurkaChatClient)messageContext.ChatClient;
+        GlobalWriter = globalWriter;
 
         ChatWriter.OnException += ChatWriter_OnException;
     }
 
     public MurkaChatClient MurkaChat { get; }
 
-    [BotCommand("^(/daily|ежа)$")]
+    public IChatWriter GlobalWriter { get; }
+
+    [BotCommand("/daily")]
+    [BotCommand("ежа")]
     public async Task ShowDailyAsync()
     {
         DateTime serverTime = ServerTime.GetCurrent();
@@ -44,7 +48,8 @@ public class MurkaMessageHandler : MessageHandler
         }
     }
 
-    [BotCommand("^(/promo|промокоды)$")]
+    [BotCommand("/promo")]
+    [BotCommand("промокоды")]
     public async Task ShowPromocodesAsync()
     {
         DateTime serverTime = ServerTime.GetCurrent();
@@ -70,15 +75,22 @@ public class MurkaMessageHandler : MessageHandler
         }
     }
 
-    [BotCommand("^(/admin|админ)$")]
     [AdminOnly]
+    [BotCommand("/admin")]
+    [BotCommand("админ")]
     public async Task GreetAdminAsync()
     {
-        //if (_context.ChatType == ChatType.Private)
         await ChatWriter.SendTextAsync("Hi admin =^.^=");
     }
 
-    [BotCommand("привет|доброе утро|добрый день|добрый вечер", RegexOptions.IgnoreCase)]
+    [AdminOnly]
+    [BotCommand("/^/ga (.+)/")]
+    public async Task GlobalAnnounce(string message)
+    {
+        await GlobalWriter.SendTextAsync(message);
+    }
+
+    [BotCommand("/привет|доброе утро|добрый день|добрый вечер/", RegexOptions.IgnoreCase)]
     public async Task SayMurrAsync()
     {
         if (!(ServerTime.GetCurrent() - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(1)))
@@ -88,13 +100,15 @@ public class MurkaMessageHandler : MessageHandler
         }
     }
 
-    [BotCommand("^(/sea|море)$")]
+    [BotCommand("/sea")]
+    [BotCommand("море")]
     public async Task ShowSeaAsync()
     {
         await ChatWriter.SendPhotoAsync("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
     }
 
-    [BotCommand("^(/north|север)$")]
+    [BotCommand("/north")]
+    [BotCommand("север")]
     public async Task ShowNorthAsync()
     {
         Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerTime.GetCurrent());
@@ -102,19 +116,22 @@ public class MurkaMessageHandler : MessageHandler
         await ChatWriter.SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
     }
 
-    [BotCommand("^(/agenda|сводка)$")]
+    [BotCommand("/agenda")]
+    [BotCommand("сводка")]
     public async Task ShowAgendaAsync()
     {
         await ShowAgendaForAsync(ServerTime.GetCurrent());
     }
 
-    [BotCommand("^(/tomorrow|завтра)$")]
+    [BotCommand("/tomorrow")]
+    [BotCommand("завтра")]
     public async Task ShowAgendaTomorrowAsync()
     {
         await ShowAgendaForAsync(ServerTime.GetCurrent().AddDays(1));
     }
 
-    [BotCommand("^(/events|ивенты)$")]
+    [BotCommand("/events")]
+    [BotCommand("ивенты")]
     public async Task ShowEventsAsync()
     {
         DateTime serverTime = ServerTime.GetCurrent();
@@ -132,21 +149,23 @@ public class MurkaMessageHandler : MessageHandler
         await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
-    [BotCommand("^(/calendar|календарь)$")]
+    [BotCommand("/calendar")]
+    [BotCommand("календарь")]
     public async Task ShowCalendarAsync()
     {
         BinaryData photo = MurkaChat.Logic.GetCalendar();
         await ChatWriter.SendPhotoAsync(photo.ToStream());
     }
 
-    [BotCommand("^(/murka|мурка)$")]
+    [BotCommand("/murka")]
+    [BotCommand("мурка")]
     public async Task StartDialogAsync()
     {
         IReplyMarkup replyMarkup = new InlineKeyboardMarkup(new[]
         {
-                new InlineKeyboardButton("ежа") { CallbackData = "ежа" },
-                new InlineKeyboardButton("север") { CallbackData = "север" }
-            });
+            new InlineKeyboardButton("ежа") { CallbackData = "ежа" },
+            new InlineKeyboardButton("север") { CallbackData = "север" }
+        });
 
         await MessageContext.BotClient.SendTextMessageAsync(MurkaChat.Chat.Id, "Чем помочь?", replyMarkup: replyMarkup);
     }

@@ -7,9 +7,9 @@ public class Logic : ILogic
 {
     private readonly IStorageEndpoint _storageEndpoint;
 
-    public Logic(AzureTablesCredentials credentials)
+    public Logic(IStorageEndpoint storageEndpoint)
     {
-        _storageEndpoint = new StorageEndpoint(credentials.Account, credentials.Key);
+        _storageEndpoint = storageEndpoint;
     }
 
     public void Cleanup()
