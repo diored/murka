@@ -7,7 +7,7 @@ using DioRed.Murka.Storage.Contracts;
 
 namespace DioRed.Murka.Storage.AzureTables;
 
-public class EventsStorage : IEventsStorage
+public class EventsStorage : StorageBase, IEventsStorage
 {
     private readonly TableClient _tableClient;
 
@@ -16,12 +16,13 @@ public class EventsStorage : IEventsStorage
         _tableClient = tableClient;
     }
 
-    public Event[] GetActive(DateTime dateTime)
+    public Event[] GetActive(ServerTime serverTime)
     {
         return _tableClient
-            .Query<TableEntity>(entity => entity.Ends >= dateTime)
-            .OrderBy(entity => entity.Ends)
-            .Select(entity => new Event(entity.Name, entity.Ends))
+            .Query<TableEntity>()
+            .Select(FromEntity)
+            .Where(e => e.Valid.Contains(serverTime))
+            .OrderBy(e => e.Valid.To?.ToString() ?? "")
             .ToArray();
     }
 
@@ -30,39 +31,25 @@ public class EventsStorage : IEventsStorage
         TableEntity entity = new()
         {
             PartitionKey = "RU",
-            RowKey = NewId(),
+            RowKey = StorageHelper.GenerateId(),
             Name = @event.Name,
-            Ends = @event.Ends
+            ValidFrom = @event.Valid.From?.ToString(),
+            ValidTo = @event.Valid.To?.ToString()
         };
 
         _tableClient.AddEntity(entity);
     }
 
-    public BaseTableEntity[] RemoveOutdated()
+    public BaseTableEntity[] RemoveOutdated() => RemoveOutdated<TableEntity>(_tableClient);
+
+    private Event FromEntity(TableEntity entity)
     {
-        DateTime dateTime = ServerTime.GetCurrent();
-
-        TableEntity[] entitiesToRemove = _tableClient
-            .Query<TableEntity>(entity => entity.Ends < dateTime)
-            .ToArray();
-
-        foreach (var entity in entitiesToRemove)
-        {
-            _tableClient.DeleteEntity(entity.PartitionKey, entity.RowKey);
-        }
-
-        return entitiesToRemove;
+        return new Event(entity.Name, entity.GetValid());
     }
 
-    private static string NewId()
-    {
-        return Guid.NewGuid().ToString()[^12..];
-    }
-
-    private class TableEntity : BaseTableEntity
+    private class TableEntity : TimeLimitedTableEntity
     {
         public string Name { get; set; } = default!;
-        public DateTime Ends { get; set; }
         public string? Servers { get; set; }
     }
 }

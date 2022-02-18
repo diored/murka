@@ -4,6 +4,7 @@ using DioRed.Murka.TelegramBot.Configuration;
 using DioRed.Vermilion;
 
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace DioRed.Murka.TelegramBot;
 
@@ -11,7 +12,6 @@ public class MurkaBot : Bot
 {
     private readonly MurkaConfiguration _configuration;
     private readonly ILogic _logic;
-    private readonly IChatWriter _globalWriter;
 
     private bool _newChatsDetection;
 
@@ -20,7 +20,6 @@ public class MurkaBot : Bot
     {
         _configuration = configuration;
         _logic = logic;
-        _globalWriter = new GlobalWriter(this);
 
         _newChatsDetection = true;
 
@@ -83,38 +82,8 @@ public class MurkaBot : Bot
 
     protected override IChatClient CreateChatClient(Chat chat)
     {
-        return new MurkaChatClient(chat, _configuration.AdminId, _logic, _globalWriter);
-    }
+        bool isAdmin = chat.Type == ChatType.Private && chat.Id == _configuration.AdminId;
 
-    class GlobalWriter : IChatWriter
-    {
-        private readonly MurkaBot _bot;
-
-        public GlobalWriter(MurkaBot bot)
-        {
-            _bot = bot;
-        }
-
-        public event Action<Exception>? OnException;
-
-        public async Task SendHtmlAsync(string html)
-        {
-            await _bot.Broadcast(writer => writer.SendHtmlAsync(html));
-        }
-
-        public async Task SendPhotoAsync(string url)
-        {
-            await _bot.Broadcast(writer => writer.SendPhotoAsync(url));
-        }
-
-        public async Task SendPhotoAsync(Stream stream)
-        {
-            await _bot.Broadcast(writer => writer.SendPhotoAsync(stream));
-        }
-
-        public async Task SendTextAsync(string text)
-        {
-            await _bot.Broadcast(writer => writer.SendTextAsync(text));
-        }
+        return new MurkaChatClient(chat, isAdmin, _logic, Broadcaster);
     }
 }

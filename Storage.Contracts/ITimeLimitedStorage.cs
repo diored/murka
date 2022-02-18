@@ -1,10 +1,10 @@
 ﻿using DioRed.Common.AzureStorage;
+using DioRed.Murka.Common;
 
 namespace DioRed.Murka.Storage.Contracts;
 
-public interface ITimeBasedStorage<T>
+public interface ITimeLimitedStorage<T>
 {
-    void AddNew(T entity);
-    T[] GetActive(DateTime dateTime);
+    T[] GetActive(ServerTime serverTime);
     BaseTableEntity[] RemoveOutdated();
 }

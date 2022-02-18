@@ -2,6 +2,7 @@
 
 namespace DioRed.Murka.Storage.Contracts;
 
-public interface IEventsStorage : ITimeBasedStorage<Event>
+public interface IEventsStorage : ITimeLimitedStorage<Event>
 {
+    void AddNew(Event newEvent);
 }

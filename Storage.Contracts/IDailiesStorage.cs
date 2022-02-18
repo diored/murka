@@ -1,8 +1,9 @@
-﻿using DioRed.Murka.Core.Entities;
+﻿using DioRed.Murka.Common;
+using DioRed.Murka.Core.Entities;
 
 namespace DioRed.Murka.Storage.Contracts;
 
 public interface IDailiesStorage
 {
-    Daily Get(DateTime dateTime);
+    Daily Get(DateOnly date);
 }

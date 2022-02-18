@@ -1,4 +1,5 @@
-﻿using DioRed.Murka.Core.Contracts;
+﻿using DioRed.Murka.Common;
+using DioRed.Murka.Core.Contracts;
 using DioRed.Murka.Core.Entities;
 
 namespace DioRed.Murka.Core;
@@ -33,68 +34,70 @@ public class Logic : ILogic
         Log(level, "Storage cleanup finished");
     }
 
-    public ICollection<Event> GetActiveEvents(DateTime dateTime)
+    public ICollection<Event> GetActiveEvents(ServerTime serverTime)
     {
-        return _storageEndpoint.Events.GetActive(dateTime);
+        return _storageEndpoint.Events.GetActive(serverTime);
     }
 
-    public ICollection<Promocode> GetActivePromocodes(DateTime dateTime)
+    public ICollection<Promocode> GetActivePromocodes(ServerTime serverTime)
     {
-        return _storageEndpoint.Promocodes.GetActive(dateTime);
+        return _storageEndpoint.Promocodes.GetActive(serverTime);
     }
 
-    public Daily GetDaily(DateTime dateTime)
+    public Daily GetDaily(DateOnly date)
     {
-        return _storageEndpoint.Dailies.Get(dateTime);
+        return _storageEndpoint.Dailies.Get(date);
     }
 
-    public ICollection<string> GetDayEvents(DateTime dateTime)
+    public ICollection<DayEvent> GetDayEvents(DateOnly date)
     {
-        List<string> dayEvents = new();
+        List<DayEvent> dayEvents = new();
 
-        DayOfWeek dow = dateTime.DayOfWeek;
+        DayOfWeek dow = date.DayOfWeek;
 
         if (dow == DayOfWeek.Monday)
         {
-            dayEvents.Add("20:20 — Битва династий (внутрисерверная)");
+            dayEvents.Add(new DayEvent(new TimeOnly(20, 20), "Битва династий (внутрисерверная)"));
         }
 
         if (dow == DayOfWeek.Friday)
         {
-            dayEvents.Add("20:20 — Битва династий (межсерверная)");
+            dayEvents.Add(new DayEvent(new TimeOnly(20, 20), "Битва династий (межсерверная)"));
         }
 
         // Северные земли
         dayEvents.Add(dow switch
         {
-            DayOfWeek.Tuesday => "20:00 — Ледяной штурм (СЗ)",
-            DayOfWeek.Monday or DayOfWeek.Friday => "20:20 — Битва за ледник (войско богов)",
-            _ => "20:20 — Битва за ледник (армия севера)"
+            DayOfWeek.Tuesday => new DayEvent(new TimeOnly(20, 0), "Ледяной штурм (СЗ)"),
+            DayOfWeek.Monday or DayOfWeek.Friday => new DayEvent(new TimeOnly(20, 20), "Битва за ледник (войско богов)"),
+            _ => new DayEvent(new TimeOnly(20, 20), "Битва за ледник (армия севера)")
         });
 
         if (dow == DayOfWeek.Wednesday)
         {
-            dayEvents.Add("20:00 — Битва за ресурсы (БЗР)");
+            dayEvents.Add(new DayEvent(new TimeOnly(20, 0), "Битва за ресурсы (БЗР)"));
         }
 
         if (dow == DayOfWeek.Thursday)
         {
-            dayEvents.Add("20:00 — Конкурс ремесленников");
+            dayEvents.Add(new DayEvent(new TimeOnly(20, 0), "Конкурс ремесленников"));
         }
 
         if (dow == DayOfWeek.Saturday)
         {
-            dayEvents.Add("17:30 — Клан-холл");
+            dayEvents.Add(new DayEvent(new TimeOnly(17, 30), "Клан-холл"));
         }
 
-        dayEvents.Sort();
+        dayEvents = dayEvents
+            .OrderBy(de => de.Time)
+            .ToList();
 
         return dayEvents;
     }
 
-    public Northlands GetNorthLands(DateTime dateTime)
+    public Northlands GetNorthLands(DateOnly date)
     {
-        DayOfWeek dayOfWeek = dateTime.DayOfWeek;
+        DayOfWeek dayOfWeek = date.DayOfWeek;
 
         if (dayOfWeek == DayOfWeek.Tuesday)
         {
@@ -189,6 +192,16 @@ public class Logic : ILogic
         return items[Random.Shared.Next(items.Count)];
     }
 
+    public void AddEvent(Event newEvent)
+    {
+        _storageEndpoint.Events.AddNew(newEvent);
+    }
+
+    public void AddPromocode(Promocode newPromocode)
+    {
+        _storageEndpoint.Promocodes.AddNew(newPromocode);
+    }
+
     private static readonly string[] _greetings =
     {
         "Привет! =)",
@@ -196,6 +209,8 @@ public class Logic : ILogic
         ",,,==(^.^)==,,,",
         "Рада видеть ;)",
         "И вам здравствуйте!",
-        "Мурр"
+        "Мурр",
+        "Чао )",
+        "Фрррр"
     };
 }

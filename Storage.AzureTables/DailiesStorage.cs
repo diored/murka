@@ -16,10 +16,10 @@ public class DailiesStorage : IDailiesStorage
         _tableClient = tableClient;
     }
 
-    public Daily Get(DateTime dateTime)
+    public Daily Get(DateOnly date)
     {
-        string partitionKey = dateTime.Month.ToString("D2");
-        string rowKey = dateTime.Day.ToString("D2");
+        string partitionKey = date.Month.ToString("D2");
+        string rowKey = date.Day.ToString("D2");
 
         try
         {
@@ -44,9 +44,9 @@ public class DailiesStorage : IDailiesStorage
 
     private static readonly Dictionary<string, Daily> _dailies = new()
     {
-        ["W"] = new("⚔️ Оружие", "ПВ2 (Аурогон) / ПП / МИ / ГШ"),
-        ["A"] = new("🛡 Доспех", "ПВ1 (Чернокрыл) / СЦ / ХХ 4-1 / ХХ 4-2"),
-        ["R"] = new("💍 Реликвия", "ХС / ЛА / ДР")
+        ["W"] = new("⚔️Оружие", "ПВ2 (Аурогон) / ПП / МИ / ГШ"),
+        ["A"] = new("🛡Доспех", "ПВ1 (Чернокрыл) / СЦ / ХХ 4-1 / ХХ 4-2"),
+        ["R"] = new("💍Реликвия", "ХС / ЛА / ДР")
     };
 
     private class TableEntity : BaseTableEntity

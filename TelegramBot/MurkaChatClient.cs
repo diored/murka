@@ -9,17 +9,16 @@ namespace DioRed.Murka.TelegramBot;
 
 public class MurkaChatClient : IChatClient
 {
-    private readonly IChatWriter _globalWriter;
+    private readonly Broadcaster _broadcaster;
 
     private string? _botName;
 
-    public MurkaChatClient(Chat chat, long adminId, ILogic logic, IChatWriter globalWriter)
+    public MurkaChatClient(Chat chat, bool isAdmin, ILogic logic, Broadcaster broadcaster)
     {
         Chat = chat;
-        IsAdmin = chat.Type == ChatType.Private && chat.Id == adminId;
+        IsAdmin = isAdmin;
         Logic = logic;
-
-        _globalWriter = globalWriter;
+        _broadcaster = broadcaster;
     }
 
     public Chat Chat { get; }
@@ -60,7 +59,8 @@ public class MurkaChatClient : IChatClient
 
     private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
     {
-        return new(new MessageContext(botClient, this, cancellationToken), _globalWriter);
+        MessageContext messageContext = new(botClient, this, _broadcaster, cancellationToken);
+        return new MurkaMessageHandler(messageContext);
     }
 
     private static async Task<string> GetBotNameAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)

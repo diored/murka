@@ -2,6 +2,7 @@
 
 namespace DioRed.Murka.Storage.Contracts;
 
-public interface IPromocodesStorage : ITimeBasedStorage<Promocode>
+public interface IPromocodesStorage : ITimeLimitedStorage<Promocode>
 {
+    void AddNew(Promocode newPromocode);
 }

@@ -1,3 +1,5 @@
-﻿namespace DioRed.Murka.Core.Entities;
+﻿using DioRed.Murka.Common;
 
-public record Event(string Name, DateTime Ends);
+namespace DioRed.Murka.Core.Entities;
+
+public record Event(string Name, ServerTimeRange Valid) : TimeLimitedEntity(Valid);

@@ -21,18 +21,13 @@ namespace DioRed.Murka.Storage.AzureTables
             TableEntity entity = new()
             {
                 PartitionKey = level,
-                RowKey = NewId(),
+                RowKey = StorageHelper.GenerateId(),
                 Message = message,
                 Argument = GetArgumentString(argument),
                 Exception = GetExceptionString(exception)
             };
 
             _tableClient.AddEntity(entity);
-        }
-
-        private static string NewId()
-        {
-            return Guid.NewGuid().ToString()[^12..];
         }
 
         private static string? GetArgumentString(object? argumentObject)
