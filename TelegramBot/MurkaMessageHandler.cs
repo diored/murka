@@ -177,11 +177,27 @@ public class MurkaMessageHandler : MessageHandler
         {
             builder
                 .AppendLine()
+                .Append("— ")
                 .Append(evt.Name);
 
             if (evt.Valid.To.HasValue)
             {
-                builder.AppendFormat(" — <i>до {0}</i>", evt.Valid.To.Value);
+                builder.AppendFormat(" — <i>");
+
+                if (evt.Valid.To.Value.Date == serverTime.Date)
+                {
+                    builder.Append("сегодня последний день");
+                }
+                else if (evt.Valid.To.Value.Date == serverTime.Date.AddDays(1))
+                {
+                    builder.Append("до завтра");
+                }
+                else
+                {
+                    builder.AppendFormat("до {0}", evt.Valid.To.Value);
+                }
+                
+                builder.AppendFormat("</i>");
             }
         }
 
