@@ -50,6 +50,5 @@ public class EventsStorage : StorageBase, IEventsStorage
     private class TableEntity : TimeLimitedTableEntity
     {
         public string Name { get; set; } = default!;
-        public string? Servers { get; set; }
     }
 }

@@ -7,72 +7,70 @@ using Telegram.Bot.Types.Enums;
 
 namespace DioRed.Murka.TelegramBot;
 
-public class MurkaChatClient : IChatClient
+public class MurkaChatClient : ChatClient
 {
     private readonly Broadcaster _broadcaster;
+    private readonly bool _isSuperAdmin;
 
     private string? _botName;
 
-    public MurkaChatClient(Chat chat, bool isAdmin, ILogic logic, Broadcaster broadcaster)
+    public MurkaChatClient(Chat chat, bool isSuperAdmin, ILogic logic, Broadcaster broadcaster)
+        : base(chat)
     {
-        Chat = chat;
-        IsAdmin = isAdmin;
+        _isSuperAdmin = isSuperAdmin;
         Logic = logic;
         _broadcaster = broadcaster;
     }
 
-    public Chat Chat { get; }
-    public bool IsAdmin { get; }
     public ILogic Logic { get; }
 
     public DateTime? LatestGreeting { get; set; }
 
-    public async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
+    public override async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-        await HandleCommand(callbackQuery.Data!, handler);
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, callbackQuery.From.Id, cancellationToken);
+
+        await handler.HandleAsync(callbackQuery.Data!);
     }
 
-    public async Task HandleMessageAsync(Bot bot, Message message, CancellationToken cancellationToken)
+    public override async Task HandleMessageAsync(Bot bot, Message message, CancellationToken cancellationToken)
     {
-        if (message!.Type == MessageType.Text &&
-            message.From?.IsBot == false)
+        if (message!.Type != MessageType.Text ||
+            (message.From?.IsBot) != false)
         {
-            _botName ??= "@" + await GetBotNameAsync(bot.BotClient, cancellationToken);
-            string messageText = TrimBotName(message.Text!, _botName);
-
-            MurkaMessageHandler handler = GetMessageHandler(bot.BotClient, cancellationToken);
-            await HandleCommand(messageText, handler);
+            return;
         }
+
+        _botName ??= "@" + await GetBotNameAsync(bot.BotClient, cancellationToken);
+        string messageText = TrimBotName(message.Text!, _botName);
+
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, message.From.Id, cancellationToken);
+
+        await handler.HandleAsync(messageText);
     }
 
-    public async Task ShowAgendaAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    public async Task ShowAgendaAsync(ITelegramBotClient botClient, long senderId, CancellationToken cancellationToken)
     {
-        MurkaMessageHandler handler = GetMessageHandler(botClient, cancellationToken);
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(botClient, senderId, cancellationToken);
         await handler.ShowAgendaAsync();
     }
 
-    private async Task HandleCommand(string command, MurkaMessageHandler handler)
+    private async Task<MurkaMessageHandler> GetMessageHandlerAsync(ITelegramBotClient botClient, long senderId, CancellationToken cancellationToken)
     {
-        await handler.HandleAsync(command, IsAdmin);
-    }
-
-    private MurkaMessageHandler GetMessageHandler(ITelegramBotClient botClient, CancellationToken cancellationToken)
-    {
-        MessageContext messageContext = new(botClient, this, _broadcaster, cancellationToken);
+        UserRole role = await GetUserRoleAsync(botClient, senderId, cancellationToken);
+        MessageContext messageContext = new(botClient, this, role, _broadcaster, cancellationToken);
         return new MurkaMessageHandler(messageContext);
     }
 
-    private static async Task<string> GetBotNameAsync(ITelegramBotClient botClient, CancellationToken cancellationToken)
+    protected override async Task<UserRole> GetUserRoleAsync(ITelegramBotClient botClient, long senderId, CancellationToken cancellationToken)
     {
-        return (await botClient.GetMeAsync(cancellationToken)).Username!;
-    }
+        var role = await base.GetUserRoleAsync(botClient, senderId, cancellationToken);
 
-    private static string TrimBotName(string message, string botName)
-    {
-        Index start = message.StartsWith(botName + " ") ? botName.Length + 1 : 0;
-        Index end = message.EndsWith(botName) ? ^botName.Length : ^0;
+        if (_isSuperAdmin)
+        {
+            role |= UserRole.SuperAdmin;
+        }
 
-        return message[start..end];
+        return role;
     }
 }

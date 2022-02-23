@@ -4,10 +4,11 @@ namespace DioRed.Murka.Core;
 
 public interface IStorageEndpoint
 {
-    IPromocodesStorage Promocodes { get; }
-    IEventsStorage Events { get; }
-    IDailiesStorage Dailies { get; }
     IChatsStorage Chats { get; }
-    ILogStorage Log { get; }
+    IDailiesStorage Dailies { get; }
+    IDayEventsStorage DayEvents { get; }
+    IEventsStorage Events { get; }
     IImageStorage Images { get; }
+    ILogStorage Log { get; }
+    IPromocodesStorage Promocodes { get; }
 }

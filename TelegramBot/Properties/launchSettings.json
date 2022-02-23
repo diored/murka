@@ -10,7 +10,9 @@
     "Test": {
       "commandName": "Project",
       "environmentVariables": {
-        "token": "2035899794:AAHZiPpZOr6ikBNGsqc7Cv7FO9Hb7mflgnQ"
+        "azure:key": "FB3EXEKZaWN4q38x2Cj1WtuooF3WUaDLAPlDjFvPApaftmgTN1MidsfVE1MdVUDGhLBX9fg7aiSvL5kjwLkTLA==",
+        "azure:account": "murkatest",
+        "botToken": "2035899794:AAHZiPpZOr6ikBNGsqc7Cv7FO9Hb7mflgnQ"
       }
     },
     "Release": {

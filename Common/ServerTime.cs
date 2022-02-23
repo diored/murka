@@ -4,8 +4,9 @@ namespace DioRed.Murka.Common;
 
 public struct ServerTime
 {
-    private const string DateTimeFormat = "yyyy-MM-ddTHH-mm";
-    private const string DateFormat = "yyyy-MM-dd";
+    public const string DateFormat = "yyyy-MM-dd";
+    public const string TimeFormat = "HH:mm";
+    public const string DateTimeFormat = $"{DateFormat} {TimeFormat}";
 
     private static readonly TimeSpan MoscowTimeZone = TimeSpan.FromHours(3);
 

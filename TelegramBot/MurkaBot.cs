@@ -77,13 +77,13 @@ public class MurkaBot : Bot
 
     private async Task DailyAgenda(IChatClient chatClient, CancellationToken token)
     {
-        await ((MurkaChatClient)chatClient).ShowAgendaAsync(BotClient, token);
+        await ((MurkaChatClient)chatClient).ShowAgendaAsync(BotClient, BotSenderId, token);
     }
 
     protected override IChatClient CreateChatClient(Chat chat)
     {
-        bool isAdmin = chat.Type == ChatType.Private && chat.Id == _configuration.AdminId;
+        bool isSuperAdmin = chat.Type == ChatType.Private && chat.Id == _configuration.SuperAdminId;
 
-        return new MurkaChatClient(chat, isAdmin, _logic, Broadcaster);
+        return new MurkaChatClient(chat, isSuperAdmin, _logic, Broadcaster);
     }
 }

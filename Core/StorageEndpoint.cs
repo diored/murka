@@ -12,19 +12,21 @@ public class StorageEndpoint : IStorageEndpoint
         AzureStorageSettings storageSettings = new(accountName, storageAccountKey);
         AzureStorageClient storageClient = new(storageSettings);
 
-        Promocodes = new PromocodesStorage(storageClient.Table("Promocodes"));
-        Events = new EventsStorage(storageClient.Table("Events"));
-        Dailies = new DailiesStorage(storageClient.Table("Dailies"));
         Chats = new ChatsStorage(storageClient.Table("Chats"));
+        Dailies = new DailiesStorage(storageClient.Table("Dailies"));
+        DayEvents = new DayEventsStorage(storageClient.Table("DayEvents"));
+        Events = new EventsStorage(storageClient.Table("Events"));
         Log = new LogStorage(storageClient.Table("Log"));
+        Promocodes = new PromocodesStorage(storageClient.Table("Promocodes"));
 
         Images = new ImageStorage(storageClient);
     }
 
-    public IPromocodesStorage Promocodes { get; }
-    public IEventsStorage Events { get; }
-    public IDailiesStorage Dailies { get; }
     public IChatsStorage Chats { get; }
-    public ILogStorage Log { get; }
+    public IDailiesStorage Dailies { get; }
+    public IDayEventsStorage DayEvents { get; }
+    public IEventsStorage Events { get; }
     public IImageStorage Images { get; }
+    public ILogStorage Log { get; }
+    public IPromocodesStorage Promocodes { get; }
 }

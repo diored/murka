@@ -49,50 +49,9 @@ public class Logic : ILogic
         return _storageEndpoint.Dailies.Get(date);
     }
 
-    public ICollection<DayEvent> GetDayEvents(DateOnly date)
+    public ICollection<DayEvent> GetDayEvents(DateOnly date, string chatId)
     {
-        List<DayEvent> dayEvents = new();
-
-        DayOfWeek dow = date.DayOfWeek;
-
-        if (dow == DayOfWeek.Monday)
-        {
-            dayEvents.Add(new DayEvent(new TimeOnly(20, 20), "Битва династий (внутрисерверная)"));
-        }
-
-        if (dow == DayOfWeek.Friday)
-        {
-            dayEvents.Add(new DayEvent(new TimeOnly(20, 20), "Битва династий (межсерверная)"));
-        }
-
-        // Северные земли
-        dayEvents.Add(dow switch
-        {
-            DayOfWeek.Tuesday => new DayEvent(new TimeOnly(20, 0), "Ледяной штурм (СЗ)"),
-            DayOfWeek.Monday or DayOfWeek.Friday => new DayEvent(new TimeOnly(20, 20), "Битва за ледник (войско богов)"),
-            _ => new DayEvent(new TimeOnly(20, 20), "Битва за ледник (армия севера)")
-        });
-
-        if (dow == DayOfWeek.Wednesday)
-        {
-            dayEvents.Add(new DayEvent(new TimeOnly(20, 0), "Битва за ресурсы (БЗР)"));
-        }
-
-        if (dow == DayOfWeek.Thursday)
-        {
-            dayEvents.Add(new DayEvent(new TimeOnly(20, 0), "Конкурс ремесленников"));
-        }
-
-        if (dow == DayOfWeek.Saturday)
-        {
-            dayEvents.Add(new DayEvent(new TimeOnly(17, 30), "Клан-холл"));
-        }
-
-        dayEvents = dayEvents
-            .OrderBy(de => de.Time)
-            .ToList();
-
-        return dayEvents;
+        return _storageEndpoint.DayEvents.Get(date, chatId);
     }
 
     public Northlands GetNorthLands(DateOnly date)
@@ -200,6 +159,11 @@ public class Logic : ILogic
     public void AddPromocode(Promocode newPromocode)
     {
         _storageEndpoint.Promocodes.AddNew(newPromocode);
+    }
+
+    public void AddDayEvent(DayEvent dayEvent)
+    {
+        _storageEndpoint.DayEvents.AddNew(dayEvent);
     }
 
     private static readonly string[] _greetings =
