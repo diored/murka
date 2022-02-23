@@ -86,6 +86,10 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand(UserRole.SuperAdmin, @"^/addEvent (.+)\|(.*)\|(.*)$", BotCommandOptions.Regex)]
     public void AddEvent(string eventName, string starts, string ends)
     {
+        eventName = eventName.Trim();
+        starts = starts.Trim();
+        ends = ends.Trim();
+
         Event newEvent = new(eventName, ParseServerTimeRange(starts, ends));
         MurkaChat.Logic.AddEvent(newEvent);
     }
@@ -120,22 +124,26 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand(UserRole.ChatAdmin, @"^/addDayEvent(!)? (.+)\|(.+)\|(.+)$", BotCommandOptions.Regex | BotCommandOptions.CaseInsensitive)]
     public void AddDayEvent(string marker, string name, string time, string repeat)
     {
+        name = name.Trim();
+        time = time.Trim();
+        repeat = repeat.Trim();
+
         string chatId = marker == "!" && MessageContext.Role.HasFlag(UserRole.SuperAdmin)
             ? string.Empty
             : MessageContext.ChatClient.Chat.ToChatInfo().ToString();
 
         TimeOnly timeOnly = TimeOnly.ParseExact(time, ServerTime.TimeFormat);
-        Occurrence occurrence = repeat switch
+        Occurrence occurrence = repeat.ToLowerInvariant() switch
         {
             "daily" => Occurrence.Daily(timeOnly),
-            "mo" or "Mo" or "1" => Occurrence.Weekly(DayOfWeek.Monday, timeOnly),
-            "tu" or "Tu" or "2" => Occurrence.Weekly(DayOfWeek.Tuesday, timeOnly),
-            "we" or "We" or "3" => Occurrence.Weekly(DayOfWeek.Wednesday, timeOnly),
-            "th" or "Th" or "4" => Occurrence.Weekly(DayOfWeek.Thursday, timeOnly),
-            "fr" or "Fr" or "5" => Occurrence.Weekly(DayOfWeek.Friday, timeOnly),
-            "sa" or "Sa" or "6" => Occurrence.Weekly(DayOfWeek.Saturday, timeOnly),
-            "su" or "Su" or "7" => Occurrence.Weekly(DayOfWeek.Sunday, timeOnly),
-            _ => throw new ArgumentOutOfRangeException(nameof(repeat), $"Unrecognized repeat: {repeat}")
+            "mo" or "monday" or "1" => Occurrence.Weekly(DayOfWeek.Monday, timeOnly),
+            "tu" or "tuesday" or "2" => Occurrence.Weekly(DayOfWeek.Tuesday, timeOnly),
+            "we" or "wednesday" or "3" => Occurrence.Weekly(DayOfWeek.Wednesday, timeOnly),
+            "th" or "thursday" or "4" => Occurrence.Weekly(DayOfWeek.Thursday, timeOnly),
+            "fr" or "friday" or "5" => Occurrence.Weekly(DayOfWeek.Friday, timeOnly),
+            "sa" or "saturday" or "6" => Occurrence.Weekly(DayOfWeek.Saturday, timeOnly),
+            "su" or "sunday" or "7" or "0" => Occurrence.Weekly(DayOfWeek.Sunday, timeOnly),
+            _ => throw new ArgumentOutOfRangeException(nameof(repeat), $"Unrecognized repeat qualifier: {repeat}. See /addDayEvent for possible qualifiers list.")
         };
 
         var dayEvent = new DayEvent(name, occurrence, chatId);
@@ -145,6 +153,10 @@ public class MurkaMessageHandler : MessageHandler
     [BotCommand(UserRole.SuperAdmin, @"^/addPromocode (.+)\|(.*)\|(.*)$", BotCommandOptions.Regex)]
     public void AddPromocode(string code, string validTo, string description)
     {
+        code = code.Trim();
+        validTo = validTo.Trim();
+        description = description.Trim();
+
         Promocode newPromocode = new(code, description, new ServerTimeRange(null, ServerTime.SafeParse(validTo)));
         MurkaChat.Logic.AddPromocode(newPromocode);
     }
