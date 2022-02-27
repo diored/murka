@@ -3,8 +3,6 @@ using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Attributes;
 
-using Telegram.Bot;
-
 namespace DioRed.Murka.TelegramBot;
 
 public partial class MurkaMessageHandler
@@ -48,13 +46,4 @@ public partial class MurkaMessageHandler
     {
         await MessageContext.Broadcaster.SendTextAsync(message);
     }
-
-    //[BotCommand(UserRole.SuperAdmin, "/x")]
-    //public async void DeleteMe()
-    //{
-    //    if (MessageContext.MessageId != 0)
-    //    {
-    //        await RemoveMessage();
-    //    }
-    //}
 }

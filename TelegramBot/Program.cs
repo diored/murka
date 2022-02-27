@@ -40,28 +40,3 @@ host.Run();
 
 cts.Cancel();
 Console.WriteLine("Bot was stopped.");
-
-//MurkaConfiguration configuration = configurationRoot.Get<MurkaConfiguration>();
-
-//ILogic logic = new Logic(configuration.Azure);
-
-//MurkaBot bot = new(configuration.BotToken, configuration.AdminId, logic, cts.Token);
-//bot.AddLogger(new ConsoleLogger());
-//bot.StartReceiving();
-
-//Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
-
-//Console.CancelKeyPress += (_, _) =>
-//{
-//    cts.Cancel();
-//    Console.WriteLine("Bot was stopped.");
-//    Environment.Exit(0);
-//};
-
-//await Task.Run(async () =>
-//{
-//    while (!cts.IsCancellationRequested)
-//    {
-//        await Task.Delay(TimeSpan.FromMinutes(1));
-//    }
-//}, cts.Token);
