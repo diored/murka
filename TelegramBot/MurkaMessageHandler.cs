@@ -10,7 +10,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DioRed.Murka.TelegramBot;
 
-public class MurkaMessageHandler : MessageHandler
+public partial class MurkaMessageHandler : MessageHandler
 {
     public MurkaMessageHandler(MessageContext messageContext)
         : base(messageContext)
@@ -23,7 +23,7 @@ public class MurkaMessageHandler : MessageHandler
     public MurkaChatClient MurkaChat { get; }
 
     [BotCommand("/daily")]
-    [BotCommand("ежа")]
+    [BotCommand("ежа", BotCommandOptions.CaseInsensitive)]
     public async Task ShowDailyAsync()
     {
         ServerTime serverTime = ServerTime.GetCurrent();
@@ -45,7 +45,7 @@ public class MurkaMessageHandler : MessageHandler
     }
 
     [BotCommand("/promo")]
-    [BotCommand("промокоды")]
+    [BotCommand("промокоды", BotCommandOptions.CaseInsensitive)]
     public async Task ShowPromocodesAsync()
     {
         ServerTime serverTime = ServerTime.GetCurrent();
@@ -77,24 +77,7 @@ public class MurkaMessageHandler : MessageHandler
         await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
-    [BotCommand(UserRole.SuperAdmin, "/ga", BotCommandOptions.StartsWith)]
-    public async Task GlobalAnnounce(string message)
-    {
-        await MessageContext.Broadcaster.SendTextAsync(message);
-    }
-
-    [BotCommand(UserRole.SuperAdmin, @"^/addEvent (.+)\|(.*)\|(.*)$", BotCommandOptions.Regex)]
-    public void AddEvent(string eventName, string starts, string ends)
-    {
-        eventName = eventName.Trim();
-        starts = starts.Trim();
-        ends = ends.Trim();
-
-        Event newEvent = new(eventName, ParseServerTimeRange(starts, ends));
-        MurkaChat.Logic.AddEvent(newEvent);
-    }
-
-    [BotCommand(@"/addDayEvent", BotCommandOptions.CaseInsensitive)]
+    [BotCommand("/addDayEvent", BotCommandOptions.CaseInsensitive)]
     public async void AddDayEventHelp()
     {
         if (MessageContext.Role == UserRole.AnyUser)
@@ -121,50 +104,16 @@ public class MurkaMessageHandler : MessageHandler
         await ChatWriter.SendHtmlAsync(html);
     }
 
-    [BotCommand(UserRole.ChatAdmin, @"^/addDayEvent(!)? (.+)\|(.+)\|(.+)$", BotCommandOptions.Regex | BotCommandOptions.CaseInsensitive)]
-    public void AddDayEvent(string marker, string name, string time, string repeat)
+    [BotCommand(UserRole.ChatAdmin, @"/addDayEvent", BotCommandOptions.CaseInsensitive)]
+    public void AddDayEvent(string name, string time, string repeat)
     {
-        name = name.Trim();
-        time = time.Trim();
-        repeat = repeat.Trim();
-
-        string chatId = marker == "!" && MessageContext.Role.HasFlag(UserRole.SuperAdmin)
-            ? string.Empty
-            : MessageContext.ChatClient.Chat.ToChatInfo().ToString();
-
-        TimeOnly timeOnly = TimeOnly.ParseExact(time, ServerTime.TimeFormat);
-        Occurrence occurrence = repeat.ToLowerInvariant() switch
-        {
-            "daily" => Occurrence.Daily(timeOnly),
-            "mo" or "monday" or "1" => Occurrence.Weekly(DayOfWeek.Monday, timeOnly),
-            "tu" or "tuesday" or "2" => Occurrence.Weekly(DayOfWeek.Tuesday, timeOnly),
-            "we" or "wednesday" or "3" => Occurrence.Weekly(DayOfWeek.Wednesday, timeOnly),
-            "th" or "thursday" or "4" => Occurrence.Weekly(DayOfWeek.Thursday, timeOnly),
-            "fr" or "friday" or "5" => Occurrence.Weekly(DayOfWeek.Friday, timeOnly),
-            "sa" or "saturday" or "6" => Occurrence.Weekly(DayOfWeek.Saturday, timeOnly),
-            "su" or "sunday" or "7" or "0" => Occurrence.Weekly(DayOfWeek.Sunday, timeOnly),
-            _ => throw new ArgumentOutOfRangeException(nameof(repeat), $"Unrecognized repeat qualifier: {repeat}. See /addDayEvent for possible qualifiers list.")
-        };
-
-        var dayEvent = new DayEvent(name, occurrence, chatId);
-        MurkaChat.Logic.AddDayEvent(dayEvent);
-    }
-
-    [BotCommand(UserRole.SuperAdmin, @"^/addPromocode (.+)\|(.*)\|(.*)$", BotCommandOptions.Regex)]
-    public void AddPromocode(string code, string validTo, string description)
-    {
-        code = code.Trim();
-        validTo = validTo.Trim();
-        description = description.Trim();
-
-        Promocode newPromocode = new(code, description, new ServerTimeRange(null, ServerTime.SafeParse(validTo)));
-        MurkaChat.Logic.AddPromocode(newPromocode);
+        AddDayEventInternal(MessageContext.ChatClient.Chat.ToChatInfo().ToString(), name, time, repeat);
     }
 
     [BotCommand("привет|доброе утро|добрый день|добрый вечер", BotCommandOptions.Regex | BotCommandOptions.CaseInsensitive)]
     public async Task SayMurrAsync()
     {
-        if (!(DateTime.UtcNow - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(1)))
+        if (!(DateTime.UtcNow - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(5)))
         {
             MurkaChat.LatestGreeting = DateTime.UtcNow;
             await ChatWriter.SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
@@ -172,14 +121,14 @@ public class MurkaMessageHandler : MessageHandler
     }
 
     [BotCommand("/sea")]
-    [BotCommand("море")]
+    [BotCommand("море", BotCommandOptions.CaseInsensitive)]
     public async Task ShowSeaAsync()
     {
         await ChatWriter.SendPhotoAsync("https://operator.cdn.gmru.net/ms/05141cf319c4d5788eb1470cebd9a28c.jpg");
     }
 
     [BotCommand("/north")]
-    [BotCommand("север")]
+    [BotCommand("север", BotCommandOptions.CaseInsensitive)]
     public async Task ShowNorthAsync()
     {
         Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerTime.GetCurrent().Date);
@@ -188,21 +137,21 @@ public class MurkaMessageHandler : MessageHandler
     }
 
     [BotCommand("/agenda")]
-    [BotCommand("сводка")]
+    [BotCommand("сводка", BotCommandOptions.CaseInsensitive)]
     public async Task ShowAgendaAsync()
     {
         await ShowAgendaInternalAsync(ServerTime.GetCurrent().Date);
     }
 
     [BotCommand("/tomorrow")]
-    [BotCommand("завтра")]
+    [BotCommand("завтра", BotCommandOptions.CaseInsensitive)]
     public async Task ShowAgendaTomorrowAsync()
     {
         await ShowAgendaInternalAsync(ServerTime.GetCurrent().Date.AddDays(1));
     }
 
     [BotCommand("/events")]
-    [BotCommand("ивенты")]
+    [BotCommand("ивенты", BotCommandOptions.CaseInsensitive)]
     public async Task ShowEventsAsync()
     {
         ServerTime serverTime = ServerTime.GetCurrent();
@@ -250,15 +199,24 @@ public class MurkaMessageHandler : MessageHandler
     }
 
     [BotCommand("/calendar")]
-    [BotCommand("календарь")]
+    [BotCommand("календарь", BotCommandOptions.CaseInsensitive)]
     public async Task ShowCalendarAsync()
     {
         BinaryData photo = MurkaChat.Logic.GetCalendar();
         await ChatWriter.SendPhotoAsync(photo.ToStream());
     }
 
+    //[BotCommand("/remind (.+)|(.+)", BotCommandOptions.Regex)]
+    //public async Task AddReminder(string time, string message)
+    //{
+    //    TimeSpan timeSpan = ServerTime.Parse(time.Trim()).ToUtc().TimeOfDay;
+    //    message = message.Trim();
+
+    //    Job.SetupOneTime(MessageContext.Role)
+    //}
+
     [BotCommand("/murka")]
-    [BotCommand("мурка")]
+    [BotCommand("мурка", BotCommandOptions.CaseInsensitive)]
     public async Task StartDialogAsync()
     {
         IReplyMarkup replyMarkup = new InlineKeyboardMarkup(new[]
@@ -268,6 +226,30 @@ public class MurkaMessageHandler : MessageHandler
         });
 
         await MessageContext.BotClient.SendTextMessageAsync(MurkaChat.Chat.Id, "Чем помочь?", replyMarkup: replyMarkup);
+    }
+
+    private void AddDayEventInternal(string chatId, string name, string time, string repeat)
+    {
+        name = name.Trim();
+        time = time.Trim();
+        repeat = repeat.Trim();
+
+        TimeOnly timeOnly = TimeOnly.ParseExact(time, ServerTime.TimeFormat);
+        Occurrence occurrence = repeat.ToLowerInvariant() switch
+        {
+            "daily" => Occurrence.Daily(timeOnly),
+            "mo" or "monday" or "1" => Occurrence.Weekly(DayOfWeek.Monday, timeOnly),
+            "tu" or "tuesday" or "2" => Occurrence.Weekly(DayOfWeek.Tuesday, timeOnly),
+            "we" or "wednesday" or "3" => Occurrence.Weekly(DayOfWeek.Wednesday, timeOnly),
+            "th" or "thursday" or "4" => Occurrence.Weekly(DayOfWeek.Thursday, timeOnly),
+            "fr" or "friday" or "5" => Occurrence.Weekly(DayOfWeek.Friday, timeOnly),
+            "sa" or "saturday" or "6" => Occurrence.Weekly(DayOfWeek.Saturday, timeOnly),
+            "su" or "sunday" or "7" or "0" => Occurrence.Weekly(DayOfWeek.Sunday, timeOnly),
+            _ => throw new ArgumentOutOfRangeException(nameof(repeat), $"Unrecognized repeat qualifier: {repeat}. See /addDayEvent for possible qualifiers list.")
+        };
+
+        var dayEvent = new DayEvent(name, occurrence, chatId);
+        MurkaChat.Logic.AddDayEvent(dayEvent);
     }
 
     private async Task ShowAgendaInternalAsync(DateOnly date)
@@ -345,7 +327,7 @@ public class MurkaMessageHandler : MessageHandler
         }
     }
 
-    private static ServerTimeRange ParseServerTimeRange(string from, string to)
+    private static ServerTimeRange ParseServerTimeRange(string? from, string? to)
     {
         return new ServerTimeRange(ServerTime.SafeParse(from), ServerTime.SafeParse(to));
     }

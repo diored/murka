@@ -50,5 +50,7 @@ public class PromocodesStorage : StorageBase, IPromocodesStorage
     private class TableEntity : TimeLimitedTableEntity
     {
         public string Content { get; set; } = default!;
+
+        public override string ToString() => RowKey;
     }
 }

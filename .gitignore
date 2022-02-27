@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Production config
 appsettings.Production.json
+launchSettings.json

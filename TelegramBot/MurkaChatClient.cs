@@ -28,7 +28,7 @@ public class MurkaChatClient : ChatClient
 
     public override async Task HandleCallbackQueryAsync(Bot bot, CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, callbackQuery.From.Id, cancellationToken);
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, callbackQuery.From.Id, 0, cancellationToken);
 
         await handler.HandleAsync(callbackQuery.Data!);
     }
@@ -44,21 +44,21 @@ public class MurkaChatClient : ChatClient
         _botName ??= "@" + await GetBotNameAsync(bot.BotClient, cancellationToken);
         string messageText = TrimBotName(message.Text!, _botName);
 
-        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, message.From.Id, cancellationToken);
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(bot.BotClient, message.From.Id, message.MessageId, cancellationToken);
 
         await handler.HandleAsync(messageText);
     }
 
     public async Task ShowAgendaAsync(ITelegramBotClient botClient, long senderId, CancellationToken cancellationToken)
     {
-        MurkaMessageHandler handler = await GetMessageHandlerAsync(botClient, senderId, cancellationToken);
+        MurkaMessageHandler handler = await GetMessageHandlerAsync(botClient, senderId, 0, cancellationToken);
         await handler.ShowAgendaAsync();
     }
 
-    private async Task<MurkaMessageHandler> GetMessageHandlerAsync(ITelegramBotClient botClient, long senderId, CancellationToken cancellationToken)
+    private async Task<MurkaMessageHandler> GetMessageHandlerAsync(ITelegramBotClient botClient, long senderId, int messageId, CancellationToken cancellationToken)
     {
         UserRole role = await GetUserRoleAsync(botClient, senderId, cancellationToken);
-        MessageContext messageContext = new(botClient, this, role, _broadcaster, cancellationToken);
+        MessageContext messageContext = new(botClient, this, role, _broadcaster, messageId, cancellationToken);
         return new MurkaMessageHandler(messageContext);
     }
 

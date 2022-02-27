@@ -1,4 +1,5 @@
-﻿using DioRed.Murka.Core.Contracts;
+﻿using DioRed.Murka.Common;
+using DioRed.Murka.Core.Contracts;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.TelegramBot.Configuration;
 using DioRed.Vermilion;
@@ -15,17 +16,21 @@ public class MurkaBot : Bot
 
     private bool _newChatsDetection;
 
-    public MurkaBot(MurkaConfiguration configuration, ILogic logic, ILogger logger, CancellationTokenSource cancellationTokenSource)
-        : base(configuration, cancellationTokenSource.Token)
+    public MurkaBot(
+        MurkaConfiguration configuration,
+        ILogic logic,
+        ILogger logger,
+        CancellationTokenSource cancellationTokenSource)
+            : base(configuration, cancellationTokenSource.Token)
     {
         _configuration = configuration;
         _logic = logic;
 
         _newChatsDetection = true;
 
-        Job.SetupDaily(this, () => DailyRoutine(), TimeSpan.FromHours(21));
+        Logger.Loggers.Add(logger);
 
-        AddLogger(logger);
+        Job.SetupDaily(Logger, () => DailyRoutine(), TimeSpan.FromHours(21), "CleanupAndAgenda");
     }
 
     protected override void OnChatClientAdded(Chat chat)

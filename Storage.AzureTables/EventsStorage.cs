@@ -50,5 +50,7 @@ public class EventsStorage : StorageBase, IEventsStorage
     private class TableEntity : TimeLimitedTableEntity
     {
         public string Name { get; set; } = default!;
+
+        public override string ToString() => Name;
     }
 }

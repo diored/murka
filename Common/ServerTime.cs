@@ -97,7 +97,7 @@ public struct ServerTime
     {
         if (serverTime1.Date != serverTime2.Date)
         {
-            return serverTime1.Date > serverTime1.Date;
+            return serverTime1.Date > serverTime2.Date;
         }
 
         if (serverTime1.Time.HasValue && serverTime2.Time.HasValue)
@@ -112,7 +112,7 @@ public struct ServerTime
     {
         if (serverTime1.Date != serverTime2.Date)
         {
-            return serverTime1.Date < serverTime1.Date;
+            return serverTime1.Date < serverTime2.Date;
         }
 
         if (serverTime1.Time.HasValue && serverTime2.Time.HasValue)
