@@ -46,4 +46,18 @@ public partial class MurkaMessageHandler
     {
         await MessageContext.Broadcaster.SendTextAsync(message);
     }
+
+    [BotCommand(UserRole.SuperAdmin, "/setDaily")]
+    public void SetDaily(string month, string dailies)
+    {
+        int monthNumber = int.Parse(month.Trim());
+        dailies = dailies.Trim();
+
+        if (DateTime.DaysInMonth(DateTime.Now.Year, monthNumber) != dailies.Length)
+        {
+            throw new ArgumentException("Wrong month length", nameof(dailies));
+        }
+
+        MurkaChat.Logic.SetDaily(monthNumber, dailies);
+    }
 }

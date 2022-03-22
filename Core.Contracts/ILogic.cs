@@ -12,6 +12,7 @@ public interface ILogic
     void RemoveChat(ChatInfo chatInfo);
 
     Daily GetDaily(DateOnly date);
+    void SetDaily(int monthNumber, string dailies);
 
     ICollection<DayEvent> GetDayEvents(DateOnly date, string chatId);
     void AddDayEvent(DayEvent dayEvent);

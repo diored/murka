@@ -42,6 +42,25 @@ public class DailiesStorage : IDailiesStorage
         }
     }
 
+    public void SetMonth(int month, string dailies)
+    {
+        string partitionKey = month.ToString("D2");
+
+        var entities = dailies
+            .Select((ch, index) => new TableEntity
+            {
+                PartitionKey = partitionKey,
+                RowKey = (index + 1).ToString("D2"),
+                Code = ch.ToString()
+            })
+            .ToArray();
+
+        foreach (var entity in entities)
+        {
+            _tableClient.UpsertEntity(entity, TableUpdateMode.Replace);
+        }
+    }
+
     private static readonly Dictionary<string, Daily> _dailies = new()
     {
         ["W"] = new("⚔️Оружие", "ПВ2 (Аурогон) / ПП / МИ / ГШ"),

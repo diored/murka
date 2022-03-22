@@ -166,6 +166,11 @@ public class Logic : ILogic
         _storageEndpoint.DayEvents.AddNew(dayEvent);
     }
 
+    public void SetDaily(int month, string dailies)
+    {
+        _storageEndpoint.Dailies.SetMonth(month, dailies);
+    }
+
     private static readonly string[] _greetings =
     {
         "Привет! =)",
