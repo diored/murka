@@ -1,4 +1,6 @@
-﻿using DioRed.Murka.Common;
+﻿using Azure;
+
+using DioRed.Murka.Common;
 using DioRed.Murka.Core.Contracts;
 using DioRed.Murka.Core.Entities;
 
@@ -133,7 +135,14 @@ public class Logic : ILogic
 
     public BinaryData GetCalendar()
     {
-        return _storageEndpoint.Images.Get("daily.png");
+        try
+        {
+            return _storageEndpoint.Images.Get("daily.jpg");
+        }
+        catch (RequestFailedException)
+        {
+            return _storageEndpoint.Images.Get("daily.png");
+        }
     }
 
     private static T GetRandomItem<T>(IList<T> items)

@@ -12,6 +12,8 @@ namespace DioRed.Murka.TelegramBot;
 
 public partial class MurkaMessageHandler : MessageHandler
 {
+    private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
+
     public MurkaMessageHandler(MessageContext messageContext)
         : base(messageContext)
     {
@@ -113,7 +115,7 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("привет|доброе утро|добрый день|добрый вечер", BotCommandOptions.Regex | BotCommandOptions.CaseInsensitive)]
     public async Task SayMurrAsync()
     {
-        if (!(DateTime.UtcNow - MurkaChat.LatestGreeting < TimeSpan.FromMinutes(5)))
+        if (!(DateTime.UtcNow - MurkaChat.LatestGreeting < GreetingInterval))
         {
             MurkaChat.LatestGreeting = DateTime.UtcNow;
             await ChatWriter.SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
@@ -204,6 +206,17 @@ public partial class MurkaMessageHandler : MessageHandler
     {
         BinaryData photo = MurkaChat.Logic.GetCalendar();
         await ChatWriter.SendPhotoAsync(photo.ToStream());
+    }
+
+    [BotCommand("фразы", BotCommandOptions.CaseInsensitive)]
+    public async Task ShowPhrasesAsync()
+    {
+        var builder = new StringBuilder()
+            .AppendLine("<code>!@Плюс в лс, кто тоже за шаром!</code>")
+            .AppendLine("<code>!@Пробудим драконов вместе!</code>")
+            .Append("<code>!@Поздравляю всех с 14-летием игры!</code>");
+
+        await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
     //[BotCommand("/remind (.+)|(.+)", BotCommandOptions.Regex)]
