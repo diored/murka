@@ -1,0 +1,20 @@
+﻿@using DioRed.Murka.Manager.Models
+
+<div>
+    <p>@Prompt</p>
+
+    <button class="btn btn-primary" @onclick="Confirm">@ConfirmButton</button>
+    <button class="btn btn-secondary" @onclick="Cancel">@CancelButton</button>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [Parameter] public string Prompt { get; set; } = string.Empty;
+    [Parameter] public string ConfirmButton { get; set; } = "Подтвердить";
+    [Parameter] public string CancelButton { get; set; } = "Отмена";
+
+    async Task Confirm() =>  await ModalInstance.CloseAsync(ModalResult.Ok(true));
+
+    async Task Cancel() => await ModalInstance.CancelAsync();
+}

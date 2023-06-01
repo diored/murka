@@ -1,0 +1,60 @@
+﻿@page "/broadcast"
+
+@using DioRed.Murka.Manager.Components
+@using DioRed.Murka.Manager.Models
+@using DioRed.Murka.Services
+@using Grpc.Net.Client
+@using Grpc.Net.Client.Web
+@using System.ComponentModel.DataAnnotations
+
+@inject DataProvider Data
+
+<PageTitle>Рассылка</PageTitle>
+
+<h1>Рассылка</h1>
+
+<Alert @ref="_alert" />
+
+<div class="btn-group">
+    <button type="button" class="btn btn-secondary">@(_selectedChat?.Name ?? "Кому")</button>
+    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" @onclick="SelectAll">Всем</a>
+        <div class="dropdown-divider"></div>
+        @foreach (var chat in _chats)
+        {
+            <a class="dropdown-item" @onclick="() => Select(chat)">#@chat.Id — @chat.Name</a>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    private Alert _alert = default!;
+    ICollection<(string Name, long Id)> _chats = new List<(string, long)>();
+    (string Name, long Id)? _selectedChat;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //_chats = await Data.GetChatsAsync();
+        _chats.Add(("Вася", 1));
+        _chats.Add(("Чуча", 2));
+        _chats.Add(("Шмяк", 3));
+
+        await base.OnInitializedAsync();
+    }
+
+    void SelectAll()
+    {
+        _selectedChat = null;
+    }
+
+    void Select((string Name, long Id) chat)
+    {
+        _selectedChat = chat;
+    }
+}

@@ -1,0 +1,11 @@
+﻿@page "/"
+@inject IConfiguration config
+<PageTitle>Главная</PageTitle>
+
+<h1>Мяу!</h1>
+
+<p>Добро пожаловать в менеджер Мурки =)</p>
+
+<small class="bg-success bg-opacity-10 border border-success border-opacity-10 rounded-2">
+    Service url: @(config["serviceUrl"] ?? "<null>")
+</small>

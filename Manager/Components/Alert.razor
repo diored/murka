@@ -1,0 +1,16 @@
+﻿@if (Type is not null && Text is not null)
+{
+    <div class="alert alert-@Type!.ToString()!.ToLowerInvariant()" role="alert">
+        @Text
+    </div>
+}
+
+@code {
+    public AlertType? Type { get; set; }
+    public string? Text { get; set; }
+
+    public enum AlertType
+    {
+        Primary, Secondary, Info, Success, Warning, Danger
+    }
+}

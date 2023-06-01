@@ -2,5 +2,5 @@
 
 public record ChatInfo(string Id, string Type, string Title)
 {
-    public override string ToString() => $"{Type}:{Id}";
+    public string ChatId { get; } = $"{Type}:{Id}";
 }

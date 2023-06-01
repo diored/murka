@@ -1,39 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <UserSecretsId>3371d872-5073-497e-817e-7f06e7a254a9</UserSecretsId>
-    <RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AssemblyName>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
+		<RootNamespace>$(AssemblyName)</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove=".gitattributes" />
-    <None Remove=".gitignore" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DioRed.Auth.Client" Version="2.1.4" />
+		<PackageReference Include="DioRed.Vermilion" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-	<PackageReference Include="DioRed.Vermilion" Version="7.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Telegram.Bot" Version="17.0.0" />
-    <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\ForecastBuilder\ForecastBuilder.csproj" />
+	</ItemGroup>
 
 </Project>

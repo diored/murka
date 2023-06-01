@@ -1,4 +1,4 @@
-﻿using DioRed.Murka.Core.Contracts;
+﻿using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.TelegramBot.Configuration;
 using DioRed.Vermilion;
@@ -79,7 +79,7 @@ public class MurkaBot : Bot
         await Broadcast(DailyAgenda);
     }
 
-    private async Task DailyAgenda(IChatClient chatClient, CancellationToken token)
+    public async Task DailyAgenda(IChatClient chatClient, CancellationToken token)
     {
         await ((MurkaChatClient)chatClient).ShowAgendaAsync(BotClient, BotSenderId, token);
     }

@@ -1,5 +1,3 @@
-﻿using DioRed.Murka.Common;
+﻿namespace DioRed.Murka.Core.Entities;
 
-namespace DioRed.Murka.Core.Entities;
-
-public record Promocode(string Code, string Content, ServerTimeRange Valid) : TimeLimitedEntity(Valid);
+public record Promocode(string Code, string Content, ServerDateTime? ValidFrom, ServerDateTime? ValidTo);

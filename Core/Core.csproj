@@ -1,17 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Core.Contracts\Core.Contracts.csproj" />
-    <ProjectReference Include="..\Core.Entities\Core.Entities.csproj" />
-    <ProjectReference Include="..\Storage.AzureBlobs\Storage.AzureBlobs.csproj" />
-    <ProjectReference Include="..\Storage.AzureTables\Storage.AzureTables.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Core.Entities\Core.Entities.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Memory.Data" Version="7.0.0" />
+	</ItemGroup>
 
 </Project>

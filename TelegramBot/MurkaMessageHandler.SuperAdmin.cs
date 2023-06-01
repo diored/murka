@@ -1,5 +1,4 @@
-﻿using DioRed.Murka.Common;
-using DioRed.Murka.Core.Entities;
+﻿using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Attributes;
 
@@ -10,7 +9,7 @@ public partial class MurkaMessageHandler
     [BotCommand(UserRole.ChatAdmin, @"/addDayEvent!", BotCommandOptions.CaseInsensitive)]
     public void AddGlobalDayEvent(string name, string time, string repeat)
     {
-        AddDayEventInternal(MessageContext.ChatClient.Chat.ToChatInfo().ToString(), name, time, repeat);
+        AddDayEventInternal(name, repeat, time, MessageContext.ChatClient.Chat.ToChatInfo().ChatId);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/addEvent")]
@@ -20,7 +19,7 @@ public partial class MurkaMessageHandler
         starts = starts?.Trim();
         ends = ends?.Trim();
 
-        Event newEvent = new(eventName, ParseServerTimeRange(starts, ends));
+        Event newEvent = new(eventName, ServerDateTime.ParseOrDefault(starts), ServerDateTime.ParseOrDefault(ends));
         MurkaChat.Logic.AddEvent(newEvent);
     }
 
@@ -31,7 +30,7 @@ public partial class MurkaMessageHandler
         validTo = validTo.Trim();
         description = description.Trim();
 
-        Promocode newPromocode = new(code, description, new ServerTimeRange(null, ServerTime.SafeParse(validTo)));
+        Promocode newPromocode = new(code, description, null, ServerDateTime.ParseOrDefault(validTo));
         MurkaChat.Logic.AddPromocode(newPromocode);
     }
 

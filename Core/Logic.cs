@@ -1,95 +1,57 @@
-﻿using Azure;
-
-using DioRed.Murka.Common;
-using DioRed.Murka.Core.Contracts;
-using DioRed.Murka.Core.Entities;
+﻿using DioRed.Murka.Core.Entities;
 
 namespace DioRed.Murka.Core;
 
 public class Logic : ILogic
 {
-    private readonly IStorageEndpoint _storageEndpoint;
+    private readonly ApiClient _api;
 
-    public Logic(IStorageEndpoint storageEndpoint)
+    public Logic(ApiClient api)
     {
-        _storageEndpoint = storageEndpoint;
+        _api = api;
     }
 
     public void Cleanup()
     {
-        const string level = "cleanup";
-
-        Log(level, "Storage cleanup started");
-
-        var removed = _storageEndpoint.Promocodes.RemoveOutdated();
-        if (removed.Any())
-        {
-            Log(level, $"Outdated promocodes removed", removed);
-        }
-
-        removed = _storageEndpoint.Events.RemoveOutdated();
-        if (removed.Any())
-        {
-            Log(level, $"Outdated events removed", removed);
-        }
-
-        Log(level, "Storage cleanup finished");
+        _api.Log("cleanup", "Storage cleanup started").GetAwaiter().GetResult();
+        _api.CleanupPromocodes().GetAwaiter().GetResult();
+        _api.CleanupEvents().GetAwaiter().GetResult();
+        _api.Log("cleanup", "Storage cleanup finished").GetAwaiter().GetResult();
     }
 
-    public ICollection<Event> GetActiveEvents(ServerTime serverTime)
+    public ICollection<Event> GetActiveEvents()
     {
-        return _storageEndpoint.Events.GetActive(serverTime);
+        return _api.GetActiveEvents().GetAwaiter().GetResult();
     }
 
-    public ICollection<Promocode> GetActivePromocodes(ServerTime serverTime)
+    public ICollection<Promocode> GetActivePromocodes()
     {
-        return _storageEndpoint.Promocodes.GetActive(serverTime);
+        return _api.GetActivePromocodes().GetAwaiter().GetResult();
     }
 
     public Daily GetDaily(DateOnly date)
     {
-        return _storageEndpoint.Dailies.Get(date);
+        return _api.GetDaily(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
     }
 
     public ICollection<DayEvent> GetDayEvents(DateOnly date, string chatId)
     {
-        return _storageEndpoint.DayEvents.Get(date, chatId);
+        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
     }
 
     public Northlands GetNorthLands(DateOnly date)
     {
-        DayOfWeek dayOfWeek = date.DayOfWeek;
-
-        if (dayOfWeek == DayOfWeek.Tuesday)
-        {
-            return new Northlands("Ледяной штурм", "Ледяной штурм");
-        }
-
-        int[] godsEvents = dayOfWeek switch
-        {
-            DayOfWeek.Monday or DayOfWeek.Friday => new[] { 18, 19, 20, 21 },
-            DayOfWeek.Wednesday or DayOfWeek.Thursday => new[] { 18, 19, 21, 22 },
-            DayOfWeek.Saturday or DayOfWeek.Sunday => new[] { 18, 19 },
-            _ => Array.Empty<int>()
-        };
-
-        int[] northEvents = Enumerable.Range(16, 8) // 16..23
-            .Except(godsEvents)
-            .ToArray();
-
-        return new Northlands(
-            string.Join(", ", northEvents.Select(e => $"{e}:00")),
-            string.Join(", ", godsEvents.Select(e => $"{e}:00")));
+        return _api.GetNorthlands(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
     }
 
     public string GetRandomGreeting()
     {
-        return GetRandomItem(_greetings);
+        return _api.GetRandomGreeting().GetAwaiter().GetResult();
     }
 
     public ICollection<ChatInfo> GetChats()
     {
-        return _storageEndpoint.Chats.GetTelegramChats();
+        return _api.GetTelegramChats().GetAwaiter().GetResult();
     }
 
     public void AddChat(ChatInfo chatInfo)
@@ -98,13 +60,12 @@ public class Logic : ILogic
 
         try
         {
-            _storageEndpoint.Chats.Add(chatInfo);
-
-            Log(level, "Chat added", chatInfo);
+            _api.AddChat(chatInfo.Id, chatInfo.Type, chatInfo.Title).GetAwaiter().GetResult();
+            _api.Log(level, "Chat added", chatInfo).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            Log(level, "Chat adding failed", chatInfo, ex);
+            _api.Log(level, "Chat adding failed", chatInfo, ex).GetAwaiter().GetResult();
 
             throw;
         }
@@ -116,79 +77,59 @@ public class Logic : ILogic
 
         try
         {
-            _storageEndpoint.Chats.Remove(chatInfo);
-
-            Log(level, "Chat removed", chatInfo);
+            _api.RemoveChat(chatInfo.Id, chatInfo.Type).GetAwaiter().GetResult();
+            _api.Log(level, "Chat removed", chatInfo).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            Log(level, "Chat removing failed", chatInfo, ex);
+            _api.Log(level, "Chat removing failed", chatInfo, ex).GetAwaiter().GetResult();
 
             throw;
         }
     }
 
-    public void Log(string level, string message, object? argumentObject = null, Exception? exception = null)
-    {
-        _storageEndpoint.Log.Log(level, message, argumentObject, exception);
-    }
-
     public BinaryData GetCalendar()
     {
-        try
-        {
-            return _storageEndpoint.Images.Get("daily.jpg");
-        }
-        catch (RequestFailedException)
-        {
-            return _storageEndpoint.Images.Get("daily.png");
-        }
+        return new BinaryData(_api.GetDailyCalendar().GetAwaiter().GetResult());
     }
 
-    private static T GetRandomItem<T>(IList<T> items)
+    public void Log(string level, string message, object? argumentObject = null, Exception? exception = null)
     {
-        if (items is null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-
-        if (items.Count == 0)
-        {
-            throw new ArgumentException(nameof(items) + " should contain at least one item");
-        }
-
-        return items[Random.Shared.Next(items.Count)];
+        _api.Log(level, message, argumentObject, exception).GetAwaiter().GetResult();
     }
 
     public void AddEvent(Event newEvent)
     {
-        _storageEndpoint.Events.AddNew(newEvent);
+        _api.AddEvent(newEvent.Name, newEvent.ValidFrom?.ToString(), newEvent.ValidTo?.ToString()).GetAwaiter().GetResult();
     }
 
-    public void AddPromocode(Promocode newPromocode)
+    public void AddPromocode(Promocode promocode)
     {
-        _storageEndpoint.Promocodes.AddNew(newPromocode);
+        _api.AddPromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
     }
 
-    public void AddDayEvent(DayEvent dayEvent)
+    public void AddDayEvent(string name, string occurrence, TimeOnly time, string? chatId)
     {
-        _storageEndpoint.DayEvents.AddNew(dayEvent);
+        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
     }
 
     public void SetDaily(int month, string dailies)
     {
-        _storageEndpoint.Dailies.SetMonth(month, dailies);
+        _api.SetDailyMonth(month, dailies).GetAwaiter().GetResult();
     }
 
-    private static readonly string[] _greetings =
+    public void UpdatePromocode(Promocode promocode)
     {
-        "Привет! =)",
-        "Мяу :-)",
-        ",,,==(^.^)==,,,",
-        "Рада видеть ;)",
-        "И вам здравствуйте!",
-        "Мурр",
-        "Чао )",
-        "Фрррр"
-    };
+        _api.UpdatePromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
+    }
+
+    public void RemovePromocode(string code)
+    {
+        _api.RemovePromocode(code).GetAwaiter().GetResult();
+    }
+
+    public string GetLink(string id)
+    {
+        return _api.GetLink(id).GetAwaiter().GetResult();
+    }
 }
