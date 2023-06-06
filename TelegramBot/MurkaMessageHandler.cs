@@ -355,9 +355,9 @@ public partial class MurkaMessageHandler : MessageHandler
                     .Append(", ")
                     .AppendFormat("<code>{0}</code>", promocode.Code);
             }
-
-            await ChatWriter.SendHtmlAsync(builder.ToString());
         }
+
+        await ChatWriter.SendHtmlAsync(builder.ToString());
     }
 
     private static string GetDaytimeGreeting(TimeOnly time)
