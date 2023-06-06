@@ -344,7 +344,7 @@ public partial class MurkaMessageHandler : MessageHandler
             builder
                 .AppendLine()
                 .AppendLine()
-                .Append("Сегодня последний день активации промокод")
+                .Append("Последний день активации промокод")
                 .Append(expiringPromocodes.Count > 1 ? "ов" : "а")
                 .Append(' ')
                 .AppendFormat("<code>{0}</code>", expiringPromocodes[0].Code);
@@ -355,6 +355,8 @@ public partial class MurkaMessageHandler : MessageHandler
                     .Append(", ")
                     .AppendFormat("<code>{0}</code>", promocode.Code);
             }
+
+            builder.Append('.');
         }
 
         await ChatWriter.SendHtmlAsync(builder.ToString());
