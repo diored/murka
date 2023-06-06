@@ -336,7 +336,7 @@ public partial class MurkaMessageHandler : MessageHandler
 
         // ExpiringPromocodes
         List<Promocode> expiringPromocodes = MurkaChat.Logic.GetActivePromocodes()
-            .Where(p => p.ValidTo?.Date == ServerDateTime.GetCurrent().Date)
+            .Where(p => p.ValidTo?.Date == date)
             .ToList();
 
         if (expiringPromocodes.Any())
