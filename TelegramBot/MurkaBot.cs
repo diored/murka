@@ -1,4 +1,5 @@
-﻿using DioRed.Murka.Core;
+﻿using DioRed.Common.Jobs;
+using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.TelegramBot.Configuration;
 using DioRed.Vermilion;
@@ -29,7 +30,9 @@ public class MurkaBot : Bot
 
         Logger.Loggers.Add(logger);
 
-        Job.SetupDaily(() => DailyRoutine(), new TimeOnly(21, 0), Logger, "CleanupAndAgenda");
+        var job = Job.SetupDaily(DailyRoutine, new TimeOnly(21, 0), "CleanupAndAgenda");
+        job.LogInfo += (_, message) => Logger.LogInfo(message);
+        job.Start();
     }
 
     protected override void OnChatClientAdded(Chat chat)
