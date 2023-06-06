@@ -279,74 +279,84 @@ public partial class MurkaMessageHandler : MessageHandler
     {
         StringBuilder builder = new();
 
-        Greeting();
-        Daily();
-        Northlands();
-        DayEvents();
+        // Greeting
+        builder
+            .AppendLine(GetDaytimeGreeting(ServerDateTime.GetCurrent().Time!.Value));
 
-        await ChatWriter.SendHtmlAsync(builder.ToString());
-
-
-        void Greeting()
+        // Daily
+        var daily = MurkaChat.Logic.GetDaily(date);
+        if (daily?.Definition != null)
         {
-            builder.AppendLine(GetDaytimeGreeting(ServerDateTime.GetCurrent().Time!.Value));
-        }
-
-        void Daily()
-        {
-            var daily = MurkaChat.Logic.GetDaily(date);
-            if (daily?.Definition != null)
-            {
-                builder
-                    .AppendFormat("Ежа: <b>{0}</b> — {1}.", daily.Quest, daily.Definition)
-                    .AppendLine();
-            }
-        }
-
-        void Northlands()
-        {
-            Northlands northlands = MurkaChat.Logic.GetNorthLands(date);
-
             builder
-                .AppendLine("Северные земли:")
-                .AppendFormat("— войско богов: <b>{0}</b>.", northlands.Gods)
-                .AppendLine()
-                .AppendFormat("— армия севера: <b>{0}</b>.", northlands.North)
+                .AppendFormat("Ежа: <b>{0}</b> — {1}.", daily.Quest, daily.Definition)
                 .AppendLine();
         }
 
-        void DayEvents()
+        // Northlands
+        Northlands northlands = MurkaChat.Logic.GetNorthLands(date);
+
+        builder
+            .AppendLine("Северные земли:")
+            .AppendFormat("— войско богов: <b>{0}</b>.", northlands.Gods)
+            .AppendLine()
+            .AppendFormat("— армия севера: <b>{0}</b>.", northlands.North)
+            .AppendLine();
+
+        // DayEvents        
+        builder
+            .Append("Ивенты ")
+            .Append(date.DayOfWeek switch
+            {
+                DayOfWeek.Monday => "в <i>понедельник</i>",
+                DayOfWeek.Tuesday => "во <i>вторник</i>",
+                DayOfWeek.Wednesday => "в <i>среду</i>",
+                DayOfWeek.Thursday => "в <i>четверг</i>",
+                DayOfWeek.Friday => "в <i>пятницу</i>",
+                DayOfWeek.Saturday => "в <i>субботу</i>",
+                _ => "в <i>воскресенье</i>"
+            });
+
+        string chatId = MessageContext.ChatClient.Chat.ToChatInfo().ChatId;
+        var dayEvents = MurkaChat.Logic.GetDayEvents(date, chatId);
+
+        if (!dayEvents.Any())
+        {
+            builder.Append(" <b>отсутствуют</b>");
+            return;
+        }
+
+        builder.Append(':');
+
+        foreach (DayEvent dayEvent in dayEvents)
         {
             builder
-                .Append("Ивенты ")
-                .Append(date.DayOfWeek switch
-                {
-                    DayOfWeek.Monday => "в <i>понедельник</i>",
-                    DayOfWeek.Tuesday => "во <i>вторник</i>",
-                    DayOfWeek.Wednesday => "в <i>среду</i>",
-                    DayOfWeek.Thursday => "в <i>четверг</i>",
-                    DayOfWeek.Friday => "в <i>пятницу</i>",
-                    DayOfWeek.Saturday => "в <i>субботу</i>",
-                    _ => "в <i>воскресенье</i>"
-                });
+                .AppendLine()
+                .AppendFormat("— <b>{0}</b> — {1}", dayEvent.Time, dayEvent.Name);
+        }
 
-            string chatId = MessageContext.ChatClient.Chat.ToChatInfo().ChatId;
-            var dayEvents = MurkaChat.Logic.GetDayEvents(date, chatId);
+        // ExpiringPromocodes
+        List<Promocode> expiringPromocodes = MurkaChat.Logic.GetActivePromocodes()
+            .Where(p => p.ValidTo?.Date == ServerDateTime.GetCurrent().Date)
+            .ToList();
 
-            if (!dayEvents.Any())
-            {
-                builder.Append(" <b>отсутствуют</b>");
-                return;
-            }
+        if (expiringPromocodes.Any())
+        {
+            builder
+                .AppendLine()
+                .AppendLine()
+                .Append("Сегодня последний день активации промокод")
+                .Append(expiringPromocodes.Count > 1 ? "ов" : "а")
+                .Append(' ')
+                .AppendFormat("<code>{0}</code>", expiringPromocodes[0].Code);
 
-            builder.Append(':');
-
-            foreach (DayEvent dayEvent in dayEvents)
+            foreach (Promocode promocode in expiringPromocodes.Skip(1))
             {
                 builder
-                    .AppendLine()
-                    .AppendFormat("— <b>{0}</b> — {1}", dayEvent.Time, dayEvent.Name);
+                    .Append(", ")
+                    .AppendFormat("<code>{0}</code>", promocode.Code);
             }
+
+            await ChatWriter.SendHtmlAsync(builder.ToString());
         }
     }
 
