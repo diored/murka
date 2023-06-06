@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="DioRed.Auth.Client" Version="2.1.4" />
-		<PackageReference Include="DioRed.Vermilion" Version="8.0.1" />
+		<PackageReference Include="DioRed.Vermilion" Version="8.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />

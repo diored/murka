@@ -29,7 +29,7 @@ public class MurkaBot : Bot
 
         Logger.Loggers.Add(logger);
 
-        Job.SetupDaily(Logger, () => DailyRoutine(), TimeSpan.FromHours(21), "CleanupAndAgenda");
+        Job.SetupDaily(() => DailyRoutine(), new TimeOnly(21, 0), Logger, "CleanupAndAgenda");
     }
 
     protected override void OnChatClientAdded(Chat chat)

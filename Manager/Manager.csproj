@@ -6,9 +6,11 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 		<RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<UserSecretsId>112a53a1-4d0d-4918-9eb5-b310ff7e9287</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DioRed.Auth.Client" Version="2.1.4" />
 		<PackageReference Include="Blazored.Modal" Version="7.1.0" />
 		<PackageReference Include="Grpc.Net.Client.Web" Version="2.53.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
