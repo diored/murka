@@ -30,7 +30,7 @@ var authClient = new AuthClient(authConfiguration);
 builder.Services.AddSingleton(new ApiSettings
 {
     Uri = builder.Configuration["apiUri"]!,
-    AccessToken = authClient.GetAccessToken()
+    GetAccessToken = authClient.GetAccessToken
 });
 
 builder.Services.AddSingleton<ApiClient>();

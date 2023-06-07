@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DioRed.Auth.Client" Version="2.1.4" />
+		<PackageReference Include="DioRed.Auth.Client" Version="2.2.0" />
 		<PackageReference Include="DioRed.Common.Jobs" Version="1.0.0" />
 		<PackageReference Include="DioRed.Vermilion" Version="8.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />

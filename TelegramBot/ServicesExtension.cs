@@ -22,13 +22,13 @@ public static class ServicesExtension
         services.AddSingleton(new ApiSettings
         {
             Uri = configuration["apiUri"]!,
-            AccessToken = authClient.GetAccessToken()
+            GetAccessToken = authClient.GetAccessToken
         });
         services.AddSingleton<ILogger, ConsoleLogger>();
         services.AddTransient<CancellationTokenSource>();
 
         services.AddSingleton<MurkaBot>();
-
+        
         return services;
     }
 }
