@@ -4,5 +4,6 @@ namespace DioRed.Murka.TelegramBot.Configuration;
 
 public class MurkaConfiguration : BotConfiguration
 {
-    public long SuperAdminId { get; set; } = default!;
+    public required long SuperAdminId { get; init; }
+    public required string Version { get; init; }
 }

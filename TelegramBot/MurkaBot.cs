@@ -30,6 +30,8 @@ public class MurkaBot : Bot
 
         Logger.Loggers.Add(logger);
 
+        Logger.LogInfo($"Murka v{configuration.Version} started.");
+
         var job = Job.SetupDaily(DailyRoutine, new TimeOnly(21, 0), "CleanupAndAgenda");
         job.LogInfo += (_, message) => Logger.LogInfo(message);
         job.Start();
