@@ -322,16 +322,17 @@ public partial class MurkaMessageHandler : MessageHandler
         if (!dayEvents.Any())
         {
             builder.Append(" <b>отсутствуют</b>");
-            return;
         }
-
-        builder.Append(':');
-
-        foreach (DayEvent dayEvent in dayEvents)
+        else
         {
-            builder
-                .AppendLine()
-                .AppendFormat("— <b>{0}</b> — {1}", dayEvent.Time, dayEvent.Name);
+            builder.Append(':');
+
+            foreach (DayEvent dayEvent in dayEvents)
+            {
+                builder
+                    .AppendLine()
+                    .AppendFormat("— <b>{0}</b> — {1}", dayEvent.Time, dayEvent.Name);
+            }
         }
 
         // ExpiringPromocodes
