@@ -12,11 +12,11 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
-		<PackageReference Include="DioRed.Vermilion" Version="10.0.0" />
+		<PackageReference Include="DioRed.Vermilion" Version="10.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-		<ProjectReference Include="..\..\vermilion\Telegram\DioRed.Vermilion.csproj" />
+		<ProjectReference Include="..\..\vermilion\Vermilion\DioRed.Vermilion.csproj" />
 	</ItemGroup>
 
 </Project>
