@@ -1,5 +1,5 @@
 ﻿using DioRed.Murka.Services;
-using DioRed.Murka.TelegramBot;
+using DioRed.Vermilion;
 
 using Google.Protobuf.WellKnownTypes;
 
@@ -9,16 +9,21 @@ namespace DioRed.Murka.AspLauncher.Services;
 
 public class BroadcastService : Broadcast.BroadcastBase
 {
-    private readonly MurkaBot _murkaBot;
+    private readonly VermilionManager _botManager;
 
-    public BroadcastService(MurkaBot murkaBot)
+    public BroadcastService(VermilionManager botManager)
     {
-        _murkaBot = murkaBot;
+        _botManager = botManager;
     }
 
     public override async Task<Empty> Agenda(Empty request, ServerCallContext context)
     {
-        await _murkaBot.Broadcast(_murkaBot.DailyAgenda);
+        await _botManager.Broadcast(DailyAgenda);
         return new Empty();
+    }
+
+    private static async Task DailyAgenda(ChatClient chatClient, CancellationToken token)
+    {
+        await chatClient.HandleMessageAsync("/agenda", -1, 0, token);
     }
 }

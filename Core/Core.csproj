@@ -8,11 +8,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Core.Entities\Core.Entities.csproj" />
+		<PackageReference Include="System.Memory.Data" Version="7.0.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="System.Memory.Data" Version="7.0.0" />
+	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
+		<PackageReference Include="DioRed.Vermilion" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<ProjectReference Include="..\..\vermilion\Telegram\DioRed.Vermilion.csproj" />
 	</ItemGroup>
 
 </Project>

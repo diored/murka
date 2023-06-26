@@ -1,28 +1,26 @@
 ﻿using System.Text;
 
+using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
-using DioRed.Murkal.ForecastBuilder;
+using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
-using DioRed.Vermilion.Attributes;
+using DioRed.Vermilion.Handlers;
 
-using Telegram.Bot;
-using Telegram.Bot.Types.ReplyMarkups;
+using File = System.IO.File;
 
-namespace DioRed.Murka.TelegramBot;
+namespace DioRed.Murka.BotCore;
 
-public partial class MurkaMessageHandler : MessageHandler
+public partial class MessageHandler : AttributeBasedMessageHandler
 {
+    private readonly ILogic _logic;
+
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
 
-    public MurkaMessageHandler(MessageContext messageContext)
+    public MessageHandler(MessageContext messageContext, ILogic logic)
         : base(messageContext)
     {
-        MurkaChat = (MurkaChatClient)messageContext.ChatClient;
-
-        ChatWriter.OnException += ChatWriter_OnException;
+        _logic = logic;
     }
-
-    public MurkaChatClient MurkaChat { get; }
 
     [BotCommand("/daily")]
     [BotCommand("ежа", BotCommandOptions.CaseInsensitive)]
@@ -51,7 +49,7 @@ public partial class MurkaMessageHandler : MessageHandler
             .Select(i =>
             {
                 DateOnly date = serverTime.Date.AddDays(i);
-                return new ScheduleItem(date, MurkaChat.Logic.GetDaily(date).Id);
+                return new ScheduleItem(date, _logic.GetDaily(date).Id);
             })
             .ToArray();
 
@@ -77,7 +75,7 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("промокоды", BotCommandOptions.CaseInsensitive)]
     public async Task ShowPromocodesAsync()
     {
-        ICollection<Promocode> activePromocodes = MurkaChat.Logic.GetActivePromocodes();
+        ICollection<Promocode> activePromocodes = _logic.GetActivePromocodes();
 
         if (!activePromocodes.Any())
         {
@@ -112,7 +110,7 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("/addDayEvent", BotCommandOptions.CaseInsensitive)]
     public async void AddDayEventHelp()
     {
-        if (MessageContext.Role == UserRole.AnyUser)
+        if (MessageContext.UserRole == UserRole.Member)
         {
             await ChatWriter.SendTextAsync("Добавлять ивенты может только администратор чата");
             return;
@@ -139,24 +137,27 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand(UserRole.ChatAdmin, @"/addDayEvent", BotCommandOptions.CaseInsensitive)]
     public void AddDayEvent(string name, string time, string repeat)
     {
-        AddDayEventInternal(name, repeat, time, MessageContext.ChatClient.Chat.ToChatInfo().ChatId);
+        AddDayEventInternal(name, repeat, time, MessageContext.ChatId);
     }
 
     [BotCommand("привет|доброе утро|добрый день|добрый вечер", BotCommandOptions.Regex | BotCommandOptions.CaseInsensitive)]
     public async Task SayMurrAsync()
     {
-        if (!(DateTime.UtcNow - MurkaChat.LatestGreeting < GreetingInterval))
+        if (MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&
+            DateTime.UtcNow - latestGreeting < GreetingInterval)
         {
-            MurkaChat.LatestGreeting = DateTime.UtcNow;
-            await ChatWriter.SendTextAsync(MurkaChat.Logic.GetRandomGreeting());
+            return;
         }
+
+        MessageContext.ChatClient["LatestGreeting"] = DateTime.UtcNow;
+        await ChatWriter.SendTextAsync(_logic.GetRandomGreeting());
     }
 
     [BotCommand("/sea")]
     [BotCommand("море", BotCommandOptions.CaseInsensitive)]
     public async Task ShowSeaAsync()
     {
-        string link = MurkaChat.Logic.GetLink("sea");
+        string link = _logic.GetLink("sea");
 
         await ChatWriter.SendPhotoAsync(link);
     }
@@ -165,7 +166,7 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("север", BotCommandOptions.CaseInsensitive)]
     public async Task ShowNorthAsync()
     {
-        Northlands northlands = MurkaChat.Logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
+        Northlands northlands = _logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
 
         await ChatWriter.SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
     }
@@ -188,7 +189,7 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("ивенты", BotCommandOptions.CaseInsensitive)]
     public async Task ShowEventsAsync()
     {
-        ICollection<Event> events = MurkaChat.Logic.GetActiveEvents();
+        ICollection<Event> events = _logic.GetActiveEvents();
 
         if (!events.Any())
         {
@@ -236,25 +237,44 @@ public partial class MurkaMessageHandler : MessageHandler
     [BotCommand("календарь", BotCommandOptions.CaseInsensitive)]
     public async Task ShowCalendarAsync()
     {
-        string link = MurkaChat.Logic.GetLink("daily");
+        string link = _logic.GetLink("daily");
 
         await ChatWriter.SendPhotoAsync(link);
     }
 
-    [BotCommand("/murka")]
-    [BotCommand("мурка", BotCommandOptions.CaseInsensitive)]
-    public async Task StartDialogAsync()
-    {
-        IReplyMarkup replyMarkup = new InlineKeyboardMarkup(new[]
-        {
-            new InlineKeyboardButton("ежа") { CallbackData = "ежа" },
-            new InlineKeyboardButton("север") { CallbackData = "север" }
-        });
+    //[BotCommand("/murka")]
+    //[BotCommand("мурка", BotCommandOptions.CaseInsensitive)]
+    //public async Task StartDialogAsync()
+    //{
+    //    IReplyMarkup replyMarkup = new InlineKeyboardMarkup(new[]
+    //    {
+    //        new InlineKeyboardButton("ежа") { CallbackData = "ежа" },
+    //        new InlineKeyboardButton("север") { CallbackData = "север" }
+    //    });
 
-        await MessageContext.BotClient.SendTextMessageAsync(MurkaChat.Chat.Id, "Чем помочь?", replyMarkup: replyMarkup);
+    //    await ((TelegramChatWriter)ChatWriter).SendTextAsync("Чем помочь?", replyMarkup);
+    //}
+
+    protected override async Task OnExceptionAsync(Exception ex)
+    {
+        _logic.Log("error", "Error occurred in chat", MessageContext.ChatClient.ChatId, ex);
+
+        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
+        {
+            _logic.RemoveChat(MessageContext.ChatClient.ChatId);
+        }
+        else
+        {
+            string message = "Error occurred";
+#if DEBUG
+            message += $": {ex}";
+#endif
+
+            await ChatWriter.SendTextAsync(message);
+        }
     }
 
-    private void AddDayEventInternal(string name, string occurrence, string time, string chatId)
+    private void AddDayEventInternal(string name, string occurrence, string time, ChatId chatId)
     {
         name = name.Trim();
         occurrence = occurrence.Trim().ToLowerInvariant() switch
@@ -272,7 +292,7 @@ public partial class MurkaMessageHandler : MessageHandler
 
         TimeOnly timeOnly = TimeOnly.ParseExact(time, CommonValues.TimeFormat);
 
-        MurkaChat.Logic.AddDayEvent(name, occurrence, timeOnly, chatId);
+        _logic.AddDayEvent(name, occurrence, timeOnly, chatId);
     }
 
     private async Task ShowAgendaInternalAsync(DateOnly date)
@@ -284,7 +304,7 @@ public partial class MurkaMessageHandler : MessageHandler
             .AppendLine(GetDaytimeGreeting(ServerDateTime.GetCurrent().Time!.Value));
 
         // Daily
-        var daily = MurkaChat.Logic.GetDaily(date);
+        var daily = _logic.GetDaily(date);
         if (daily?.Definition != null)
         {
             builder
@@ -293,7 +313,7 @@ public partial class MurkaMessageHandler : MessageHandler
         }
 
         // Northlands
-        Northlands northlands = MurkaChat.Logic.GetNorthLands(date);
+        Northlands northlands = _logic.GetNorthLands(date);
 
         builder
             .AppendLine("Северные земли:")
@@ -316,8 +336,7 @@ public partial class MurkaMessageHandler : MessageHandler
                 _ => "в <i>воскресенье</i>"
             });
 
-        string chatId = MessageContext.ChatClient.Chat.ToChatInfo().ChatId;
-        var dayEvents = MurkaChat.Logic.GetDayEvents(date, chatId);
+        var dayEvents = _logic.GetDayEvents(date, MessageContext.ChatId);
 
         if (!dayEvents.Any())
         {
@@ -336,7 +355,7 @@ public partial class MurkaMessageHandler : MessageHandler
         }
 
         // ExpiringPromocodes
-        List<Promocode> expiringPromocodes = MurkaChat.Logic.GetActivePromocodes()
+        List<Promocode> expiringPromocodes = _logic.GetActivePromocodes()
             .Where(p => p.ValidTo?.Date == date)
             .ToList();
 
@@ -372,28 +391,5 @@ public partial class MurkaMessageHandler : MessageHandler
             < 18 => "Добрый день! =^.^=",
             >= 18 => "Добрый вечер! =^.^="
         };
-    }
-
-    private void ChatWriter_OnException(Exception ex)
-    {
-        ChatInfo chat = MurkaChat.Chat.ToChatInfo();
-
-        MurkaChat.Logic.Log("error", "Error occurred in chat", chat, ex);
-
-        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
-        {
-            MurkaChat.Logic.RemoveChat(chat);
-        }
-    }
-
-    public override async Task OnExceptionAsync(Exception ex)
-    {
-        string message = "Error occurred"
-#if DEBUG
-            + ": " + (ex.InnerException?.Message ?? ex.Message)
-#endif
-        ;
-
-        await ChatWriter.SendTextAsync(message);
     }
 }

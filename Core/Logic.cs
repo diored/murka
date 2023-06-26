@@ -1,4 +1,5 @@
 ﻿using DioRed.Murka.Core.Entities;
+using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
@@ -34,9 +35,9 @@ public class Logic : ILogic
         return _api.GetDaily(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
     }
 
-    public ICollection<DayEvent> GetDayEvents(DateOnly date, string chatId)
+    public ICollection<DayEvent> GetDayEvents(DateOnly date, ChatId chatId)
     {
-        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
+        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), ChatIdConvertor.ToString(chatId)).GetAwaiter().GetResult();
     }
 
     public Northlands GetNorthLands(DateOnly date)
@@ -49,40 +50,46 @@ public class Logic : ILogic
         return _api.GetRandomGreeting().GetAwaiter().GetResult();
     }
 
-    public ICollection<ChatInfo> GetChats()
-    {
-        return _api.GetTelegramChats().GetAwaiter().GetResult();
-    }
-
-    public void AddChat(ChatInfo chatInfo)
+    public void AddChat(ChatId chatId, string title)
     {
         const string level = "chat";
 
         try
         {
-            _api.AddChat(chatInfo.Id, chatInfo.Type, chatInfo.Title).GetAwaiter().GetResult();
-            _api.Log(level, "Chat added", chatInfo).GetAwaiter().GetResult();
+            _api.AddChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId), title).GetAwaiter().GetResult();
+            _api.Log(level, "Chat added", new { chatId, title }).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _api.Log(level, "Chat adding failed", chatInfo, ex).GetAwaiter().GetResult();
+            _api.Log(level, "Chat adding failed", new { chatId, title }, ex).GetAwaiter().GetResult();
 
             throw;
         }
     }
 
-    public void RemoveChat(ChatInfo chatInfo)
+    public ICollection<ChatId> GetChats()
+    {
+        return _api.GetTelegramChats().GetAwaiter().GetResult()
+            .Select(chatInfo =>
+            {
+                (BotSystem system, string type) = ChatIdConvertor.FromTypeString(chatInfo.Type).Value;
+                return new ChatId(system, type, chatInfo.Id);
+            })
+            .ToList();
+    }
+
+    public void RemoveChat(ChatId chatId)
     {
         const string level = "chat";
 
         try
         {
-            _api.RemoveChat(chatInfo.Id, chatInfo.Type).GetAwaiter().GetResult();
-            _api.Log(level, "Chat removed", chatInfo).GetAwaiter().GetResult();
+            _api.RemoveChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId)).GetAwaiter().GetResult();
+            _api.Log(level, "Chat removed", chatId).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _api.Log(level, "Chat removing failed", chatInfo, ex).GetAwaiter().GetResult();
+            _api.Log(level, "Chat removing failed", chatId, ex).GetAwaiter().GetResult();
 
             throw;
         }
@@ -108,9 +115,9 @@ public class Logic : ILogic
         _api.AddPromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
     }
 
-    public void AddDayEvent(string name, string occurrence, TimeOnly time, string? chatId)
+    public void AddDayEvent(string name, string occurrence, TimeOnly time, ChatId? chatId)
     {
-        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
+        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), ChatIdConvertor.ToString(chatId)).GetAwaiter().GetResult();
     }
 
     public void SetDaily(int month, string dailies)

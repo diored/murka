@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace DioRed.Murkal.ForecastBuilder;
+namespace DioRed.Murka.Graphics;
 
 public static class ForecastBuilder
 {

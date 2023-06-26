@@ -1,4 +1,5 @@
 ﻿using DioRed.Murka.Core.Entities;
+using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
@@ -6,15 +7,15 @@ public interface ILogic
 {
     string GetRandomGreeting();
 
-    ICollection<ChatInfo> GetChats();
-    void AddChat(ChatInfo chatInfo);
-    void RemoveChat(ChatInfo chatInfo);
+    void AddChat(ChatId chatInfo, string title);
+    ICollection<ChatId> GetChats();
+    void RemoveChat(ChatId chatInfo);
 
     Daily GetDaily(DateOnly date);
     void SetDaily(int monthNumber, string dailies);
 
-    ICollection<DayEvent> GetDayEvents(DateOnly date, string chatId);
-    void AddDayEvent(string name, string occurrence, TimeOnly time, string? chatId);
+    ICollection<DayEvent> GetDayEvents(DateOnly date, ChatId chatId);
+    void AddDayEvent(string name, string occurrence, TimeOnly time, ChatId? chatId);
 
     ICollection<Event> GetActiveEvents();
     void AddEvent(Event newEvent);

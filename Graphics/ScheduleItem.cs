@@ -1,4 +1,4 @@
-﻿namespace DioRed.Murkal.ForecastBuilder;
+﻿namespace DioRed.Murka.Graphics;
 
 public record struct ScheduleItem(string Day, string Month, string Quest)
 {

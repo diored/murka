@@ -1,15 +1,15 @@
 ﻿using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
-using DioRed.Vermilion.Attributes;
+using DioRed.Vermilion.Handlers;
 
-namespace DioRed.Murka.TelegramBot;
+namespace DioRed.Murka.BotCore;
 
-public partial class MurkaMessageHandler
+public partial class MessageHandler
 {
     [BotCommand(UserRole.ChatAdmin, @"/addDayEvent!", BotCommandOptions.CaseInsensitive)]
     public void AddGlobalDayEvent(string name, string time, string repeat)
     {
-        AddDayEventInternal(name, repeat, time, MessageContext.ChatClient.Chat.ToChatInfo().ChatId);
+        AddDayEventInternal(name, repeat, time, MessageContext.ChatId);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/addEvent")]
@@ -20,7 +20,7 @@ public partial class MurkaMessageHandler
         ends = ends?.Trim();
 
         Event newEvent = new(eventName, ServerDateTime.ParseOrDefault(starts), ServerDateTime.ParseOrDefault(ends));
-        MurkaChat.Logic.AddEvent(newEvent);
+        _logic.AddEvent(newEvent);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/addPromocode")]
@@ -31,19 +31,19 @@ public partial class MurkaMessageHandler
         description = description.Trim();
 
         Promocode newPromocode = new(code, description, null, ServerDateTime.ParseOrDefault(validTo));
-        MurkaChat.Logic.AddPromocode(newPromocode);
+        _logic.AddPromocode(newPromocode);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/cleanup")]
     public void Cleanup()
     {
-        MurkaChat.Logic.Cleanup();
+        _logic.Cleanup();
     }
 
     [BotCommand(UserRole.SuperAdmin, "/ga")]
     public async Task GlobalAnnounce(string message)
     {
-        await MessageContext.Broadcaster.SendTextAsync(message);
+        await MessageContext.Bot.Manager.Broadcast(chat => chat.SendTextAsync(message));
     }
 
     [BotCommand(UserRole.SuperAdmin, "/setDaily")]
@@ -57,6 +57,6 @@ public partial class MurkaMessageHandler
             throw new ArgumentException("Wrong month length", nameof(dailies));
         }
 
-        MurkaChat.Logic.SetDaily(monthNumber, dailies);
+        _logic.SetDaily(monthNumber, dailies);
     }
 }

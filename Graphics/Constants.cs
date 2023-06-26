@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace DioRed.Murkal.ForecastBuilder;
+namespace DioRed.Murka.Graphics;
 
 internal static class Constants
 {
@@ -54,9 +54,11 @@ internal static class Constants
 
     public static class Images
     {
-        public static SKBitmap Weapon { get; } = SKBitmap.Decode("Assets\\DPSRole.png");
-        public static SKBitmap Armor { get; } = SKBitmap.Decode("Assets\\TankRole.png");
-        public static SKBitmap Relic { get; } = SKBitmap.Decode("Assets\\HealerRole.png");
+        public static SKBitmap Weapon { get; } = LoadBitmapAsset("DPSRole.png");
+        public static SKBitmap Armor { get; } = LoadBitmapAsset("TankRole.png");
+        public static SKBitmap Relic { get; } = LoadBitmapAsset("HealerRole.png");
+
+        private static SKBitmap LoadBitmapAsset(string assetName) => SKBitmap.Decode(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets\\{assetName}"));
     }
 
     public static class DailyDescription

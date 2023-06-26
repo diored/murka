@@ -1,8 +1,7 @@
 ﻿using System.Text;
 
-using DioRed.Murka.TelegramBot;
+using DioRed.Murka.BotCore;
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -14,8 +13,7 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-var bot = host.Services.GetRequiredService<MurkaBot>();
-bot.StartReceiving();
+host.UseMurkaBot();
 
 Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
 host.Run();
