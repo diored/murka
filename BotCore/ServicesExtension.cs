@@ -38,7 +38,7 @@ public static class ServicesExtension
         services.AddSingleton<ILogic>(logic);
 
         // Bot
-        services.AddSingleton<MessageHandlerBuilderDelegate>(messageContext => new MessageHandler(messageContext, logic));
+        services.AddSingleton<MessageHandlerBuilderDelegate>(messageContext => new SimpleMessageHandler(messageContext, logic));
         services.AddSingleton<TelegramVermilionBot>();
         services.AddSingleton<VermilionManager>();
 

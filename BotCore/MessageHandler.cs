@@ -265,16 +265,11 @@ public partial class MessageHandler : AttributeBasedMessageHandler
         }
         else
         {
-            string message = "Error occurred";
-#if DEBUG
-            message += $": {ex}";
-#endif
-
-            await ChatWriter.SendTextAsync(message);
+            await base.OnExceptionAsync(ex);
         }
     }
 
-    private void AddDayEventInternal(string name, string occurrence, string time, ChatId chatId)
+    private void AddDayEventInternal(string name, string occurrence, string time, ChatId? chatId)
     {
         name = name.Trim();
         occurrence = occurrence.Trim().ToLowerInvariant() switch

@@ -6,10 +6,10 @@ namespace DioRed.Murka.BotCore;
 
 public partial class MessageHandler
 {
-    [BotCommand(UserRole.ChatAdmin, @"/addDayEvent!", BotCommandOptions.CaseInsensitive)]
+    [BotCommand(UserRole.SuperAdmin, @"/addDayEvent!", BotCommandOptions.CaseInsensitive)]
     public void AddGlobalDayEvent(string name, string time, string repeat)
     {
-        AddDayEventInternal(name, repeat, time, MessageContext.ChatId);
+        AddDayEventInternal(name, repeat, time, null);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/addEvent")]

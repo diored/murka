@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
 		<RootNamespace>$(AssemblyName)</RootNamespace>
+		<Configurations>Debug;Release;DebugEngine</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,12 +24,12 @@
 		<ProjectReference Include="..\Graphics\Graphics.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
-		<PackageReference Include="DioRed.Vermilion" Version="10.0.1" />
-		<PackageReference Include="DioRed.Vermilion.Telegram" Version="10.0.2" />
+	<ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
+		<PackageReference Include="DioRed.Vermilion" Version="10.2.0" />
+		<PackageReference Include="DioRed.Vermilion.Telegram" Version="10.2.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+	<ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
 		<ProjectReference Include="..\..\vermilion\Telegram\DioRed.Vermilion.Telegram.csproj" />
 	</ItemGroup>
 

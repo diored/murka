@@ -5,17 +5,18 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<Configurations>Debug;Release;DebugEngine</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="System.Memory.Data" Version="7.0.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
-		<PackageReference Include="DioRed.Vermilion" Version="10.0.1" />
+	<ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
+		<PackageReference Include="DioRed.Vermilion" Version="10.2.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+	<ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
 		<ProjectReference Include="..\..\vermilion\Vermilion\DioRed.Vermilion.csproj" />
 	</ItemGroup>
 
