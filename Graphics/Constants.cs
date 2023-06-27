@@ -58,7 +58,13 @@ internal static class Constants
         public static SKBitmap Armor { get; } = LoadBitmapAsset("TankRole.png");
         public static SKBitmap Relic { get; } = LoadBitmapAsset("HealerRole.png");
 
-        private static SKBitmap LoadBitmapAsset(string assetName) => SKBitmap.Decode(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets\\{assetName}"));
+        private static SKBitmap LoadBitmapAsset(string assetName) => SKBitmap.Decode(
+#if DEBUG
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets\\{assetName}")
+#else
+            $"Assets\\{assetName}"
+#endif
+            );
     }
 
     public static class DailyDescription
