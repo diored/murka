@@ -27,7 +27,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
         string[] parts = message.Split(new[] { ' ' }, 2, StringSplitOptions.TrimEntries);
         string command = parts[0];
 
-        Args args = Args.Parse(parts.Length > 1 ? parts[1] : string.Empty);
+        Args args = parts.Length > 1 ? Args.Parse(parts[1]) : new Args();
 
         Task? task = null;
 
