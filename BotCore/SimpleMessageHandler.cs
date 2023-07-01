@@ -363,7 +363,10 @@ public partial class SimpleMessageHandler : MessageHandlerBase
     {
         string link = _logic.GetLink("daily");
 
-        await ChatWriter.SendPhotoAsync(link);
+        char prefix = link.Contains('?') ? '&' : '?';
+        string url = $"{link}{prefix}month={DateTime.Now:yyMM}";
+
+        await ChatWriter.SendPhotoAsync(url);
     }
 
     private async Task AddEvent(string eventName, ServerDateTime? starts, ServerDateTime? ends)
