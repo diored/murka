@@ -6,8 +6,6 @@ using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handlers;
 
-using File = System.IO.File;
-
 namespace DioRed.Murka.BotCore;
 
 public partial class SimpleMessageHandler : MessageHandlerBase
@@ -33,44 +31,46 @@ public partial class SimpleMessageHandler : MessageHandlerBase
 
         if (MessageContext.UserRole.HasFlag(UserRole.SuperAdmin))
         {
-            task = command switch
+            task = (command, args) switch
             {
-                "/addDayEvent!" when args.Count == 3 => AddDayEvent(args[0], args.Time(1), args[2], null),
-                "/addEvent" when args.Count > 0 => AddEvent(args[0], args.Count > 1 ? args.DateTimeOrDefault(1) : null, args.Count > 2 ? args.DateTimeOrDefault(2) : null),
-                "/addPromocode" when args.Count == 3 => AddPromocode(args[0], args.DateTimeOrDefault(1), args[2]),
-                "/cleanup" => Cleanup(),
-                "/ga" when parts.Length > 1 => GlobalAnnounce(parts[1]),
-                "/ga?" when parts.Length > 1 => NoSoGlobalAnnounce(parts[1]),
-                "/setDaily" when args.Count == 2 => SetDaily(args.Int(0), args[1]),
+                ("/addDayEvent!", { Types: [not ArgType.Empty, ArgType.Time, not ArgType.Empty] }) => AddDayEvent(args[0], args[1].TimeValue, args[2], null),
+                ("/addEvent", { Types: [not ArgType.Empty] or [not ArgType.Empty, ArgType.DateTime or ArgType.Empty] or [not ArgType.Empty, ArgType.DateTime or ArgType.Empty, ArgType.DateTime or ArgType.Empty] }) => AddEvent(args[0], args.DateTimeOrDefault(1), args.DateTimeOrDefault(2)),
+                ("/addPromocode", { Types: [not ArgType.Empty, ArgType.DateTime or ArgType.Empty, not ArgType.Empty] }) => AddPromocode(args[0], args.DateTimeOrDefault(1), args[2]),
+                ("/cleanup", _) => Cleanup(),
+                ("/ga", { Count: > 0 }) => GlobalAnnounce(parts[1]),
+                ("/ga?", { Count: > 0 }) => NoSoGlobalAnnounce(parts[1]),
+                ("/setDaily", { Types: [ArgType.Int, not ArgType.Empty] }) => SetDaily(args[0].IntValue, args[1]),
                 _ => null
             };
         }
 
         if (MessageContext.UserRole.HasFlag(UserRole.ChatAdmin))
         {
-            task ??= command switch
+            task ??= (command, args) switch
             {
-                "/addDayEvent" when args.Count == 3 => AddDayEvent(args[0], args.Time(1), args[2], MessageContext.ChatId),
+                ("/addDayEvent", { Types: [not ArgType.Empty, ArgType.Time, not ArgType.Empty] }) => AddDayEvent(args[0], args[1].TimeValue, args[2], MessageContext.ChatId),
                 _ => null
             };
         }
 
-        task ??= command switch
+        task ??= (command, args) switch
         {
-            "/daily" or "ежа" => ShowDaily(args.Count == 1 ? args.Int(0) : 5),
-            "/promo" or "промокоды" => ShowPromocodes(),
-            "/addDayEvent" => AddDayEventHelp(),
-            "/sea" or "море" => ShowSeaAsync(),
-            "/north" or "север" => ShowNorthAsync(),
-            "/agenda" or "сводка" => ShowAgenda(ServerDateTime.GetCurrent().Date),
-            "/tomorrow" or "завтра" => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
-            "/events" or "ивенты" => ShowEventsAsync(),
-            "/calendar" or "календарь" => ShowCalendarAsync(),
+            ("/daily" or "ежа", { Types: [] or [ArgType.Int] }) => ShowDaily(args.Count == 1 ? args[0].IntValue : 5),
+            ("/promo" or "промокоды", _) => ShowPromocodes(),
+            ("/addDayEvent", _) => AddDayEventHelp(),
+            ("/sea" or "море", _) => ShowSeaAsync(),
+            ("/north" or "север", _) => ShowNorthAsync(),
+            ("/agenda" or "сводка", _) => ShowAgenda(ServerDateTime.GetCurrent().Date),
+            ("/tomorrow" or "завтра", _) => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
+            ("/events" or "ивенты", _) => ShowEventsAsync(),
+            ("/calendar" or "календарь", _) => ShowCalendarAsync(),
             _ => null
         };
 
         if (task is null &&
-            _greetingsToReply.Any(greeting => message.Contains(greeting, StringComparison.InvariantCultureIgnoreCase)))
+            _greetingsToReply.Any(greeting => message.Contains(greeting, StringComparison.InvariantCultureIgnoreCase)) &&
+            !(MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&
+            DateTime.UtcNow - latestGreeting < GreetingInterval))
         {
             task = SayMurrAsync();
         }
@@ -152,21 +152,24 @@ public partial class SimpleMessageHandler : MessageHandlerBase
             return;
         }
 
-        string html = @"Синтаксис:
-<code>/addDayEvent {наименование}|{время}|{повторение}</code>
+        string html = """
+            Синтаксис:
+            <code>/addDayEvent {наименование}|{время}|{повторение}</code>
+            
+            Повторение:
+            <code>daily</code> — ежедневно
+            <code>1</code> — по понедельникам
+            <code>2</code> — по вторникам
+            ...
+            <code>7</code> — по воскресеньям
+            
+            Пример:
+            <code>/addDayEvent Клан-холл|17:30|6</code>
+            
+            <b>Примечание</b>
+            Удаление ранее добавленных событий будет реализовано в одной из последующих версий.
+            """;
 
-Повторение:
-<code>daily</code> — ежедневно
-<code>1</code> — по понедельникам
-<code>2</code> — по вторникам
-...
-<code>7</code> — по воскресеньям
-
-Пример:
-<code>/addDayEvent Клан-холл|17:30|6</code>
-
-<b>Примечание</b>
-Удаление ранее добавленных событий будет реализовано в одной из последующих версий.";
         await ChatWriter.SendHtmlAsync(html);
     }
 
@@ -192,12 +195,6 @@ public partial class SimpleMessageHandler : MessageHandlerBase
 
     private async Task SayMurrAsync()
     {
-        if (MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&
-            DateTime.UtcNow - latestGreeting < GreetingInterval)
-        {
-            return;
-        }
-
         MessageContext.ChatClient["LatestGreeting"] = DateTime.UtcNow;
         await ChatWriter.SendTextAsync(_logic.GetRandomGreeting());
     }
@@ -213,7 +210,13 @@ public partial class SimpleMessageHandler : MessageHandlerBase
     {
         Northlands northlands = _logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
 
-        await ChatWriter.SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
+        string text = $"""
+            Расписание ивентов в СЗ:
+            — войско богов: {northlands.Gods}
+            — армия севера: {northlands.North}
+            """;
+
+        await ChatWriter.SendTextAsync(text);
     }
 
     private async Task ShowAgenda(DateOnly date)
