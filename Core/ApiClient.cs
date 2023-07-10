@@ -146,21 +146,6 @@ public class ApiClient
         return await http.GetAsync<string>($"links/{id}");
     }
 
-    public async Task Log(string level, string message, object? argument = null, Exception? exception = null)
-    {
-        using var http = CreateHttpClient();
-
-        string? argumentString = argument is IEnumerable enumerable
-            ? string.Join(", ", enumerable)
-            : argument?.ToString();
-
-        string? exceptionString = exception is null
-            ? null
-            : exception.GetType().Name + " — " + exception.Message;
-
-        await http.PostAsync("logs/add", new { level, message, argument = argumentString, exception = exceptionString });
-    }
-
     private SimpleHttpClient CreateHttpClient()
     {
         return new SimpleHttpClient(_apiSettings.Uri, _apiSettings.GetAccessToken());

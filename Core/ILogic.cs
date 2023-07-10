@@ -30,6 +30,5 @@ public interface ILogic
     string GetLink(string id);
     BinaryData GetCalendar();
 
-    void Log(string level, string message, object? argumentObject = null, Exception? exception = null);
     void Cleanup();
 }

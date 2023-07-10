@@ -6,16 +6,20 @@ using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handlers;
 
+using Microsoft.Extensions.Logging;
+
 namespace DioRed.Murka.BotCore;
 
 public partial class SimpleMessageHandler : MessageHandlerBase
 {
     private readonly ILogic _logic;
+    private readonly ILogger _logger;
 
-    public SimpleMessageHandler(MessageContext messageContext, ILogic logic)
+    public SimpleMessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory logger)
         : base(messageContext)
     {
         _logic = logic;
+        _logger = logger.CreateLogger("MessageHandler");
     }
 
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
@@ -40,6 +44,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
                 ("/ga", { Count: > 0 }) => GlobalAnnounce(parts[1]),
                 ("/ga?", { Count: > 0 }) => NoSoGlobalAnnounce(parts[1]),
                 ("/setDaily", { Types: [ArgType.Int, not ArgType.Empty] }) => SetDaily(args[0].IntValue, args[1]),
+                ("/log", { Count: > 0 }) => LogMessage(parts[1]),
                 _ => null
             };
         }
@@ -55,7 +60,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
 
         task ??= (command, args) switch
         {
-            ("/daily" or "ежа", { Types: [] or [ArgType.Int] }) => ShowDaily(args.Count == 1 ? args[0].IntValue : 5),
+            ("/daily" or "ежа", { Types: [] or [ArgType.Int] }) => ShowDaily(args.IntOrDefault(0) ?? 5),
             ("/promo" or "промокоды", _) => ShowPromocodes(),
             ("/addDayEvent", _) => AddDayEventHelp(),
             ("/sea" or "море", _) => ShowSeaAsync(),
@@ -425,6 +430,12 @@ public partial class SimpleMessageHandler : MessageHandlerBase
         await ChatWriter.SendTextAsync($"Dailies for month {month} set");
     }
 
+    private Task LogMessage(string message)
+    {
+        _logger.LogInformation(message);
+        return Task.CompletedTask;
+    }
+
     //[BotCommand("/murka")]
     //[BotCommand("мурка", BotCommandOptions.CaseInsensitive)]
     //public async Task StartDialogAsync()
@@ -440,7 +451,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
 
     protected override async Task OnExceptionAsync(Exception ex)
     {
-        _logic.Log("error", "Error occurred in chat", MessageContext.ChatClient.ChatId, ex);
+        _logger.LogError(EventIDs.MessageHandleException, ex, "Error occurred in chat {ChatId}", MessageContext.ChatId);
 
         if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
         {

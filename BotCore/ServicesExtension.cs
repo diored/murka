@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-
-using DioRed.Auth.Client;
+﻿using DioRed.Auth.Client;
 using DioRed.Common.Jobs;
 using DioRed.Murka.Core;
 using DioRed.Vermilion;
@@ -24,21 +22,19 @@ public static class ServicesExtension
         var authConfiguration = AuthClientConfiguration.Load(configuration.GetRequiredSection("auth"));
         var authClient = new AuthClient(authConfiguration);
 
-        ApiSettings apiSettings = new()
+        services.AddSingleton(new ApiSettings
         {
             Uri = configuration["apiUri"]!,
             GetAccessToken = authClient.GetAccessToken
-        };
-
-        ApiClient apiClient = new(apiSettings);
-        Logic logic = new(apiClient);
+        });
+        services.AddSingleton<ApiClient>();
 
         // Storage and Logic
+        services.AddSingleton<ILogic, Logic>();
         services.AddSingleton<IChatStorage, ChatStorage>();
-        services.AddSingleton<ILogic>(logic);
 
         // Bot
-        services.AddSingleton<MessageHandlerBuilderDelegate>(messageContext => new SimpleMessageHandler(messageContext, logic));
+        services.AddSingleton<IMessageHandlerBuilder, MessageHandlerBuilder>();
         services.AddSingleton<TelegramVermilionBot>();
         services.AddSingleton<VermilionManager>();
 

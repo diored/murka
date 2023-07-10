@@ -45,7 +45,7 @@ internal class Arg
             return;
         }
 
-        if (ServerDateTime.ParseOrDefault(value) is { } dateTimeValue)
+        if (ServerDateTime.TryParse(value, out var dateTimeValue))
         {
             _dateTimeValue = dateTimeValue;
             Value = dateTimeValue;

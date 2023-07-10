@@ -1,23 +1,27 @@
 ﻿using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
+using Microsoft.Extensions.Logging;
+
 namespace DioRed.Murka.Core;
 
 public class Logic : ILogic
 {
     private readonly ApiClient _api;
+    private readonly ILogger _logger;
 
-    public Logic(ApiClient api)
+    public Logic(ApiClient api, ILoggerFactory logger)
     {
         _api = api;
+        _logger = logger.CreateLogger("Logic");
     }
 
     public void Cleanup()
     {
-        _api.Log("cleanup", "Storage cleanup started").GetAwaiter().GetResult();
+        _logger.LogInformation(EventIDs.CleanupStarted, "Storage cleanup started");
         _api.CleanupPromocodes().GetAwaiter().GetResult();
         _api.CleanupEvents().GetAwaiter().GetResult();
-        _api.Log("cleanup", "Storage cleanup finished").GetAwaiter().GetResult();
+        _logger.LogInformation(EventIDs.CleanupFinished, "Storage cleanup finished");
     }
 
     public ICollection<Event> GetActiveEvents()
@@ -52,17 +56,14 @@ public class Logic : ILogic
 
     public void AddChat(ChatId chatId, string title)
     {
-        const string level = "chat";
-
         try
         {
             _api.AddChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId), title).GetAwaiter().GetResult();
-            _api.Log(level, "Chat added", new { chatId, title }).GetAwaiter().GetResult();
+            _logger.LogInformation(EventIDs.ChatAdded, "Chat {ChatId} ({Title}) added", chatId, title);
         }
         catch (Exception ex)
         {
-            _api.Log(level, "Chat adding failed", new { chatId, title }, ex).GetAwaiter().GetResult();
-
+            _logger.LogError(EventIDs.ChatAddFailure, ex, "Chat {ChatId} ({Title}) add failure", chatId, title);
             throw;
         }
     }
@@ -80,17 +81,14 @@ public class Logic : ILogic
 
     public void RemoveChat(ChatId chatId)
     {
-        const string level = "chat";
-
         try
         {
             _api.RemoveChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId)).GetAwaiter().GetResult();
-            _api.Log(level, "Chat removed", chatId).GetAwaiter().GetResult();
+            _logger.LogInformation(EventIDs.ChatRemoved, "Chat {ChatId} removed", chatId);
         }
         catch (Exception ex)
         {
-            _api.Log(level, "Chat removing failed", chatId, ex).GetAwaiter().GetResult();
-
+            _logger.LogError(EventIDs.ChatRemoveFailure, ex, "Chat {ChatId} remove failure", chatId);
             throw;
         }
     }
@@ -98,11 +96,6 @@ public class Logic : ILogic
     public BinaryData GetCalendar()
     {
         return new BinaryData(_api.GetDailyCalendar().GetAwaiter().GetResult());
-    }
-
-    public void Log(string level, string message, object? argumentObject = null, Exception? exception = null)
-    {
-        _api.Log(level, message, argumentObject, exception).GetAwaiter().GetResult();
     }
 
     public void AddEvent(Event newEvent)

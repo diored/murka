@@ -6,6 +6,8 @@ using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handlers;
 
+using Microsoft.Extensions.Logging;
+
 using File = System.IO.File;
 
 namespace DioRed.Murka.BotCore;
@@ -13,13 +15,15 @@ namespace DioRed.Murka.BotCore;
 public partial class MessageHandler : AttributeBasedMessageHandler
 {
     private readonly ILogic _logic;
+    private readonly ILogger _logger;
 
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
 
-    public MessageHandler(MessageContext messageContext, ILogic logic)
+    public MessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory logger)
         : base(messageContext)
     {
         _logic = logic;
+        _logger = logger.CreateLogger("MessageHandler");
     }
 
     [BotCommand("/daily")]
@@ -257,7 +261,7 @@ public partial class MessageHandler : AttributeBasedMessageHandler
 
     protected override async Task OnExceptionAsync(Exception ex)
     {
-        _logic.Log("error", "Error occurred in chat", MessageContext.ChatClient.ChatId, ex);
+        _logger.LogError(EventIDs.MessageHandleException, "Error occurred in chat {ChatId}", MessageContext.ChatId);
 
         if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
         {

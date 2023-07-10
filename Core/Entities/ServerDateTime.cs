@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace DioRed.Murka.Core.Entities;
 
@@ -31,6 +32,24 @@ public record struct ServerDateTime(DateOnly Date, TimeOnly? Time = null)
         DateOnly date = DateOnly.ParseExact(s, CommonValues.DateFormat);
 
         return new ServerDateTime(date);
+    }
+
+    public static bool TryParse(string s, [NotNullWhen(true)] out ServerDateTime? value)
+    {
+        if (DateTime.TryParseExact(s, CommonValues.DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime))
+        {
+            value = new ServerDateTime(dateTime);
+            return true;
+        }
+
+        if (DateOnly.TryParseExact(s, CommonValues.DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly dateOnly))
+        {
+            value = new ServerDateTime(dateOnly);
+            return true;
+        }
+
+        value = default;
+        return false;
     }
 
     public static ServerDateTime? ParseOrDefault(string? s)
