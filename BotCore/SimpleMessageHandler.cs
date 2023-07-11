@@ -74,7 +74,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
 
         if (task is not null)
         {
-            _logger.LogInformation(EventIDs.MessageHandled, "Message {Message} handled as a command \"{Command}\" in chat {ChatId}", message, command, MessageContext.ChatId);
+            _logger.LogInformation(EventIDs.MessageHandled, "Message \"{Message}\" handled as a command \"{Command}\" in {System} {Type} chat #{ChatId}", message, command, MessageContext.ChatId.System, MessageContext.ChatId.Type, MessageContext.ChatId.Id);
         }
 
         // do not log the greetings: they are not commands.
