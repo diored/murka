@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-using DioRed.Murka.Core.Entities;
+﻿using DioRed.Murka.Core.Entities;
 
 namespace DioRed.Murka.Core;
 

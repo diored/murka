@@ -19,9 +19,16 @@ public class Logic : ILogic
     public void Cleanup()
     {
         _logger.LogInformation(EventIDs.CleanupStarted, "Storage cleanup started");
-        _api.CleanupPromocodes().GetAwaiter().GetResult();
-        _api.CleanupEvents().GetAwaiter().GetResult();
-        _logger.LogInformation(EventIDs.CleanupFinished, "Storage cleanup finished");
+        try
+        {
+            _api.CleanupPromocodes().GetAwaiter().GetResult();
+            _api.CleanupEvents().GetAwaiter().GetResult();
+            _logger.LogInformation(EventIDs.CleanupFinished, "Storage cleanup finished");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(EventIDs.CleanupFailed, ex, "Storage cleanup failed");
+        }
     }
 
     public ICollection<Event> GetActiveEvents()

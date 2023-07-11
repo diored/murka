@@ -8,14 +8,14 @@ using DioRed.Murka.BotCore;
 
 if (!EventLog.SourceExists("Murka"))
 {
-    EventLog.CreateEventSource("Murka", "Murka");
+    EventLog.CreateEventSource("Murka", "DioRED");
 };
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddEventLog(settings =>
 {
-    settings.LogName = "Murka";
+    settings.LogName = "DioRED";
     settings.SourceName = "Murka";
 });
 
