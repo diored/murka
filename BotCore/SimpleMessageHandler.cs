@@ -72,6 +72,12 @@ public partial class SimpleMessageHandler : MessageHandlerBase
             _ => null
         };
 
+        if (task is not null)
+        {
+            _logger.LogInformation(EventIDs.MessageHandled, "Message {Message} handled as a command \"{Command}\" in chat {ChatId}", message, command, MessageContext.ChatId);
+        }
+
+        // do not log the greetings: they are not commands.
         if (task is null &&
             _greetingsToReply.Any(greeting => message.Contains(greeting, StringComparison.InvariantCultureIgnoreCase)) &&
             !(MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&

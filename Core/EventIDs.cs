@@ -6,6 +6,7 @@ public static class EventIDs
 {
     // 1xxx — message handling
     // 19xx - error
+    public static EventId MessageHandled { get; } = new EventId(1001, "Message handled");
     public static EventId MessageHandleException { get; } = new EventId(1900, "Message handler exception");
 
     // 2xxx - database maintenance
