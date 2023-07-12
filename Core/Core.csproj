@@ -10,12 +10,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-		<PackageReference Include="System.Diagnostics.EventLog" Version="7.0.0" />
 		<PackageReference Include="System.Memory.Data" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-		<PackageReference Include="DioRed.Vermilion" Version="10.3.2" />
+		<PackageReference Include="DioRed.Vermilion" Version="10.4.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">

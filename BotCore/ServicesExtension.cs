@@ -55,7 +55,6 @@ public static class ServicesExtension
         return host;
     }
 
-
     private static void SetupDailyRoutine(ILogic logic, VermilionManager manager)
     {
         TimeOnly timeToShow = new(21, 0); // 0:00 GMT+3

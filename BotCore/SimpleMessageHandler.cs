@@ -72,23 +72,22 @@ public partial class SimpleMessageHandler : MessageHandlerBase
             _ => null
         };
 
+        // if incoming message contains any command, log it
         if (task is not null)
         {
             _logger.LogInformation(EventIDs.MessageHandled, "Message \"{Message}\" handled as a command \"{Command}\" in {System} {Type} chat #{ChatId}", message, command, MessageContext.ChatId.System, MessageContext.ChatId.Type, MessageContext.ChatId.Id);
+            await task;
         }
-
-        // do not log the greetings: they are not commands.
-        if (task is null &&
-            _greetingsToReply.Any(greeting => message.Contains(greeting, StringComparison.InvariantCultureIgnoreCase)) &&
-            !(MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&
-            DateTime.UtcNow - latestGreeting < GreetingInterval))
+        else
         {
-            task = SayMurrAsync();
+            // greetings are not commands, they shouldn't be logged
+            if (_greetingsToReply.Any(greeting => message.Contains(greeting, StringComparison.InvariantCultureIgnoreCase)) &&
+                !(MessageContext.ChatClient["LatestGreeting"] is DateTime latestGreeting &&
+                DateTime.UtcNow - latestGreeting < GreetingInterval))
+            {
+                await SayMurrAsync();
+            }
         }
-
-        task ??= Task.CompletedTask;
-
-        await task;
     }
 
     private async Task ShowDaily(int days)
