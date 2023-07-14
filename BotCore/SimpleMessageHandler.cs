@@ -457,15 +457,7 @@ public partial class SimpleMessageHandler : MessageHandlerBase
     protected override async Task OnExceptionAsync(Exception ex)
     {
         _logger.LogError(EventIDs.MessageHandleException, ex, "Error occurred in chat {ChatId}", MessageContext.ChatId);
-
-        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
-        {
-            _logic.RemoveChat(MessageContext.ChatClient.ChatId);
-        }
-        else
-        {
-            await base.OnExceptionAsync(ex);
-        }
+        await base.OnExceptionAsync(ex);
     }
 
     private static readonly string[] _greetingsToReply = new[]

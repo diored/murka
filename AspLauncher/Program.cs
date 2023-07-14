@@ -1,23 +1,13 @@
-using System.Diagnostics;
 using System.Runtime.Versioning;
 
+using DioRed.Murka.AspLauncher;
 using DioRed.Murka.AspLauncher.Services;
 using DioRed.Murka.BotCore;
 
 [assembly: SupportedOSPlatform("windows")]
 
-if (!EventLog.SourceExists("Murka"))
-{
-    EventLog.CreateEventSource("Murka", "DioRED");
-};
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Logging.ClearProviders();
-builder.Logging.AddEventLog(settings =>
-{
-    settings.LogName = "DioRED";
-    settings.SourceName = "Murka";
-});
+builder.Logging.SetupDioRedLogging("Murka");
 
 builder.Services.AddMurkaBot(builder.Configuration);
 builder.Services.AddGrpc();
