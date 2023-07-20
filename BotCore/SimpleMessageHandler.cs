@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.BotCore;
 
-public partial class SimpleMessageHandler : MessageHandlerBase
+public class SimpleMessageHandler : MessageHandlerBase
 {
     private readonly ILogic _logic;
     private readonly ILogger _logger;
@@ -61,20 +61,21 @@ public partial class SimpleMessageHandler : MessageHandlerBase
         task ??= (command, args) switch
         {
             ("/daily" or "ежа", { Types: [] or [ArgType.Int] }) => ShowDaily(args.IntOrDefault(0) ?? 5),
-            ("/promo" or "промокоды", _) => ShowPromocodes(),
+            ("/promo" or "промокоды", { Count: 0 }) => ShowPromocodes(),
             ("/addDayEvent", _) => AddDayEventHelp(),
-            ("/sea" or "море", _) => ShowSeaAsync(),
-            ("/north" or "север", _) => ShowNorthAsync(),
-            ("/agenda" or "сводка", _) => ShowAgenda(ServerDateTime.GetCurrent().Date),
-            ("/tomorrow" or "завтра", _) => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
-            ("/events" or "ивенты", _) => ShowEventsAsync(),
-            ("/calendar" or "календарь", _) => ShowCalendarAsync(),
+            ("/sea" or "море", { Count: 0 }) => ShowSeaAsync(),
+            ("/north" or "север", { Count: 0 }) => ShowNorthAsync(),
+            ("/agenda" or "сводка", { Count: 0 }) => ShowAgenda(ServerDateTime.GetCurrent().Date),
+            ("/tomorrow" or "завтра", { Count: 0 }) => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
+            ("/events" or "ивенты", { Count: 0 }) => ShowEventsAsync(),
+            ("/calendar" or "календарь", { Count: 0 }) => ShowCalendarAsync(),
             _ => null
         };
 
         // if incoming message contains any command, log it
         if (task is not null)
         {
+	        //TODO: log bot acted commands differently
             _logger.LogInformation(EventIDs.MessageHandled, "Message \"{Message}\" handled as a command \"{Command}\" in {System} {Type} chat #{ChatId}", message, command, MessageContext.ChatId.System, MessageContext.ChatId.Type, MessageContext.ChatId.Id);
             await task;
         }
