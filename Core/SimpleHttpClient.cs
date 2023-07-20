@@ -3,6 +3,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 
 namespace DioRed.Murka.Core;
@@ -11,6 +13,13 @@ public class SimpleHttpClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private bool _disposedValue;
+    private static readonly JsonSerializerOptions _options;
+
+    static SimpleHttpClient()
+    {
+        _options = new JsonSerializerOptions();
+        _options.Converters.Add(new JsonStringEnumConverter());
+    }
 
     public SimpleHttpClient(string baseUri, string? accessToken = null)
     {
@@ -81,7 +90,7 @@ public class SimpleHttpClient : IDisposable
             return Cast(await content.ReadAsStreamAsync());
         }
 
-        return Cast(await content.ReadFromJsonAsync<T>());
+        return Cast(await content.ReadFromJsonAsync<T>(_options));
 
         static T Cast(object? obj)
         {
