@@ -48,7 +48,7 @@ public class Logic : ILogic
 
     public ICollection<DayEvent> GetDayEvents(DateOnly date, ChatId chatId)
     {
-        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), ChatIdConvertor.ToString(chatId)).GetAwaiter().GetResult();
+        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
     }
 
     public Northlands GetNorthLands(DateOnly date)
@@ -65,7 +65,7 @@ public class Logic : ILogic
     {
         try
         {
-            _api.AddChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId), title).GetAwaiter().GetResult();
+            _api.AddChat(chatId.System, chatId.Type, chatId.Id, title).GetAwaiter().GetResult();
             _logger.LogInformation(EventIDs.ChatAdded, "Chat {ChatId} ({Title}) added", chatId, title);
         }
         catch (Exception ex)
@@ -77,20 +77,14 @@ public class Logic : ILogic
 
     public ICollection<ChatId> GetChats()
     {
-        return _api.GetTelegramChats().GetAwaiter().GetResult()
-            .Select(chatInfo =>
-            {
-                (BotSystem system, string type) = ChatIdConvertor.FromTypeString(chatInfo.Type).Value;
-                return new ChatId(system, type, chatInfo.Id);
-            })
-            .ToList();
+        return _api.GetChats().GetAwaiter().GetResult();
     }
 
     public void RemoveChat(ChatId chatId)
     {
         try
         {
-            _api.RemoveChat(chatId.Id, ChatIdConvertor.ToTypeString(chatId)).GetAwaiter().GetResult();
+            _api.RemoveChat(chatId.System, chatId.Id).GetAwaiter().GetResult();
             _logger.LogInformation(EventIDs.ChatRemoved, "Chat {ChatId} removed", chatId);
         }
         catch (Exception ex)
@@ -117,7 +111,7 @@ public class Logic : ILogic
 
     public void AddDayEvent(string name, string occurrence, TimeOnly time, ChatId? chatId)
     {
-        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), ChatIdConvertor.ToString(chatId)).GetAwaiter().GetResult();
+        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
     }
 
     public void SetDaily(int month, string dailies)

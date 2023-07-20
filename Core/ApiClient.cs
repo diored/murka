@@ -1,4 +1,5 @@
 ﻿using DioRed.Murka.Core.Entities;
+using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
@@ -11,25 +12,25 @@ public class ApiClient
         _apiSettings = apiSettings;
     }
 
-    public async Task<ICollection<ChatInfo>> GetTelegramChats()
+    public async Task<ICollection<ChatId>> GetChats()
     {
         using var http = CreateHttpClient();
 
-        return await http.GetAsync<ICollection<ChatInfo>>("chats/get/telegram");
+        return await http.GetAsync<ICollection<ChatId>>("chats/get");
     }
 
-    public async Task AddChat(string id, string type, string title)
+    public async Task AddChat(BotSystem system, string type, string id, string title)
     {
         using var http = CreateHttpClient();
 
-        await http.PostAsync("chats/add", new { id, type, title });
+        await http.PostAsync("chats/add", new { system, type, id, title });
     }
 
-    public async Task RemoveChat(string id, string type)
+    public async Task RemoveChat(BotSystem system, string id)
     {
         using var http = CreateHttpClient();
 
-        await http.PostAsync("chats/remove", new { id, type });
+        await http.PostAsync("chats/remove", new { system, id });
     }
 
     public async Task<Daily> GetDaily(string date)
@@ -53,14 +54,19 @@ public class ApiClient
         await http.PostAsync("daily/setMonth", new { month, dailies });
     }
 
-    public async Task<ICollection<DayEvent>> GetDayEvents(string date, string chatId)
+    public async Task<ICollection<DayEvent>> GetDayEvents(string date, ChatId chatId)
     {
         using var http = CreateHttpClient();
 
-        return await http.GetAsync<ICollection<DayEvent>>("dayevents/get", new { date, chatId });
+        return await http.GetAsync<ICollection<DayEvent>>("dayevents/get", new
+        {
+            date,
+            chatSystem = chatId.System,
+            chatId = chatId.Id
+        });
     }
 
-    public async Task AddDayEvent(string name, string occurrence, string time, string? chatId)
+    public async Task AddDayEvent(string name, string occurrence, string time, ChatId? chatId)
     {
         using var http = CreateHttpClient();
 
