@@ -75,8 +75,7 @@ public class SimpleMessageHandler : MessageHandlerBase
         // if incoming message contains any command, log it
         if (task is not null)
         {
-	        //TODO: log bot acted commands differently
-            _logger.LogInformation(EventIDs.MessageHandled, "Message \"{Message}\" handled as a command \"{Command}\" in {System} {Type} chat #{ChatId}", message, command, MessageContext.ChatId.System, MessageContext.ChatId.Type, MessageContext.ChatId.Id);
+            _logger.LogInformation(EventIDs.MessageHandled, "Message \"{Message}\" handled as a command \"{Command}\" in {System} {Type} chat #{ChatId} (user role: {UserRole})", message, command, MessageContext.ChatId.System, MessageContext.ChatId.Type, MessageContext.ChatId.Id, MessageContext.UserRole);
             await task;
         }
         else
