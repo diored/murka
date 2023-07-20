@@ -17,7 +17,7 @@ public class SimpleHttpClient : IDisposable
 
     static SimpleHttpClient()
     {
-        _options = new JsonSerializerOptions();
+        _options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         _options.Converters.Add(new JsonStringEnumConverter());
     }
 
