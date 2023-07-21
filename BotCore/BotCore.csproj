@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-		<PackageReference Include="DioRed.Vermilion.Telegram" Version="10.5.0" />
+		<PackageReference Include="DioRed.Vermilion.Telegram" Version="10.6.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">

@@ -7,6 +7,7 @@ using DioRed.Vermilion.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.BotCore;
 
@@ -48,19 +49,21 @@ public static class ServicesExtension
         var logic = host.Services.GetRequiredService<ILogic>();
         vermilionManager.AddBot(telegramBot);
 
-        SetupDailyRoutine(logic, vermilionManager);
+        var logger = host.Services.GetRequiredService<ILogger>();
+
+        SetupDailyRoutine(logic, vermilionManager, logger);
 
         vermilionManager.Start();
 
         return host;
     }
 
-    private static void SetupDailyRoutine(ILogic logic, VermilionManager manager)
+    private static void SetupDailyRoutine(ILogic logic, VermilionManager manager, ILogger logger)
     {
         TimeOnly timeToShow = new(21, 0); // 0:00 GMT+3
 
         var job = Job.SetupDaily(DailyRoutine, timeToShow, "CleanupAndAgenda");
-        job.LogInfo += (_, message) => manager.Logger.LogInfo(message);
+        job.LogInfo += (_, message) => logger.LogInformation(message);
         job.Start();
 
         async Task DailyRoutine()
