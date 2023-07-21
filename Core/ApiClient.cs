@@ -19,14 +19,14 @@ public class ApiClient
         return await http.GetAsync<ICollection<ChatId>>("chats/get");
     }
 
-    public async Task AddChat(BotSystem system, string type, string id, string title)
+    public async Task AddChat(BotSystem system, string type, long id, string title)
     {
         using var http = CreateHttpClient();
 
         await http.PostAsync("chats/add", new { system, type, id, title });
     }
 
-    public async Task RemoveChat(BotSystem system, string id)
+    public async Task RemoveChat(BotSystem system, long id)
     {
         using var http = CreateHttpClient();
 
