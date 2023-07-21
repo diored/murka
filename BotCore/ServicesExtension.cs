@@ -49,9 +49,9 @@ public static class ServicesExtension
         var logic = host.Services.GetRequiredService<ILogic>();
         vermilionManager.AddBot(telegramBot);
 
-        var logger = host.Services.GetRequiredService<ILogger>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
 
-        SetupDailyRoutine(logic, vermilionManager, logger);
+        SetupDailyRoutine(logic, vermilionManager, loggerFactory.CreateLogger("Murka.Jobs"));
 
         vermilionManager.Start();
 
