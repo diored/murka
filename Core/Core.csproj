@@ -9,16 +9,25 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DioRed.Auth.Client" Version="2.2.0" />
+		<PackageReference Include="DioRed.Common.Jobs" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
 		<PackageReference Include="System.Memory.Data" Version="7.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Graphics\Graphics.csproj" />
+	</ItemGroup>
+
 	<ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-		<PackageReference Include="DioRed.Vermilion" Version="10.7.0" />
+		<PackageReference Include="DioRed.Vermilion.Telegram" Version="10.7.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
-		<ProjectReference Include="..\..\vermilion\Vermilion\DioRed.Vermilion.csproj" />
+		<ProjectReference Include="..\..\vermilion\Vermilion\DioRed.Vermilion.Telegram.csproj" />
 	</ItemGroup>
 
 </Project>

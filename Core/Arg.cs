@@ -1,6 +1,6 @@
 ﻿using DioRed.Murka.Core.Entities;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 internal class Arg
 {
@@ -12,18 +12,21 @@ internal class Arg
 
     public Arg(string? value)
     {
-        _stringValue = value?.ToString() ?? string.Empty;
-
         if (value is null)
         {
             Value = string.Empty;
             Type = ArgType.Empty;
+            _stringValue = string.Empty;
             return;
         }
+
+        _stringValue = value.ToString();
+
 
         if (int.TryParse(value, out int intValue))
         {
             _intValue = intValue;
+            _longValue = intValue;
             Value = intValue;
             Type = ArgType.Int;
             return;
@@ -60,10 +63,13 @@ internal class Arg
     public object Value { get; }
     public ArgType Type { get; }
 
-    public int IntValue => (int)Value;
-    public long LongValue => (long)Value;
-    public TimeOnly TimeValue => (TimeOnly)Value;
-    public ServerDateTime DateTimeValue => (ServerDateTime)Value;
+#pragma warning disable CS8629 // Nullable value type may be null.
+    public int IntValue => _intValue.Value;
+    public long LongValue => _longValue.Value;
+    public TimeOnly TimeValue => _timeValue.Value;
+    public ServerDateTime DateTimeValue => _dateTimeValue.Value;
+#pragma warning restore CS8629 // Nullable value type may be null.
+
     public string StringValue => _stringValue;
 
     public static implicit operator string(Arg arg)

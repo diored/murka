@@ -1,4 +1,4 @@
-﻿namespace DioRed.Murka.BotCore;
+﻿namespace DioRed.Murka.Core;
 
 internal enum ArgType
 {

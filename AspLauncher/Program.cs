@@ -2,7 +2,7 @@ using System.Runtime.Versioning;
 
 using DioRed.Murka.AspLauncher;
 using DioRed.Murka.AspLauncher.Services;
-using DioRed.Murka.BotCore;
+using DioRed.Murka.Core;
 
 [assembly: SupportedOSPlatform("windows")]
 

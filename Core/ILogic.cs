@@ -28,7 +28,6 @@ public interface ILogic
     Northlands GetNorthLands(DateOnly date);
 
     string GetLink(string id);
-    BinaryData GetCalendar();
 
     void Cleanup();
 }

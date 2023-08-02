@@ -8,7 +8,7 @@ using DioRed.Vermilion.Handlers;
 
 using Microsoft.Extensions.Logging;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 public class SimpleMessageHandler : MessageHandlerBase
 {

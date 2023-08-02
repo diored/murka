@@ -94,11 +94,6 @@ public class Logic : ILogic
         }
     }
 
-    public BinaryData GetCalendar()
-    {
-        return new BinaryData(_api.GetDailyCalendar().GetAwaiter().GetResult());
-    }
-
     public void AddEvent(Event newEvent)
     {
         _api.AddEvent(newEvent.Name, newEvent.ValidFrom?.ToString(), newEvent.ValidTo?.ToString()).GetAwaiter().GetResult();

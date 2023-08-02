@@ -3,7 +3,7 @@ using DioRed.Vermilion;
 
 using Microsoft.Extensions.Logging;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 public class MessageHandlerBuilder : IMessageHandlerBuilder
 {

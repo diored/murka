@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-using DioRed.Murka.BotCore;
+using DioRed.Murka.Core;
 
 using Microsoft.Extensions.Hosting;
 

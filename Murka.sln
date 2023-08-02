@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manager", "Manager\Manager.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "Graphics\Graphics.csproj", "{12EB3238-738A-46C2-98CA-C524C7FE2B99}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotCore", "BotCore\BotCore.csproj", "{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vermilion", "Vermilion", "{5068464B-FF5E-4830-A8EC-E365332194BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DioRed.Vermilion", "..\vermilion\Vermilion\DioRed.Vermilion.csproj", "{D49DB282-2C06-4EDD-99F2-DC85537E1F25}"
@@ -58,12 +56,6 @@ Global
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.DebugEngine|Any CPU.Build.0 = Debug|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.DebugEngine|Any CPU.ActiveCfg = DebugEngine|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.DebugEngine|Any CPU.Build.0 = DebugEngine|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FF3D7D6-F853-495F-8DBD-E8C5B3B9BC98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D49DB282-2C06-4EDD-99F2-DC85537E1F25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D49DB282-2C06-4EDD-99F2-DC85537E1F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D49DB282-2C06-4EDD-99F2-DC85537E1F25}.DebugEngine|Any CPU.ActiveCfg = Debug|Any CPU

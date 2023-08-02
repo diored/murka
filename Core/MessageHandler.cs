@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using File = System.IO.File;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 public partial class MessageHandler : AttributeBasedMessageHandler
 {

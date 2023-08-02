@@ -40,13 +40,6 @@ public class ApiClient
         return await http.GetAsync<Daily>("daily/get", new { date });
     }
 
-    public async Task<byte[]> GetDailyCalendar()
-    {
-        using var http = CreateHttpClient();
-
-        return await http.GetAsync<byte[]>("daily/calendar");
-    }
-
     public async Task SetDailyMonth(int month, string dailies)
     {
         using var http = CreateHttpClient();

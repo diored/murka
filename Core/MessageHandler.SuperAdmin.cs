@@ -2,7 +2,7 @@
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handlers;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 public partial class MessageHandler
 {

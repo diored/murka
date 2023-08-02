@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DioRed.Murka.BotCore;
+namespace DioRed.Murka.Core;
 
 public static class ServicesExtension
 {
