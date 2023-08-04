@@ -14,10 +14,6 @@ public static class ServicesExtension
 {
     public static IServiceCollection AddMurkaBot(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configuration
-        services.AddSingleton(configuration.GetRequiredSection("Vermilion").Get<VermilionConfiguration>()!);
-        services.AddSingleton(configuration.GetRequiredSection("Vermilion:Telegram").Get<TelegramBotConfiguration>()!);
-
         // API
         var authConfiguration = AuthClientConfiguration.Load(configuration.GetRequiredSection("auth"));
         var authClient = new AuthClient(authConfiguration);
@@ -29,12 +25,14 @@ public static class ServicesExtension
         });
         services.AddSingleton<ApiClient>();
 
-        // Storage and Logic
+        // Handling
         services.AddSingleton<ILogic, Logic>();
         services.AddSingleton<IChatStorage, ChatStorage>();
-
-        // Bot
         services.AddSingleton<IMessageHandlerBuilder, MessageHandlerBuilder>();
+
+        // Vermilion
+        services.AddSingleton(configuration.GetRequiredSection("Vermilion").Get<VermilionConfiguration>()!);
+        services.AddSingleton(configuration.GetRequiredSection("Vermilion:Telegram").Get<TelegramBotConfiguration>()!);
         services.AddSingleton<TelegramVermilionBot>();
         services.AddSingleton<VermilionManager>();
 

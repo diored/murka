@@ -1,4 +1,6 @@
-﻿using DioRed.Murka.Core.Entities;
+﻿using System.IdentityModel.Tokens.Jwt;
+
+using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
@@ -6,6 +8,7 @@ namespace DioRed.Murka.Core;
 internal class ApiClient
 {
     private readonly ApiSettings _apiSettings;
+    private (string TokenString, DateTime Expiration)? _accessToken;
 
     public ApiClient(ApiSettings apiSettings)
     {
@@ -145,6 +148,13 @@ internal class ApiClient
 
     private SimpleHttpClient CreateHttpClient()
     {
-        return new SimpleHttpClient(_apiSettings.Uri, _apiSettings.GetAccessToken());
+        if (!_accessToken.HasValue || _accessToken.Value.Expiration - DateTime.UtcNow < TimeSpan.FromMinutes(1))
+        {
+            string accessToken = _apiSettings.GetAccessToken();
+            var jwt = new JwtSecurityToken(accessToken);
+            _accessToken = (accessToken, jwt.ValidTo);
+        }
+
+        return new SimpleHttpClient(_apiSettings.Uri, _accessToken.Value.TokenString);
     }
 }
