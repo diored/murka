@@ -13,7 +13,7 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-host.UseMurkaBot();
+host.Services.UseMurkaBot();
 
 Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
 host.Run();

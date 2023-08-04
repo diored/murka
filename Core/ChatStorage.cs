@@ -1,9 +1,8 @@
-﻿using DioRed.Murka.Core;
-using DioRed.Vermilion;
+﻿using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
-public class ChatStorage : IChatStorage
+internal class ChatStorage : IChatStorage
 {
     private readonly ILogic _logic;
 

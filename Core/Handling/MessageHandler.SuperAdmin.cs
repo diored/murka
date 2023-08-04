@@ -2,9 +2,9 @@
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handlers;
 
-namespace DioRed.Murka.Core;
+namespace DioRed.Murka.Core.Handling;
 
-public partial class MessageHandler
+internal partial class MessageHandler
 {
     [BotCommand(UserRole.SuperAdmin, @"/addDayEvent!", BotCommandOptions.CaseInsensitive)]
     public void AddGlobalDayEvent(string name, string time, string repeat)

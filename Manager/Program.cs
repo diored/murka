@@ -24,20 +24,13 @@ builder.Services.AddSingleton(services =>
     return GrpcChannel.ForAddress(builder.Configuration["serviceUrl"]!, new GrpcChannelOptions { HttpHandler = httpHandler });
 });
 
-var authConfiguration = AuthClientConfiguration.Load(builder.Configuration.GetSection("auth"));
-var authClient = new AuthClient(authConfiguration);
-
-builder.Services.AddSingleton(new ApiSettings
-{
-    Uri = builder.Configuration["apiUri"]!,
-    GetAccessToken = authClient.GetAccessToken
-});
-
-builder.Services.AddSingleton<ApiClient>();
-builder.Services.AddSingleton<ILogic, Logic>();
+builder.Services.AddMurkaBot(builder.Configuration);
 
 builder.Services.AddBlazoredModal();
 
 builder.Services.AddSingleton<DataProvider>();
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+app.Services.UseMurkaBot();
+
+await app.RunAsync();

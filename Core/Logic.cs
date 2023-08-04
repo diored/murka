@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
 
-public class Logic : ILogic
+internal class Logic : ILogic
 {
     private readonly ApiClient _api;
     private readonly ILogger _logger;

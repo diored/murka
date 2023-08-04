@@ -3,7 +3,7 @@ using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
-public class ApiClient
+internal class ApiClient
 {
     private readonly ApiSettings _apiSettings;
 

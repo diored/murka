@@ -1,6 +1,5 @@
 ﻿using System.Text;
 
-using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
@@ -8,18 +7,18 @@ using DioRed.Vermilion.Handlers;
 
 using Microsoft.Extensions.Logging;
 
-namespace DioRed.Murka.Core;
+namespace DioRed.Murka.Core.Handling;
 
-public class SimpleMessageHandler : MessageHandlerBase
+internal class SimpleMessageHandler : MessageHandlerBase
 {
     private readonly ILogic _logic;
     private readonly ILogger _logger;
 
-    public SimpleMessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory logger)
+    public SimpleMessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory loggerFactory)
         : base(messageContext)
     {
         _logic = logic;
-        _logger = logger.CreateLogger("MessageHandler");
+        _logger = loggerFactory.CreateLogger("MessageHandler");
     }
 
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);

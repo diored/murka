@@ -2,7 +2,7 @@
 
 namespace DioRed.Murka.Core;
 
-public static class EventIDs
+internal static class EventIDs
 {
     // 1xxx — message handling
     // 19xx - error

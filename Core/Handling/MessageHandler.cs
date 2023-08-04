@@ -1,6 +1,5 @@
 ﻿using System.Text;
 
-using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
@@ -10,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 using File = System.IO.File;
 
-namespace DioRed.Murka.Core;
+namespace DioRed.Murka.Core.Handling;
 
-public partial class MessageHandler : AttributeBasedMessageHandler
+internal partial class MessageHandler : AttributeBasedMessageHandler
 {
     private readonly ILogic _logic;
     private readonly ILogger _logger;

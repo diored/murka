@@ -1,12 +1,11 @@
 ﻿using DioRed.Auth.Client;
 using DioRed.Common.Jobs;
-using DioRed.Murka.Core;
+using DioRed.Murka.Core.Handling;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Telegram;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
@@ -42,20 +41,20 @@ public static class ServicesExtension
         return services;
     }
 
-    public static IHost UseMurkaBot(this IHost host)
+    public static IServiceProvider UseMurkaBot(this IServiceProvider services)
     {
-        var vermilionManager = host.Services.GetRequiredService<VermilionManager>();
-        var telegramBot = host.Services.GetRequiredService<TelegramVermilionBot>();
-        var logic = host.Services.GetRequiredService<ILogic>();
+        var vermilionManager = services.GetRequiredService<VermilionManager>();
+        var telegramBot = services.GetRequiredService<TelegramVermilionBot>();
+        var logic = services.GetRequiredService<ILogic>();
         vermilionManager.AddBot(telegramBot);
 
-        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
         SetupDailyRoutine(logic, vermilionManager, loggerFactory.CreateLogger("Murka.Jobs"));
 
         vermilionManager.Start();
 
-        return host;
+        return services;
     }
 
     private static void SetupDailyRoutine(ILogic logic, VermilionManager manager, ILogger logger)

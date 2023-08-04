@@ -9,7 +9,7 @@ using System.Web;
 
 namespace DioRed.Murka.Core;
 
-public class SimpleHttpClient : IDisposable
+internal class SimpleHttpClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private bool _disposedValue;
