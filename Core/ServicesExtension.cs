@@ -1,4 +1,5 @@
-﻿using DioRed.Auth.Client;
+﻿using DioRed.Api.Client;
+using DioRed.Auth.Client;
 using DioRed.Common.Jobs;
 using DioRed.Murka.Core.Handling;
 using DioRed.Vermilion;
@@ -15,15 +16,14 @@ public static class ServicesExtension
     public static IServiceCollection AddMurkaBot(this IServiceCollection services, IConfiguration configuration)
     {
         // API
-        var authConfiguration = AuthClientConfiguration.Load(configuration.GetRequiredSection("auth"));
-        var authClient = new AuthClient(authConfiguration);
+        var authClientConfiguration = AuthClientConfiguration.Load(configuration.GetRequiredSection("auth"));
 
-        services.AddSingleton(new ApiSettings
+        services.AddHttpApiClient(settings =>
         {
-            Uri = configuration["apiUri"]!,
-            GetAccessToken = authClient.GetAccessToken
+            settings.BaseAddress = configuration["apiUri"]!;
+            settings.AccessTokenProvider = AccessTokenProvider.Create(authClientConfiguration);
         });
-        services.AddSingleton<ApiClient>();
+        services.AddSingleton<ApiFacade>();
 
         // Handling
         services.AddSingleton<ILogic, Logic>();

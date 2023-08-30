@@ -7,10 +7,10 @@ namespace DioRed.Murka.Core;
 
 internal class Logic : ILogic
 {
-    private readonly ApiClient _api;
+    private readonly ApiFacade _api;
     private readonly ILogger _logger;
 
-    public Logic(ApiClient api, ILoggerFactory logger)
+    public Logic(ApiFacade api, ILoggerFactory logger)
     {
         _api = api;
         _logger = logger.CreateLogger("Logic");
