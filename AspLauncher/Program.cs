@@ -1,10 +1,6 @@
-using System.Runtime.Versioning;
-
-using DioRed.Murka.AspLauncher;
+using DioRed.Common.Logging;
 using DioRed.Murka.AspLauncher.Services;
 using DioRed.Murka.Core;
-
-[assembly: SupportedOSPlatform("windows")]
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.SetupDioRedLogging("Murka");
