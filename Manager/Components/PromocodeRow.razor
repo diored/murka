@@ -47,12 +47,12 @@
         parameters.Add(nameof(PromocodeModal.AllowCodeChange), false);
 
         var result = await Modal.Show<PromocodeModal>("Редактирование промокода", parameters).Result;
-        if (result.Cancelled)
+
+        if (result.Cancelled || result.Data is not PromocodeModel updated)
         {
             return;
         }
 
-        var updated = (PromocodeModel)result.Data;
         try
         {
             if (Data.UpdatePromocode(updated))
@@ -72,7 +72,8 @@
     async Task Remove()
     {
         var result = await Modal.Show<ConfirmModal>($"Подтвердите удаление промокода {Model.Code}.").Result;
-        if (result.Cancelled || !(bool)result.Data)
+
+        if (result.Cancelled)
         {
             return;
         }

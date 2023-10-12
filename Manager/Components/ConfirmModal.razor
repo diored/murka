@@ -14,7 +14,7 @@
     [Parameter] public string ConfirmButton { get; set; } = "Подтвердить";
     [Parameter] public string CancelButton { get; set; } = "Отмена";
 
-    async Task Confirm() =>  await ModalInstance.CloseAsync(ModalResult.Ok(true));
+    async Task Confirm() =>  await ModalInstance.CloseAsync();
 
     async Task Cancel() => await ModalInstance.CancelAsync();
 }
