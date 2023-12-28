@@ -11,19 +11,11 @@ using File = System.IO.File;
 
 namespace DioRed.Murka.Core.Handling;
 
-internal partial class MessageHandler : AttributeBasedMessageHandler
+internal partial class MessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory logger) : AttributeBasedMessageHandler(messageContext)
 {
-    private readonly ILogic _logic;
-    private readonly ILogger _logger;
+    private readonly ILogger _logger = logger.CreateLogger("MessageHandler");
 
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
-
-    public MessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory logger)
-        : base(messageContext)
-    {
-        _logic = logic;
-        _logger = logger.CreateLogger("MessageHandler");
-    }
 
     [BotCommand("/daily")]
     [BotCommand("ежа", BotCommandOptions.CaseInsensitive)]
@@ -52,7 +44,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
             .Select(i =>
             {
                 DateOnly date = serverTime.Date.AddDays(i);
-                return new ScheduleItem(date, _logic.GetDaily(date).Id);
+                return new ScheduleItem(date, logic.GetDaily(date).Id);
             })
             .ToArray();
 
@@ -78,9 +70,9 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
     [BotCommand("промокоды", BotCommandOptions.CaseInsensitive)]
     public async Task ShowPromocodesAsync()
     {
-        ICollection<Promocode> activePromocodes = _logic.GetActivePromocodes();
+        ICollection<Promocode> activePromocodes = logic.GetActivePromocodes();
 
-        if (!activePromocodes.Any())
+        if (activePromocodes.Count == 0)
         {
             await ChatWriter.SendTextAsync("Активных промокодов нет");
             return;
@@ -119,21 +111,26 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
             return;
         }
 
-        string html = @"Синтаксис:
-<code>/addDayEvent {наименование}|{время}|{повторение}</code>
+        string html = """
 
-Повторение:
-<code>daily</code> — ежедневно
-<code>1</code> — по понедельникам
-<code>2</code> — по вторникам
-...
-<code>7</code> — по воскресеньям
+            Синтаксис:
+            <code>/addDayEvent {наименование}|{время}|{повторение}</code>
 
-Пример:
-<code>/addDayEvent Клан-холл|17:30|6</code>
+            Повторение:
+            <code>daily</code> — ежедневно
+            <code>1</code> — по понедельникам
+            <code>2</code> — по вторникам
+            ...
+            <code>7</code> — по воскресеньям
 
-<b>Примечание</b>
-Удаление ранее добавленных событий будет реализовано в одной из последующих версий.";
+            Пример:
+            <code>/addDayEvent Клан-холл|17:30|6</code>
+
+            <b>Примечание</b>
+            Удаление ранее добавленных событий будет реализовано в одной из последующих версий.
+
+            """;
+
         await ChatWriter.SendHtmlAsync(html);
     }
 
@@ -153,14 +150,14 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
         }
 
         MessageContext.ChatClient["LatestGreeting"] = DateTime.UtcNow;
-        await ChatWriter.SendTextAsync(_logic.GetRandomGreeting());
+        await ChatWriter.SendTextAsync(logic.GetRandomGreeting());
     }
 
     [BotCommand("/sea")]
     [BotCommand("море", BotCommandOptions.CaseInsensitive)]
     public async Task ShowSeaAsync()
     {
-        string link = _logic.GetLink("sea");
+        string link = logic.GetLink("sea");
 
         await ChatWriter.SendPhotoAsync(link);
     }
@@ -169,9 +166,13 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
     [BotCommand("север", BotCommandOptions.CaseInsensitive)]
     public async Task ShowNorthAsync()
     {
-        Northlands northlands = _logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
+        Northlands northlands = logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
 
-        await ChatWriter.SendTextAsync($"Расписание ивентов в СЗ:\n— войско богов: {northlands.Gods}\n— армия севера: {northlands.North}");
+        await ChatWriter.SendTextAsync($"""
+            Расписание ивентов в СЗ:
+            — войско богов: {northlands.Gods}
+            — армия севера: {northlands.North}
+            """);
     }
 
     [BotCommand("/agenda")]
@@ -192,9 +193,9 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
     [BotCommand("ивенты", BotCommandOptions.CaseInsensitive)]
     public async Task ShowEventsAsync()
     {
-        ICollection<Event> events = _logic.GetActiveEvents();
+        ICollection<Event> events = logic.GetActiveEvents();
 
-        if (!events.Any())
+        if (events.Count == 0)
         {
             await ChatWriter.SendTextAsync("На данный момент ивентов нет.");
             return;
@@ -240,7 +241,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
     [BotCommand("календарь", BotCommandOptions.CaseInsensitive)]
     public async Task ShowCalendarAsync()
     {
-        string link = _logic.GetLink("daily");
+        string link = logic.GetLink("daily");
 
         await ChatWriter.SendPhotoAsync(link);
     }
@@ -264,7 +265,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
 
         if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
         {
-            _logic.RemoveChat(MessageContext.ChatClient.ChatId);
+            logic.RemoveChat(MessageContext.ChatClient.ChatId);
         }
         else
         {
@@ -290,7 +291,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
 
         TimeOnly timeOnly = TimeOnly.ParseExact(time, CommonValues.TimeFormat);
 
-        _logic.AddDayEvent(name, occurrence, timeOnly, chatId);
+        logic.AddDayEvent(name, occurrence, timeOnly, chatId);
     }
 
     private async Task ShowAgendaInternalAsync(DateOnly date)
@@ -302,7 +303,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
             .AppendLine(GetDaytimeGreeting(ServerDateTime.GetCurrent().Time!.Value));
 
         // Daily
-        var daily = _logic.GetDaily(date);
+        var daily = logic.GetDaily(date);
         if (daily?.Definition != null)
         {
             builder
@@ -311,7 +312,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
         }
 
         // Northlands
-        Northlands northlands = _logic.GetNorthLands(date);
+        Northlands northlands = logic.GetNorthLands(date);
 
         builder
             .AppendLine("Северные земли:")
@@ -334,7 +335,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
                 _ => "в <i>воскресенье</i>"
             });
 
-        var dayEvents = _logic.GetDayEvents(date, MessageContext.ChatId);
+        var dayEvents = logic.GetDayEvents(date, MessageContext.ChatId);
 
         if (!dayEvents.Any())
         {
@@ -353,7 +354,7 @@ internal partial class MessageHandler : AttributeBasedMessageHandler
         }
 
         // ExpiringPromocodes
-        List<Promocode> expiringPromocodes = _logic.GetActivePromocodes()
+        List<Promocode> expiringPromocodes = logic.GetActivePromocodes()
             .Where(p => p.ValidTo?.Date == date)
             .ToList();
 

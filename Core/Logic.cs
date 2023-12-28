@@ -5,24 +5,17 @@ using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
 
-internal class Logic : ILogic
+internal class Logic(ApiFacade api, ILoggerFactory logger) : ILogic
 {
-    private readonly ApiFacade _api;
-    private readonly ILogger _logger;
-
-    public Logic(ApiFacade api, ILoggerFactory logger)
-    {
-        _api = api;
-        _logger = logger.CreateLogger("Logic");
-    }
+    private readonly ILogger _logger = logger.CreateLogger("Logic");
 
     public void Cleanup()
     {
         _logger.LogInformation(EventIDs.CleanupStarted, "Storage cleanup started");
         try
         {
-            _api.CleanupPromocodes().GetAwaiter().GetResult();
-            _api.CleanupEvents().GetAwaiter().GetResult();
+            api.CleanupPromocodes().GetAwaiter().GetResult();
+            api.CleanupEvents().GetAwaiter().GetResult();
             _logger.LogInformation(EventIDs.CleanupFinished, "Storage cleanup finished");
         }
         catch (Exception ex)
@@ -33,39 +26,39 @@ internal class Logic : ILogic
 
     public ICollection<Event> GetActiveEvents()
     {
-        return _api.GetActiveEvents().GetAwaiter().GetResult();
+        return api.GetActiveEvents().GetAwaiter().GetResult();
     }
 
     public ICollection<Promocode> GetActivePromocodes()
     {
-        return _api.GetActivePromocodes().GetAwaiter().GetResult();
+        return api.GetActivePromocodes().GetAwaiter().GetResult();
     }
 
     public Daily GetDaily(DateOnly date)
     {
-        return _api.GetDaily(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
+        return api.GetDaily(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
     }
 
     public ICollection<DayEvent> GetDayEvents(DateOnly date, ChatId chatId)
     {
-        return _api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
+        return api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
     }
 
     public Northlands GetNorthLands(DateOnly date)
     {
-        return _api.GetNorthlands(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
+        return api.GetNorthlands(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
     }
 
     public string GetRandomGreeting()
     {
-        return _api.GetRandomGreeting().GetAwaiter().GetResult();
+        return api.GetRandomGreeting().GetAwaiter().GetResult();
     }
 
     public void AddChat(ChatId chatId, string title)
     {
         try
         {
-            _api.AddChat(chatId.System, chatId.Type, chatId.Id, title).GetAwaiter().GetResult();
+            api.AddChat(chatId.System, chatId.Type, chatId.Id, title).GetAwaiter().GetResult();
             _logger.LogInformation(EventIDs.ChatAdded, "Chat {ChatId} ({Title}) added", chatId, title);
         }
         catch (Exception ex)
@@ -77,14 +70,14 @@ internal class Logic : ILogic
 
     public ICollection<ChatId> GetChats()
     {
-        return _api.GetChats().GetAwaiter().GetResult();
+        return api.GetChats().GetAwaiter().GetResult();
     }
 
     public void RemoveChat(ChatId chatId)
     {
         try
         {
-            _api.RemoveChat(chatId.System, chatId.Id).GetAwaiter().GetResult();
+            api.RemoveChat(chatId.System, chatId.Id).GetAwaiter().GetResult();
             _logger.LogInformation(EventIDs.ChatRemoved, "Chat {ChatId} removed", chatId);
         }
         catch (Exception ex)
@@ -96,36 +89,36 @@ internal class Logic : ILogic
 
     public void AddEvent(Event newEvent)
     {
-        _api.AddEvent(newEvent.Name, newEvent.ValidFrom?.ToString(), newEvent.ValidTo?.ToString()).GetAwaiter().GetResult();
+        api.AddEvent(newEvent.Name, newEvent.ValidFrom?.ToString(), newEvent.ValidTo?.ToString()).GetAwaiter().GetResult();
     }
 
     public void AddPromocode(Promocode promocode)
     {
-        _api.AddPromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
+        api.AddPromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
     }
 
     public void AddDayEvent(string name, string occurrence, TimeOnly time, ChatId? chatId)
     {
-        _api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
+        api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
     }
 
     public void SetDaily(int month, string dailies)
     {
-        _api.SetDailyMonth(month, dailies).GetAwaiter().GetResult();
+        api.SetDailyMonth(month, dailies).GetAwaiter().GetResult();
     }
 
     public void UpdatePromocode(Promocode promocode)
     {
-        _api.UpdatePromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
+        api.UpdatePromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
     }
 
     public void RemovePromocode(string code)
     {
-        _api.RemovePromocode(code).GetAwaiter().GetResult();
+        api.RemovePromocode(code).GetAwaiter().GetResult();
     }
 
     public string GetLink(string id)
     {
-        return _api.GetLink(id).GetAwaiter().GetResult();
+        return api.GetLink(id).GetAwaiter().GetResult();
     }
 }

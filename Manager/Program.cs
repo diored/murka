@@ -1,7 +1,5 @@
 using Blazored.Modal;
 
-using DioRed.Auth.Client;
-using DioRed.Murka.Core;
 using DioRed.Murka.Manager;
 using DioRed.Murka.Manager.Data;
 

@@ -1,8 +1,9 @@
 ﻿using System.Text;
 
-using DioRed.Murka.Core;
-
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using DioRed.Common.Logging;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -11,6 +12,7 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddMurkaBot(context.Configuration);
     })
+    .ConfigureLogging(logging => logging.SetupDioRedLogging("Murka"))
     .Build();
 
 host.Services.UseMurkaBot();

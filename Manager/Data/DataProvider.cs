@@ -4,18 +4,11 @@ using DioRed.Murka.Manager.Models;
 
 namespace DioRed.Murka.Manager.Data;
 
-public class DataProvider
+public class DataProvider(ILogic logic)
 {
-    private readonly ILogic _logic;
-
-    public DataProvider(ILogic logic)
-    {
-        _logic = logic;
-    }
-
     public List<PromocodeModel> GetActivePromocodes()
     {
-        var active = _logic.GetActivePromocodes();
+        var active = logic.GetActivePromocodes();
 
         return active
             .Select(item => new PromocodeModel
@@ -40,7 +33,7 @@ public class DataProvider
 
         try
         {
-            _logic.AddPromocode(entity);
+            logic.AddPromocode(entity);
             return true;
         }
         catch
@@ -61,7 +54,7 @@ public class DataProvider
 
         try
         {
-            _logic.UpdatePromocode(entity);
+            logic.UpdatePromocode(entity);
             return true;
         }
         catch
@@ -75,7 +68,7 @@ public class DataProvider
     {
         try
         {
-            _logic.RemovePromocode(promocode.Code);
+            logic.RemovePromocode(promocode.Code);
             return true;
         }
         catch

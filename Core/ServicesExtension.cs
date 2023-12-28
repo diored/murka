@@ -1,15 +1,15 @@
 ﻿using DioRed.Api.Client;
 using DioRed.Auth.Client;
 using DioRed.Common.Jobs;
+using DioRed.Murka.Core;
 using DioRed.Murka.Core.Handling;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Telegram;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace DioRed.Murka.Core;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServicesExtension
 {

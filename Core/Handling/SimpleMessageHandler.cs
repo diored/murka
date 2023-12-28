@@ -1,5 +1,6 @@
 ﻿using System.Text;
 
+using DioRed.Murka.Core.Args;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.Graphics;
 using DioRed.Vermilion;
@@ -9,26 +10,20 @@ using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core.Handling;
 
-internal class SimpleMessageHandler : MessageHandlerBase
+internal class SimpleMessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory loggerFactory) : MessageHandlerBase(messageContext)
 {
-    private readonly ILogic _logic;
-    private readonly ILogger _logger;
-
-    public SimpleMessageHandler(MessageContext messageContext, ILogic logic, ILoggerFactory loggerFactory)
-        : base(messageContext)
-    {
-        _logic = logic;
-        _logger = loggerFactory.CreateLogger("MessageHandler");
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger("MessageHandler");
 
     private TimeSpan GreetingInterval { get; } = TimeSpan.FromMinutes(40);
 
     protected override async Task HandleMessageAsync(string message)
     {
-        string[] parts = message.Split(new[] { ' ' }, 2, StringSplitOptions.TrimEntries);
+        string[] parts = message.Split(_separator, 2, StringSplitOptions.TrimEntries);
         string command = parts[0];
 
-        Args args = parts.Length > 1 ? Args.Parse(parts[1]) : new Args();
+        ArgsList args = parts.Length > 1
+            ? ArgsList.Parse(parts[1])
+            : new ArgsList();
 
         Task? task = null;
 
@@ -36,13 +31,17 @@ internal class SimpleMessageHandler : MessageHandlerBase
         {
             task = (command, args) switch
             {
-                ("/addDayEvent!", { Types: [not ArgType.Empty, ArgType.Time, not ArgType.Empty] }) => AddDayEvent(args[0], args[1].TimeValue, args[2], null),
-                ("/addEvent", { Types: [not ArgType.Empty] or [not ArgType.Empty, ArgType.DateTime or ArgType.Empty] or [not ArgType.Empty, ArgType.DateTime or ArgType.Empty, ArgType.DateTime or ArgType.Empty] }) => AddEvent(args[0], args.DateTimeOrDefault(1), args.DateTimeOrDefault(2)),
-                ("/addPromocode", { Types: [not ArgType.Empty, ArgType.DateTime or ArgType.Empty, not ArgType.Empty] }) => AddPromocode(args[0], args.DateTimeOrDefault(1), args[2]),
-                ("/cleanup", _) => Cleanup(),
+                ("/addDayEvent!", [Arg name, TimeArg time, Arg occurrence]) => AddDayEvent(name, time, occurrence, null),
+                ("/addEvent", [Arg name]) => AddEvent(name, null, null),
+                ("/addEvent", [Arg name, DateTimeArg starts]) => AddEvent(name, starts, null),
+                ("/addEvent", [Arg name, null, DateTimeArg ends]) => AddEvent(name, null, ends),
+                ("/addEvent", [Arg name, DateTimeArg starts, DateTimeArg ends]) => AddEvent(name, starts, ends),
+                ("/addPromocode", [Arg code, null, Arg description]) => AddPromocode(code, null, description),
+                ("/addPromocode", [Arg code, DateTimeArg validTo, Arg description]) => AddPromocode(code, validTo, description),
+                ("/cleanup", []) => Cleanup(),
                 ("/ga", { Count: > 0 }) => GlobalAnnounce(parts[1]),
                 ("/ga?", { Count: > 0 }) => NoSoGlobalAnnounce(parts[1]),
-                ("/setDaily", { Types: [ArgType.Int, not ArgType.Empty] }) => SetDaily(args[0].IntValue, args[1]),
+                ("/setDaily", [IntArg month, Arg dailies]) => SetDaily(month, dailies),
                 ("/log", { Count: > 0 }) => LogMessage(parts[1]),
                 _ => null
             };
@@ -52,22 +51,23 @@ internal class SimpleMessageHandler : MessageHandlerBase
         {
             task ??= (command, args) switch
             {
-                ("/addDayEvent", { Types: [not ArgType.Empty, ArgType.Time, not ArgType.Empty] }) => AddDayEvent(args[0], args[1].TimeValue, args[2], MessageContext.ChatId),
+                ("/addDayEvent", [Arg name, TimeArg time, Arg occurrence]) => AddDayEvent(name, time.Value, occurrence, MessageContext.ChatId),
                 _ => null
             };
         }
 
         task ??= (command, args) switch
         {
-            ("/daily" or "ежа", { Types: [] or [ArgType.Int] }) => ShowDaily(args.IntOrDefault(0) ?? 5),
-            ("/promo" or "промокоды", { Count: 0 }) => ShowPromocodes(),
+            ("/daily" or "ежа", []) => ShowDaily(5),
+            ("/daily" or "ежа", [IntArg days]) => ShowDaily(days),
+            ("/promo" or "промокоды", []) => ShowPromocodes(),
             ("/addDayEvent", _) => AddDayEventHelp(),
-            ("/sea" or "море", { Count: 0 }) => ShowSeaAsync(),
-            ("/north" or "север", { Count: 0 }) => ShowNorthAsync(),
-            ("/agenda" or "сводка", { Count: 0 }) => ShowAgenda(ServerDateTime.GetCurrent().Date),
-            ("/tomorrow" or "завтра", { Count: 0 }) => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
-            ("/events" or "ивенты", { Count: 0 }) => ShowEventsAsync(),
-            ("/calendar" or "календарь", { Count: 0 }) => ShowCalendarAsync(),
+            ("/sea" or "море", []) => ShowSeaAsync(),
+            ("/north" or "север", []) => ShowNorthAsync(),
+            ("/agenda" or "сводка", []) => ShowAgenda(ServerDateTime.GetCurrent().Date),
+            ("/tomorrow" or "завтра", []) => ShowAgenda(ServerDateTime.GetCurrent().Date.AddDays(1)),
+            ("/events" or "ивенты", []) => ShowEventsAsync(),
+            ("/calendar" or "календарь", []) => ShowCalendarAsync(),
             _ => null
         };
 
@@ -97,7 +97,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
             .Select(i =>
             {
                 DateOnly date = serverTime.Date.AddDays(i);
-                return new ScheduleItem(date, _logic.GetDaily(date).Id);
+                return new ScheduleItem(date, logic.GetDaily(date).Id);
             })
             .ToArray();
 
@@ -121,9 +121,9 @@ internal class SimpleMessageHandler : MessageHandlerBase
 
     private async Task ShowPromocodes()
     {
-        ICollection<Promocode> activePromocodes = _logic.GetActivePromocodes();
+        ICollection<Promocode> activePromocodes = logic.GetActivePromocodes();
 
-        if (!activePromocodes.Any())
+        if (activePromocodes.Count == 0)
         {
             await ChatWriter.SendTextAsync("Активных промокодов нет");
             return;
@@ -197,7 +197,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
             _ => throw new ArgumentOutOfRangeException(nameof(occurrence), $"Unrecognized occurrence qualifier: {occurrence}. See /addDayEvent for possible qualifiers list.")
         };
 
-        _logic.AddDayEvent(name, occurrence, time, chatId);
+        logic.AddDayEvent(name, occurrence, time, chatId);
 
         await ChatWriter.SendTextAsync($"Day event added. Details: {(name, occurrence, time)}.");
     }
@@ -205,19 +205,19 @@ internal class SimpleMessageHandler : MessageHandlerBase
     private async Task SayMurrAsync()
     {
         MessageContext.ChatClient["LatestGreeting"] = DateTime.UtcNow;
-        await ChatWriter.SendTextAsync(_logic.GetRandomGreeting());
+        await ChatWriter.SendTextAsync(logic.GetRandomGreeting());
     }
 
     private async Task ShowSeaAsync()
     {
-        string link = _logic.GetLink("sea");
+        string link = logic.GetLink("sea");
 
         await ChatWriter.SendPhotoAsync(link);
     }
 
     private async Task ShowNorthAsync()
     {
-        Northlands northlands = _logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
+        Northlands northlands = logic.GetNorthLands(ServerDateTime.GetCurrent().Date);
 
         string text = $"""
             Расписание ивентов в СЗ:
@@ -237,7 +237,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
             .AppendLine(GetDaytimeGreeting(ServerDateTime.GetCurrent().Time!.Value));
 
         // Daily
-        var daily = _logic.GetDaily(date);
+        var daily = logic.GetDaily(date);
         if (daily?.Definition != null)
         {
             builder
@@ -246,7 +246,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
         }
 
         // Northlands
-        Northlands northlands = _logic.GetNorthLands(date);
+        Northlands northlands = logic.GetNorthLands(date);
 
         builder
             .AppendLine("Северные земли:")
@@ -255,7 +255,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
             .AppendFormat("— армия севера: <b>{0}</b>.", northlands.North)
             .AppendLine();
 
-        // DayEvents        
+        // DayEvents
         builder
             .Append("Ивенты ")
             .Append(date.DayOfWeek switch
@@ -269,9 +269,9 @@ internal class SimpleMessageHandler : MessageHandlerBase
                 _ => "в <i>воскресенье</i>"
             });
 
-        ICollection<DayEvent> dayEvents = _logic.GetDayEvents(date, MessageContext.ChatId);
+        ICollection<DayEvent> dayEvents = logic.GetDayEvents(date, MessageContext.ChatId);
 
-        if (!dayEvents.Any())
+        if (dayEvents.Count == 0)
         {
             builder.Append(" <b>отсутствуют</b>");
         }
@@ -287,11 +287,11 @@ internal class SimpleMessageHandler : MessageHandlerBase
             }
         }
 
-        List<Promocode> expiringPromocodes = _logic.GetActivePromocodes()
+        List<Promocode> expiringPromocodes = logic.GetActivePromocodes()
             .Where(p => p.ValidTo?.Date == date)
             .ToList();
 
-        if (expiringPromocodes.Any())
+        if (expiringPromocodes.Count != 0)
         {
             builder
                 .AppendLine()
@@ -327,9 +327,9 @@ internal class SimpleMessageHandler : MessageHandlerBase
 
     private async Task ShowEventsAsync()
     {
-        ICollection<Event> events = _logic.GetActiveEvents();
+        ICollection<Event> events = logic.GetActiveEvents();
 
-        if (!events.Any())
+        if (events.Count == 0)
         {
             await ChatWriter.SendTextAsync("На данный момент ивентов нет.");
             return;
@@ -373,7 +373,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
 
     private async Task ShowCalendarAsync()
     {
-        string link = _logic.GetLink("daily");
+        string link = logic.GetLink("daily");
 
         await ChatWriter.SendPhotoAsync(link);
     }
@@ -381,7 +381,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
     private async Task AddEvent(string eventName, ServerDateTime? starts, ServerDateTime? ends)
     {
         Event newEvent = new(eventName, starts, ends);
-        _logic.AddEvent(newEvent);
+        logic.AddEvent(newEvent);
 
         await ChatWriter.SendTextAsync($"Event added. Details: {(eventName, starts, ends)}");
     }
@@ -389,14 +389,14 @@ internal class SimpleMessageHandler : MessageHandlerBase
     private async Task AddPromocode(string code, ServerDateTime? validTo, string description)
     {
         Promocode newPromocode = new(code, description, null, validTo);
-        _logic.AddPromocode(newPromocode);
+        logic.AddPromocode(newPromocode);
 
         await ChatWriter.SendTextAsync($"Promocode added. Details: {(code, validTo, description)}");
     }
 
     private async Task Cleanup()
     {
-        _logic.Cleanup();
+        logic.Cleanup();
 
         await ChatWriter.SendTextAsync("Cleanup done");
     }
@@ -408,7 +408,11 @@ internal class SimpleMessageHandler : MessageHandlerBase
 
     private async Task NoSoGlobalAnnounce(string message)
     {
-        await ChatWriter.SendTextAsync("This will be announced:" + Environment.NewLine + Environment.NewLine + message);
+        await ChatWriter.SendTextAsync($"""
+            This will be announced:
+                                       
+            {message}
+            """);
     }
 
     private async Task SetDaily(int month, string dailies)
@@ -426,7 +430,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
             return;
         }
 
-        _logic.SetDaily(month, dailies);
+        logic.SetDaily(month, dailies);
 
         await ChatWriter.SendTextAsync($"Dailies for month {month} set");
     }
@@ -434,6 +438,7 @@ internal class SimpleMessageHandler : MessageHandlerBase
     private Task LogMessage(string message)
     {
         _logger.LogInformation(message);
+
         return Task.CompletedTask;
     }
 
@@ -453,15 +458,28 @@ internal class SimpleMessageHandler : MessageHandlerBase
     protected override async Task OnExceptionAsync(Exception ex)
     {
         _logger.LogError(EventIDs.MessageHandleException, ex, "Error occurred in chat {ChatId}", MessageContext.ChatId);
-        await base.OnExceptionAsync(ex);
+
+        if (MessageContext.UserRole.HasFlag(UserRole.Bot))
+        {
+            return;
+        }
+
+        try
+        {
+            await ChatWriter.SendTextAsync("Прошу прощения, на данный момент я не могу обработать команду :(");
+        }
+        catch
+        { }
     }
 
-    private static readonly string[] _greetingsToReply = new[]
-    {
+    private static readonly string[] _greetingsToReply =
+    [
         "привет",
         "доброе утро",
         "добрый день",
         "добрый вечер",
         "здравствуйте"
-    };
+    ];
+
+    private static readonly char[] _separator = [' '];
 }

@@ -20,7 +20,7 @@ internal partial class MessageHandler
         ends = ends?.Trim();
 
         Event newEvent = new(eventName, ServerDateTime.ParseOrDefault(starts), ServerDateTime.ParseOrDefault(ends));
-        _logic.AddEvent(newEvent);
+        logic.AddEvent(newEvent);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/addPromocode")]
@@ -31,13 +31,13 @@ internal partial class MessageHandler
         description = description.Trim();
 
         Promocode newPromocode = new(code, description, null, ServerDateTime.ParseOrDefault(validTo));
-        _logic.AddPromocode(newPromocode);
+        logic.AddPromocode(newPromocode);
     }
 
     [BotCommand(UserRole.SuperAdmin, "/cleanup")]
     public void Cleanup()
     {
-        _logic.Cleanup();
+        logic.Cleanup();
     }
 
     [BotCommand(UserRole.SuperAdmin, "/ga")]
@@ -57,6 +57,6 @@ internal partial class MessageHandler
             throw new ArgumentException("Wrong month length", nameof(dailies));
         }
 
-        _logic.SetDaily(monthNumber, dailies);
+        logic.SetDaily(monthNumber, dailies);
     }
 }

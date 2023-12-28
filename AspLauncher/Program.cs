@@ -1,20 +1,19 @@
 using DioRed.Common.Logging;
 using DioRed.Murka.AspLauncher.Services;
-using DioRed.Murka.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.SetupDioRedLogging("Murka");
 
-builder.Services.AddMurkaBot(builder.Configuration);
-builder.Services.AddGrpc();
-
-builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
-{
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-}));
+builder.Services
+    .AddMurkaBot(builder.Configuration)
+    .AddGrpc().Services
+    .AddCors(o => o.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+    }));
 
 var app = builder.Build();
 
