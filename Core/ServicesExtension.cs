@@ -18,7 +18,7 @@ public static class ServicesExtension
         // API
         var authClientConfiguration = AuthClientConfiguration.Load(configuration.GetRequiredSection("auth"));
 
-        services.AddHttpApiClient(settings =>
+        services.AddDioRedApiRequestBuilder(settings =>
         {
             settings.BaseAddress = configuration["apiUri"]!;
             settings.AccessTokenProvider = AccessTokenProvider.Create(authClientConfiguration);

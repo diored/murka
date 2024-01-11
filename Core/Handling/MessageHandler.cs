@@ -263,7 +263,7 @@ internal partial class MessageHandler(MessageContext messageContext, ILogic logi
     {
         _logger.LogError(EventIDs.MessageHandleException, "Error occurred in chat {ChatId}", MessageContext.ChatId);
 
-        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked"))
+        if (ex.Message.Contains("kicked") || ex.Message.Contains("blocked") || ex.Message.Contains("deactivated"))
         {
             logic.RemoveChat(MessageContext.ChatClient.ChatId);
         }
