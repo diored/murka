@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 using DioRed.Murka.Core.Args;
 using DioRed.Murka.Core.Entities;
@@ -41,7 +41,7 @@ internal class SimpleMessageHandler(MessageContext messageContext, ILogic logic,
                 ("/cleanup", []) => Cleanup(),
                 ("/ga", { Count: > 0 }) => GlobalAnnounce(parts[1]),
                 ("/ga?", { Count: > 0 }) => NoSoGlobalAnnounce(parts[1]),
-                ("/setDaily", [IntArg month, Arg dailies]) => SetDaily(month, dailies),
+                //("/setDaily", [IntArg month, Arg dailies]) => SetDaily(month, dailies),
                 ("/log", { Count: > 0 }) => LogMessage(parts[1]),
                 _ => null
             };
@@ -283,7 +283,7 @@ internal class SimpleMessageHandler(MessageContext messageContext, ILogic logic,
             {
                 builder
                     .AppendLine()
-                    .AppendFormat("— <b>{0}</b> — {1}", dayEvent.Time, dayEvent.Name);
+                    .AppendFormat("— <b>{0:HH:mm}</b> — {1}", dayEvent.Time, dayEvent.Name);
             }
         }
 
@@ -415,29 +415,29 @@ internal class SimpleMessageHandler(MessageContext messageContext, ILogic logic,
             """);
     }
 
-    private async Task SetDaily(int month, string dailies)
-    {
-        if (month is < 1 or > 12)
-        {
-            await ChatWriter.SendTextAsync($"Wrong month number. Expected: 1 to 12, actual: {month}.");
-            return;
-        }
+    //private async Task SetDaily(int month, string dailies)
+    //{
+    //    if (month is < 1 or > 12)
+    //    {
+    //        await ChatWriter.SendTextAsync($"Wrong month number. Expected: 1 to 12, actual: {month}.");
+    //        return;
+    //    }
 
-        int daysExpected = DateTime.DaysInMonth(DateTime.Now.Year, month);
-        if (daysExpected != dailies.Length)
-        {
-            await ChatWriter.SendTextAsync($"Wrong month length. Expected: {daysExpected}, actual: {dailies.Length}.");
-            return;
-        }
+    //    int daysExpected = DateTime.DaysInMonth(DateTime.Now.Year, month);
+    //    if (daysExpected != dailies.Length)
+    //    {
+    //        await ChatWriter.SendTextAsync($"Wrong month length. Expected: {daysExpected}, actual: {dailies.Length}.");
+    //        return;
+    //    }
 
-        logic.SetDaily(month, dailies);
+    //    logic.SetDaily(month, dailies);
 
-        await ChatWriter.SendTextAsync($"Dailies for month {month} set");
-    }
+    //    await ChatWriter.SendTextAsync($"Dailies for month {month} set");
+    //}
 
     private Task LogMessage(string message)
     {
-        _logger.LogInformation(message);
+        _logger.LogInformation("{Message}", message);
 
         return Task.CompletedTask;
     }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>DioRed.Murka.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <UserSecretsId>1f42fd81-b3ed-4a5f-b388-1f3d66b6b3e5</UserSecretsId>
+    <AssemblyTitle>Murka Launcher (ASP.NET)</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
