@@ -19,8 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="DioRed.Common.Logging" Version="1.2.1" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
-    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.60.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.61.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.61.0" />
   </ItemGroup>
 
   <ItemGroup>
