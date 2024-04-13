@@ -1,23 +1,48 @@
-﻿using System.Text;
+using System.Text;
 
+using DioRed.Common.AzureStorage;
+using DioRed.Common.Logging;
+using DioRed.Vermilion;
+using DioRed.Vermilion.ChatStorage;
+using DioRed.Vermilion.Subsystems.Telegram;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using DioRed.Common.Logging;
-
 Console.OutputEncoding = Encoding.UTF8;
 
-var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((context, services) =>
-    {
-        services.AddMurkaBot(context.Configuration);
-    })
+IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging(logging => logging.SetupDioRedLogging("Murka"))
+    .ConfigureServices((context, services) => services
+        .AddMurkaDependencies(context.Configuration)
+        .AddVermilion(builder => builder
+            .UseAzureTableChatStorage(AzureStorageSettings.MicrosoftAzure(
+                accountName: ReadRequired(context.Configuration, "Vermilion:AzureTable:AccountName"),
+                accountKey: ReadRequired(context.Configuration, "Vermilion:AzureTable:AccountKey")
+            ))
+            .AddCommandHandlersFromAssembly(typeof(MurkaServicesExtension).Assembly)
+            .AddTelegram()
+        )
+    )
     .Build();
 
-host.Services.UseMurkaBot();
+host.Services.SetupMurkaJobs();
 
-Console.WriteLine("Bot is started.\nPress Ctrl+C to stop the bot.");
-host.Run();
+Console.WriteLine("""
+    Bot has been started.
+    Press Ctrl+C to stop the bot.
+    """);
 
-Console.WriteLine("Bot was stopped.");
+await host.RunAsync();
+
+Console.WriteLine("Bot has been stopped.");
+return;
+
+static string ReadRequired(
+    IConfiguration configuration,
+    string keyName
+)
+{
+    return configuration[keyName] ?? throw new InvalidOperationException($"""Cannot read "${keyName}" value""");
+}

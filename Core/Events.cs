@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
 
-internal static class EventIDs
+internal static class Events
 {
     // 1xxx — message handling
     // 19xx - error

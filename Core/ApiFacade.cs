@@ -1,36 +1,30 @@
-﻿using DioRed.Api.Client;
+using DioRed.Api.Client;
 using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
 namespace DioRed.Murka.Core;
 
-internal class ApiFacade(ApiRequestBuilder api)
+internal interface IApiFacade
 {
-    public async Task<ICollection<ChatId>> GetChats()
-    {
-        var response = await api.Create("chats/get").GetAsync();
+    Task AddDayEvent(string name, string occurrence, string time, ChatId? chatId);
+    Task AddEvent(string name, string? validFrom, string? validTo);
+    Task AddPromocode(string code, string? validFrom, string? validTo, string content);
+    Task CleanupEvents();
+    Task CleanupPromocodes();
+    Task<ICollection<Event>> GetActiveEvents();
+    Task<ICollection<Promocode>> GetActivePromocodes();
+    Task<Daily> GetDaily(string date);
+    Task<ICollection<DayEvent>> GetDayEvents(string date, ChatId chatId);
+    Task<string> GetLink(string id);
+    Task<Northlands> GetNorthlands(string date);
+    Task<string> GetRandomGreeting();
+    Task RemovePromocode(string code);
+    Task SetDailyMonth(int month, string dailies);
+    Task UpdatePromocode(string code, string? validFrom, string? validTo, string content);
+}
 
-        return await response.AsAsync<ICollection<ChatId>>();
-    }
-
-    public async Task AddChat(BotSystem system, string type, long id, string title)
-    {
-        var response = await api.Create("chats/add")
-            .WithBody(new { system = system.ToString(), type, id, title })
-            .PostAsync();
-
-        response.EnsureSuccess();
-    }
-
-    public async Task RemoveChat(BotSystem system, long id)
-    {
-        var response = await api.Create("chats/remove")
-            .WithBody(new { system = system.ToString(), id })
-            .PostAsync();
-
-        response.EnsureSuccess();
-    }
-
+internal class ApiFacade(ApiRequestBuilder api) : IApiFacade
+{
     public async Task<Daily> GetDaily(string date)
     {
         var response = await api.Create("daily/get")

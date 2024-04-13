@@ -1,124 +1,253 @@
-﻿using DioRed.Murka.Core.Entities;
+using System.Text;
+
+using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 
 using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
 
-internal class Logic(ApiFacade api, ILoggerFactory logger) : ILogic
+public interface ILogic
+{
+    Task<string> GetRandomGreetingAsync();
+
+    Task<Daily> GetDailyAsync(DateOnly date);
+    Task SetDailyAsync(int monthNumber, string dailies);
+
+    Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId);
+    Task AddDayEventAsync(string name, string occurrence, TimeOnly time, ChatId? chatId);
+
+    Task<ICollection<Event>> GetActiveEventsAsync();
+    Task AddEventAsync(Event newEvent);
+
+    Task<ICollection<Promocode>> GetActivePromocodesAsync();
+    Task AddPromocodeAsync(Promocode promocode);
+    Task UpdatePromocodeAsync(Promocode promocode);
+    Task RemovePromocodeAsync(string code);
+
+    Task<Northlands> GetNorthLandsAsync(DateOnly date);
+
+    Task<string> GetLinkAsync(string id);
+
+    Task CleanupAsync();
+
+    Task<string> BuildAgendaAsync(ChatId chatId, DateOnly date);
+    string GetDaytimeGreeting(TimeOnly time);
+}
+
+internal class Logic(
+    IApiFacade api,
+    ILoggerFactory logger
+) : ILogic
 {
     private readonly ILogger _logger = logger.CreateLogger("Logic");
 
-    public void Cleanup()
+    public async Task CleanupAsync()
     {
-        _logger.LogInformation(EventIDs.CleanupStarted, "Storage cleanup started");
+        _logger.LogInformation(Events.CleanupStarted, "Storage cleanup started");
         try
         {
-            api.CleanupPromocodes().GetAwaiter().GetResult();
-            api.CleanupEvents().GetAwaiter().GetResult();
-            _logger.LogInformation(EventIDs.CleanupFinished, "Storage cleanup finished");
+            await api.CleanupPromocodes();
+            await api.CleanupEvents();
+
+            _logger.LogInformation(Events.CleanupFinished, "Storage cleanup finished");
         }
         catch (Exception ex)
         {
-            _logger.LogError(EventIDs.CleanupFailed, ex, "Storage cleanup failed");
+            _logger.LogError(Events.CleanupFailed, ex, "Storage cleanup failed");
         }
     }
 
-    public ICollection<Event> GetActiveEvents()
+    public async Task<string> BuildAgendaAsync(
+        ChatId chatId,
+        DateOnly date)
     {
-        return api.GetActiveEvents().GetAwaiter().GetResult();
+        StringBuilder builder = new();
+
+        // Greeting
+        builder.AppendLine(
+            GetDaytimeGreeting(
+                ServerDateTime.GetCurrent().Time!.Value
+            )
+        );
+
+        // Daily
+        var daily = await GetDailyAsync(date);
+        if (daily?.Definition != null)
+        {
+            builder.AppendLine(
+                $"Ежа: <b>{daily.Quest}</b> — {daily.Definition}."
+            );
+        }
+
+        // Northlands
+        Northlands northlands = await GetNorthLandsAsync(date);
+
+        builder.AppendLine($"""
+            Северные земли:
+            — войско богов: <b>{northlands.Gods}</b>.
+            — армия севера: <b>{northlands.North}</b>.
+            """
+        );
+
+        // DayEvents
+        builder
+            .Append("Ивенты ")
+            .Append(date.DayOfWeek switch
+            {
+                DayOfWeek.Monday => "в <i>понедельник</i>",
+                DayOfWeek.Tuesday => "во <i>вторник</i>",
+                DayOfWeek.Wednesday => "в <i>среду</i>",
+                DayOfWeek.Thursday => "в <i>четверг</i>",
+                DayOfWeek.Friday => "в <i>пятницу</i>",
+                DayOfWeek.Saturday => "в <i>субботу</i>",
+                _ => "в <i>воскресенье</i>"
+            });
+
+        ICollection<DayEvent> dayEvents = await GetDayEventsAsync(date, chatId);
+
+        if (dayEvents.Count == 0)
+        {
+            builder.Append(" <b>отсутствуют</b>");
+        }
+        else
+        {
+            builder.Append(':');
+
+            foreach (DayEvent dayEvent in dayEvents)
+            {
+                builder.Append($"""
+
+                    — <b>{dayEvent.Time:HH:mm}</b> — {dayEvent.Name}
+                    """
+                );
+            }
+        }
+
+        ICollection<Promocode> activePromocodes = await GetActivePromocodesAsync();
+
+        ICollection<Promocode> expiringPromocodes =
+        [
+            ..activePromocodes.Where(p => p.ValidTo?.Date == date)
+        ];
+
+        if (expiringPromocodes.Count != 0)
+        {
+            builder.AppendLine($"""
+
+
+                Последний день активации промокод{(expiringPromocodes.Count > 1 ? "ов" : "а")} {string.Join(
+                    ", ",
+                    expiringPromocodes.Select(ep => $"<code>{ep.Code}</code>")
+                )}.
+                """);
+        }
+
+        return builder.ToString();
     }
 
-    public ICollection<Promocode> GetActivePromocodes()
+    public string GetDaytimeGreeting(TimeOnly time)
     {
-        return api.GetActivePromocodes().GetAwaiter().GetResult();
+        return time.Hour switch
+        {
+            < 5 => "Доброй ночи! =^.^=",
+            < 12 => "Доброе утро! =^.^=",
+            < 18 => "Добрый день! =^.^=",
+            >= 18 => "Добрый вечер! =^.^="
+        };
     }
 
-    public Daily GetDaily(DateOnly date)
+    public async Task<ICollection<Event>> GetActiveEventsAsync()
     {
-        return api.GetDaily(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
+        return await api.GetActiveEvents();
     }
 
-    public ICollection<DayEvent> GetDayEvents(DateOnly date, ChatId chatId)
+    public async Task<ICollection<Promocode>> GetActivePromocodesAsync()
     {
-        return api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId).GetAwaiter().GetResult();
+        return await api.GetActivePromocodes();
     }
 
-    public Northlands GetNorthLands(DateOnly date)
-    {
-        return api.GetNorthlands(date.ToString(CommonValues.DateFormat)).GetAwaiter().GetResult();
-    }
-
-    public string GetRandomGreeting()
-    {
-        return api.GetRandomGreeting().GetAwaiter().GetResult();
-    }
-
-    public void AddChat(ChatId chatId, string title)
+    public async Task<Daily> GetDailyAsync(DateOnly date)
     {
         try
         {
-            api.AddChat(chatId.System, chatId.Type, chatId.Id, title).GetAwaiter().GetResult();
-            _logger.LogInformation(EventIDs.ChatAdded, "Chat {ChatId} ({Title}) added", chatId, title);
+            return await api.GetDaily(date.ToString(CommonValues.DateFormat));
         }
         catch (Exception ex)
         {
-            _logger.LogError(EventIDs.ChatAddFailure, ex, "Chat {ChatId} ({Title}) add failure", chatId, title);
+            Console.WriteLine(ex);
             throw;
         }
     }
 
-    public ICollection<ChatId> GetChats()
+    public async Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId)
     {
-        return api.GetChats().GetAwaiter().GetResult();
+        return await api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId);
     }
 
-    public void RemoveChat(ChatId chatId)
+    public async Task<Northlands> GetNorthLandsAsync(DateOnly date)
     {
-        try
-        {
-            api.RemoveChat(chatId.System, chatId.Id).GetAwaiter().GetResult();
-            _logger.LogInformation(EventIDs.ChatRemoved, "Chat {ChatId} removed", chatId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(EventIDs.ChatRemoveFailure, ex, "Chat {ChatId} remove failure", chatId);
-            throw;
-        }
+        return await api.GetNorthlands(date.ToString(CommonValues.DateFormat));
     }
 
-    public void AddEvent(Event newEvent)
+    public async Task<string> GetRandomGreetingAsync()
     {
-        api.AddEvent(newEvent.Name, newEvent.ValidFrom?.ToString(), newEvent.ValidTo?.ToString()).GetAwaiter().GetResult();
+        return await api.GetRandomGreeting();
     }
 
-    public void AddPromocode(Promocode promocode)
+    public async Task AddEventAsync(
+        Event newEvent
+    )
     {
-        api.AddPromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
+        await api.AddEvent(
+            newEvent.Name,
+            newEvent.ValidFrom?.ToString(),
+            newEvent.ValidTo?.ToString()
+        );
     }
 
-    public void AddDayEvent(string name, string occurrence, TimeOnly time, ChatId? chatId)
+    public async Task AddPromocodeAsync(Promocode promocode)
     {
-        api.AddDayEvent(name, occurrence, time.ToString(CommonValues.TimeFormat), chatId).GetAwaiter().GetResult();
+        await api.AddPromocode(
+            promocode.Code,
+            promocode.ValidFrom?.ToString(),
+            promocode.ValidTo?.ToString(),
+            promocode.Content
+        );
     }
 
-    public void SetDaily(int month, string dailies)
+    public async Task AddDayEventAsync(string name, string occurrence, TimeOnly time, ChatId? chatId)
     {
-        api.SetDailyMonth(month, dailies).GetAwaiter().GetResult();
+        await api.AddDayEvent(
+            name,
+            occurrence,
+            time.ToString(CommonValues.TimeFormat),
+            chatId
+        );
     }
 
-    public void UpdatePromocode(Promocode promocode)
+    public async Task SetDailyAsync(int month, string dailies)
     {
-        api.UpdatePromocode(promocode.Code, promocode.ValidFrom?.ToString(), promocode.ValidTo?.ToString(), promocode.Content).GetAwaiter().GetResult();
+        await api.SetDailyMonth(month, dailies);
     }
 
-    public void RemovePromocode(string code)
+    public async Task UpdatePromocodeAsync(Promocode promocode)
     {
-        api.RemovePromocode(code).GetAwaiter().GetResult();
+        await api.UpdatePromocode(
+            promocode.Code,
+            promocode.ValidFrom?.ToString(),
+            promocode.ValidTo?.ToString(),
+            promocode.Content
+        );
     }
 
-    public string GetLink(string id)
+    public async Task RemovePromocodeAsync(string code)
     {
-        return api.GetLink(id).GetAwaiter().GetResult();
+        await api.RemovePromocode(code);
+    }
+
+    public async Task<string> GetLinkAsync(string id)
+    {
+        return await api.GetLink(id);
     }
 }
