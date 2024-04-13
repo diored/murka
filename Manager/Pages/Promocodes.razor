@@ -1,8 +1,7 @@
-﻿@page "/promocodes"
+@page "/promocodes"
 
 @using DioRed.Murka.Manager.Components
 @using DioRed.Murka.Manager.Models
-@using DioRed.Murka.Services
 @using Grpc.Net.Client
 @using Grpc.Net.Client.Web
 @using System.ComponentModel.DataAnnotations
@@ -49,7 +48,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _promocodes = Data.GetActivePromocodes();
+        _promocodes = await Data.GetActivePromocodesAsync();
 
         await base.OnInitializedAsync();
     }
@@ -78,10 +77,10 @@ else
             return;
         }
 
-        var added = (PromocodeModel)result.Data;
+        var added = (PromocodeModel)result.Data!;
         try
         {
-            if (Data.AddPromocode(added))
+            if (await Data.AddPromocodeAsync(added))
             {
                 _promocodes!.Add(added);
 

@@ -22,13 +22,13 @@ builder.Services.AddSingleton(services =>
     return GrpcChannel.ForAddress(builder.Configuration["serviceUrl"]!, new GrpcChannelOptions { HttpHandler = httpHandler });
 });
 
-builder.Services.AddMurkaBot(builder.Configuration);
+builder.Services.AddMurkaDependencies(builder.Configuration);
 
 builder.Services.AddBlazoredModal();
 
 builder.Services.AddSingleton<DataProvider>();
 
 var app = builder.Build();
-app.Services.UseMurkaBot();
+//app.Services.UseMurkaBot();
 
 await app.RunAsync();

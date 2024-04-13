@@ -1,4 +1,4 @@
-﻿using DioRed.Murka.Core;
+using DioRed.Murka.Core;
 using DioRed.Murka.Core.Entities;
 using DioRed.Murka.Manager.Models;
 
@@ -6,9 +6,9 @@ namespace DioRed.Murka.Manager.Data;
 
 public class DataProvider(ILogic logic)
 {
-    public List<PromocodeModel> GetActivePromocodes()
+    public async Task<List<PromocodeModel>> GetActivePromocodesAsync()
     {
-        var active = logic.GetActivePromocodes();
+        var active = await logic.GetActivePromocodesAsync();
 
         return active
             .Select(item => new PromocodeModel
@@ -21,7 +21,7 @@ public class DataProvider(ILogic logic)
             .ToList();
     }
 
-    public bool AddPromocode(PromocodeModel promocode)
+    public async Task<bool> AddPromocodeAsync(PromocodeModel promocode)
     {
         var entity = new Promocode
         (
@@ -33,7 +33,7 @@ public class DataProvider(ILogic logic)
 
         try
         {
-            logic.AddPromocode(entity);
+            await logic.AddPromocodeAsync(entity);
             return true;
         }
         catch
@@ -54,7 +54,7 @@ public class DataProvider(ILogic logic)
 
         try
         {
-            logic.UpdatePromocode(entity);
+            logic.UpdatePromocodeAsync(entity);
             return true;
         }
         catch
@@ -68,7 +68,7 @@ public class DataProvider(ILogic logic)
     {
         try
         {
-            logic.RemovePromocode(promocode.Code);
+            logic.RemovePromocodeAsync(promocode.Code);
             return true;
         }
         catch
