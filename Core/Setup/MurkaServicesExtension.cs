@@ -62,7 +62,7 @@ public static class MurkaServicesExtension
                     }
                 );
             },
-            TimeOnly.FromDateTime(DateTime.Now.AddSeconds(10)),
+            TimeOnly.MinValue,
             CommonValues.ServerTimeZoneShift,
             "Cleanup and agenda"
         );
