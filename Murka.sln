@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "Graphics\Graphi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vermilion", "Vermilion", "{5068464B-FF5E-4830-A8EC-E365332194BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DioRed.Vermilion.Core", "..\vermilion\Core\DioRed.Vermilion.Core.csproj", "{083BDC6E-C65C-44BA-B47F-40C6584B2DBB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureTable", "..\vermilion\ChatStorage\AzureTable\AzureTable.csproj", "{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telegram", "..\vermilion\Subsystems\Telegram\Telegram.csproj", "{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "..\vermilion\Core\Core.csproj", "{23231088-CE77-44F9-AFC5-24EEF164FD01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,10 +50,6 @@ Global
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.DebugEngine|Any CPU.Build.0 = Debug|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{083BDC6E-C65C-44BA-B47F-40C6584B2DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{083BDC6E-C65C-44BA-B47F-40C6584B2DBB}.DebugEngine|Any CPU.ActiveCfg = Debug|Any CPU
-		{083BDC6E-C65C-44BA-B47F-40C6584B2DBB}.DebugEngine|Any CPU.Build.0 = Debug|Any CPU
-		{083BDC6E-C65C-44BA-B47F-40C6584B2DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}.DebugEngine|Any CPU.ActiveCfg = DebugEngine|Any CPU
 		{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}.DebugEngine|Any CPU.Build.0 = DebugEngine|Any CPU
@@ -62,14 +58,20 @@ Global
 		{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}.DebugEngine|Any CPU.ActiveCfg = DebugEngine|Any CPU
 		{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}.DebugEngine|Any CPU.Build.0 = DebugEngine|Any CPU
 		{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.DebugEngine|Any CPU.ActiveCfg = Debug|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.DebugEngine|Any CPU.Build.0 = Debug|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23231088-CE77-44F9-AFC5-24EEF164FD01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{083BDC6E-C65C-44BA-B47F-40C6584B2DBB} = {5068464B-FF5E-4830-A8EC-E365332194BE}
 		{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA} = {5068464B-FF5E-4830-A8EC-E365332194BE}
 		{1D951E30-A3F5-4CB5-8C15-BBBC3590F002} = {5068464B-FF5E-4830-A8EC-E365332194BE}
+		{23231088-CE77-44F9-AFC5-24EEF164FD01} = {5068464B-FF5E-4830-A8EC-E365332194BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C450A17-B597-445D-9BCB-34CF96B0CBFC}

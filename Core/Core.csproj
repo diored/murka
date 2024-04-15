@@ -20,13 +20,13 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
+    <ProjectReference Include="..\..\vermilion\Core\Core.csproj" />
     <ProjectReference Include="..\..\vermilion\ChatStorage\AzureTable\AzureTable.csproj" />
-    <ProjectReference Include="..\..\vermilion\Core\DioRed.Vermilion.Core.csproj" />
     <ProjectReference Include="..\..\vermilion\Subsystems\Telegram\Telegram.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-    <PackageReference Include="DioRed.Vermilion" Version="11.0.2" />
+    <PackageReference Include="DioRed.Vermilion" Version="11.0.3" />
   </ItemGroup>
 
 </Project>
