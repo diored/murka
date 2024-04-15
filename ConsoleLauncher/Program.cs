@@ -9,11 +9,15 @@ using DioRed.Vermilion.Subsystems.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 Console.OutputEncoding = Encoding.UTF8;
 
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureLogging(logging => logging.SetupDioRedLogging("Murka"))
+    .ConfigureLogging(logging => logging
+        .SetupDioRedLogging("Murka")
+        .AddConsole()
+    )
     .ConfigureServices((context, services) => services
         .AddMurkaDependencies(context.Configuration)
         .AddVermilion(builder => builder

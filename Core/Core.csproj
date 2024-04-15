@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-    <PackageReference Include="DioRed.Vermilion.Complete" Version="11.0.0" />
+    <PackageReference Include="DioRed.Vermilion" Version="11.0.2" />
   </ItemGroup>
 
 </Project>

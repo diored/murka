@@ -169,15 +169,7 @@ internal class Logic(
 
     public async Task<Daily> GetDailyAsync(DateOnly date)
     {
-        try
-        {
-            return await api.GetDaily(date.ToString(CommonValues.DateFormat));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            throw;
-        }
+        return await api.GetDaily(date.ToString(CommonValues.DateFormat));
     }
 
     public async Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId)
