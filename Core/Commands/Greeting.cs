@@ -38,6 +38,6 @@ public partial class Greeting(
         return true;
     }
 
-    [GeneratedRegex("(?:привет|доброе утро|добрый день|добрый вечер|здравствуйте)")]
+    [GeneratedRegex(".*(?:привет|доброе утро|добрый день|добрый вечер|здравствуйте).*")]
     private static partial Regex GreetingRegex();
 }
