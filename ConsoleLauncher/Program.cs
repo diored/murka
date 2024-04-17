@@ -16,7 +16,11 @@ Console.OutputEncoding = Encoding.UTF8;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging(logging => logging
         .SetupDioRedLogging("Murka")
-        .AddConsole()
+        .AddSimpleConsole(options =>
+        {
+            options.SingleLine = true;
+            options.TimestampFormat = "[HH:mm:ss] ";
+        })
     )
     .ConfigureServices((context, services) => services
         .AddMurkaDependencies(context.Configuration)
@@ -33,14 +37,7 @@ IHost host = Host.CreateDefaultBuilder(args)
 
 host.Services.SetupMurkaJobs();
 
-Console.WriteLine("""
-    Bot has been started.
-    Press Ctrl+C to stop the bot.
-    """);
-
 await host.RunAsync();
-
-Console.WriteLine("Bot has been stopped.");
 return;
 
 static string ReadRequired(
