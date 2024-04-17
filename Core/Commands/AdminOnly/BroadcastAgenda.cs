@@ -14,7 +14,6 @@ public class BroadcastAgenda(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/agenda!" },
-        HasTail = false,
         LogHandling = true,
         RequiredRole = UserRole.SuperAdmin
     };
@@ -24,19 +23,23 @@ public class BroadcastAgenda(
         Feedback feedback
     )
     {
-        DateOnly date = context.Message.Command is "/tomorrow" or "завтра"
-            ? ServerDateTime.GetCurrent().Date.AddDays(1)
-            : ServerDateTime.GetCurrent().Date;
-
         Func<ChatId, Task<IContent>> buildAgenda = async (ChatId chatId) => new HtmlContent
         {
             Html = await logic.BuildAgendaAsync(
                 chatId,
-                date
+                ServerDateTime.GetCurrent().Date
             )
         };
 
-        await feedback.ToEveryone().ContentAsync(buildAgenda);
+        if (context.Message.Args.Count > 0 &&
+            long.TryParse(context.Message.Args[0], out long receiverId))
+        {
+            await feedback.To(chatId => chatId.Id == receiverId).ContentAsync(buildAgenda);
+        }
+        else
+        {
+            await feedback.ToEveryone().ContentAsync(buildAgenda);
+        }
 
         return true;
     }

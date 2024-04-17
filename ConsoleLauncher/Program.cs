@@ -48,5 +48,5 @@ static string ReadRequired(
     string keyName
 )
 {
-    return configuration[keyName] ?? throw new InvalidOperationException($"""Cannot read "${keyName}" value""");
+    return configuration[keyName] ?? throw new InvalidOperationException($"""Cannot read "{keyName}" value""");
 }
