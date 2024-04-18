@@ -49,7 +49,7 @@ public class CleanConsoleLogger : ILogger
         };
 
         string suffix = eventId != 0
-            ? " [darkseagreen4]#{eventId}[/]"
+            ? $" [darkseagreen4]#{eventId}[/]"
             : "";
 
         AnsiConsole.MarkupLine($"{timestamp}[{messageColor}]{message}[/]{suffix}");
