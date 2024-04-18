@@ -35,7 +35,9 @@ public class CleanConsoleLogger : ILogger
         }
 
         string message = formatter(state, exception);
+
         string timestamp = $"[lime]{DateTime.Now:HH:mm:ss}[/] • ";
+
         string messageColor = logLevel switch
         {
             LogLevel.Trace => "grey",
@@ -46,7 +48,11 @@ public class CleanConsoleLogger : ILogger
             _ => "silver"
         };
 
-        AnsiConsole.MarkupLine($"{timestamp}[{messageColor}]{message}[/]");
+        string suffix = eventId != 0
+            ? " [darkseagreen4]#{eventId}[/]"
+            : "";
+
+        AnsiConsole.MarkupLine($"{timestamp}[{messageColor}]{message}[/]{suffix}");
 
         if (exception is not null)
         {
