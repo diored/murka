@@ -2,7 +2,6 @@ using System.Text;
 
 using DioRed.Common.AzureStorage;
 using DioRed.Common.Logging;
-using DioRed.Murka.ConsoleLauncher;
 using DioRed.Vermilion;
 using DioRed.Vermilion.ChatStorage;
 using DioRed.Vermilion.Subsystems.Telegram;
@@ -14,10 +13,7 @@ using Microsoft.Extensions.Hosting;
 Console.OutputEncoding = Encoding.UTF8;
 
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureLogging(logging => logging
-        .SetupDioRedLogging("Murka")
-        .AddCleanConsole()
-    )
+    .ConfigureLogging(logging => logging.AddDioRedLogging("Murka"))
     .ConfigureServices((context, services) => services
         .AddMurkaDependencies(context.Configuration)
         .AddVermilion(builder => builder
