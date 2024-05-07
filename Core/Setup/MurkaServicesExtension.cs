@@ -68,7 +68,8 @@ public static class MurkaServicesExtension
         );
 
         job.LogInfo += (_, message) => logger.LogInformation(
-            "[mediumspringgreen]{Message}[/]",
+            Events.JobsOutput,
+            "{Message}",
             message
         );
 

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DioRed.Murka.Core;
 
-internal static class Events
+public static class Events
 {
     // 1xxx — message handling
     // 19xx - error
@@ -23,4 +23,7 @@ internal static class Events
     // 32xx - chat removing
     public static EventId ChatRemoved { get; } = new EventId(3200, "Chat removed");
     public static EventId ChatRemoveFailure { get; } = new EventId(3290, "Chat remove failure");
+
+    // 4xxx - jobs
+    public static EventId JobsOutput { get; } = new EventId(4000, "Job output");
 }
