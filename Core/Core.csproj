@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="DioRed.Api.Client" Version="2.2.1" />
-    <PackageReference Include="DioRed.Common.Jobs" Version="1.2.0" />
+    <PackageReference Include="DioRed.Common.Jobs" Version="1.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
   </ItemGroup>

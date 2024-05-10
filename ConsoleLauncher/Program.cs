@@ -3,6 +3,7 @@ using System.Text;
 using DioRed.Common.AzureStorage;
 using DioRed.Common.Logging;
 using DioRed.Murka.Core;
+using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 using DioRed.Vermilion.ChatStorage;
 using DioRed.Vermilion.Subsystems.Telegram;
@@ -16,10 +17,14 @@ Console.OutputEncoding = Encoding.UTF8;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging(logging => logging.UseDioRedLogging(
         "Murka",
-        options => options.EventColors.Add(
-            Events.JobsOutput,
-            "mediumspringgreen"
-        )
+        options =>
+        {
+            options.EventColors.Add(
+                Events.JobsOutput,
+                "mediumspringgreen"
+            );
+            options.DateTimeOffset = CommonValues.ServerTimeZoneShift;
+        }
     ))
     .ConfigureServices((context, services) => services
         .AddMurkaDependencies(context.Configuration)

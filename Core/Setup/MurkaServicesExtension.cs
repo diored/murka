@@ -62,15 +62,29 @@ public static class MurkaServicesExtension
                     }
                 );
             },
-            TimeOnly.MinValue,
-            CommonValues.ServerTimeZoneShift,
-            "Cleanup and agenda"
+            timeOfDay: TimeOnly.MinValue,
+            timeZoneOffset: CommonValues.ServerTimeZoneShift,
+            id: "Cleanup and agenda"
         );
 
-        job.LogInfo += (_, message) => logger.LogInformation(
+        job.Started += (_, _) => logger.LogInformation(
             Events.JobsOutput,
-            "{Message}",
-            message
+            """Job "{JobId}" started""",
+            job.Id
+        );
+
+        job.Finished += (_, _) => logger.LogInformation(
+            Events.JobsOutput,
+            """Job "{JobId}" finished""",
+            job.Id
+        );
+
+        job.Scheduled += (_, eventArgs) => logger.LogInformation(
+            Events.JobsOutput,
+            """Next occurrence of the job "{JobId}" is scheduled at {NextOccurrence} (in {TimeLeft})""",
+            job.Id,
+            eventArgs.NextOccurrence.ToString("u"),
+            (eventArgs.NextOccurrence - DateTimeOffset.Now).ToString("c")
         );
 
         job.Start();
