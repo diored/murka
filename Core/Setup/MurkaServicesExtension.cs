@@ -64,6 +64,7 @@ public static class MurkaServicesExtension
             },
             timeOfDay: TimeOnly.MinValue,
             timeZoneOffset: CommonValues.ServerTimeZoneShift,
+            repeatNumber: 0,
             id: "Cleanup and agenda"
         );
 
@@ -81,7 +82,8 @@ public static class MurkaServicesExtension
 
         job.Scheduled += (_, eventArgs) => logger.LogInformation(
             Events.JobsOutput,
-            """Next occurrence of the job "{JobId}" is scheduled at {NextOccurrence} (in {TimeLeft})""",
+            """Next occurrence (#{OcurrenceNumber}) of the job "{JobId}" is scheduled at {NextOccurrence} (in {TimeLeft})""",
+            eventArgs.OccurrenceNumber,
             job.Id,
             eventArgs.NextOccurrence.ToString("u"),
             (eventArgs.NextOccurrence - DateTimeOffset.Now).ToString("c")
