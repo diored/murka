@@ -28,7 +28,7 @@ IHost host = Host.CreateDefaultBuilder(args)
                 accountName: ReadRequired(context.Configuration, "Vermilion:AzureTable:AccountName"),
                 accountKey: ReadRequired(context.Configuration, "Vermilion:AzureTable:AccountKey")
             ))
-            .AddCommandHandlersFromAssembly(typeof(Program).Assembly)
+            .AddCommandHandlersFromAssembly(typeof(MurkaServicesExtension).Assembly)
             .AddTelegram()
         )
     )

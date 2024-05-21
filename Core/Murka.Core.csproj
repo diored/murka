@@ -19,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
-    <ProjectReference Include="..\..\vermilion\Core\Core.csproj" />
-    <ProjectReference Include="..\..\vermilion\ChatStorage\AzureTable\AzureTable.csproj" />
-    <ProjectReference Include="..\..\vermilion\Subsystems\Telegram\Telegram.csproj" />
+    <ProjectReference Include="..\..\vermilion\Core\Vermilion.Core.csproj" />
+    <ProjectReference Include="..\..\vermilion\ChatStorage\AzureTable\Vermilion.ChatStorage.AzureTable.csproj" />
+    <ProjectReference Include="..\..\vermilion\Subsystems\Telegram\Vermilion.Subsystems.Telegram.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
