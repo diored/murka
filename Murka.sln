@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{CC2353B7-09D3-4EF9-A733-61242420197C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Core", "Core\Murka.Core.csproj", "{CC2353B7-09D3-4EF9-A733-61242420197C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleLauncher", "ConsoleLauncher\ConsoleLauncher.csproj", "{F5F73F0B-9038-45C1-842F-9D7CED620224}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.ConsoleLauncher", "ConsoleLauncher\Murka.ConsoleLauncher.csproj", "{F5F73F0B-9038-45C1-842F-9D7CED620224}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manager", "Manager\Manager.csproj", "{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Manager", "Manager\Murka.Manager.csproj", "{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "Graphics\Graphics.csproj", "{12EB3238-738A-46C2-98CA-C524C7FE2B99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Graphics", "Graphics\Murka.Graphics.csproj", "{12EB3238-738A-46C2-98CA-C524C7FE2B99}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vermilion", "Vermilion", "{5068464B-FF5E-4830-A8EC-E365332194BE}"
 EndProject

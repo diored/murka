@@ -44,17 +44,17 @@ internal class Logic(
 
     public async Task CleanupAsync()
     {
-        _logger.LogInformation(Events.CleanupStarted, "Storage cleanup started");
+        _logger.LogInformation(MurkaEvents.CleanupStarted, "Storage cleanup started");
         try
         {
             await api.CleanupPromocodes();
             await api.CleanupEvents();
 
-            _logger.LogInformation(Events.CleanupFinished, "Storage cleanup finished");
+            _logger.LogInformation(MurkaEvents.CleanupFinished, "Storage cleanup finished");
         }
         catch (Exception ex)
         {
-            _logger.LogError(Events.CleanupFailed, ex, "Storage cleanup failed");
+            _logger.LogError(MurkaEvents.CleanupFailed, ex, "Storage cleanup failed");
         }
     }
 
