@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Graphics", "Graphics\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vermilion", "Vermilion", "{5068464B-FF5E-4830-A8EC-E365332194BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureTable", "..\vermilion\ChatStorage\AzureTable\AzureTable.csproj", "{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vermilion.ChatStorage.AzureTable", "..\vermilion\ChatStorage\AzureTable\Vermilion.ChatStorage.AzureTable.csproj", "{D4013AF3-8FF3-46DE-BB33-98FB1FE4E5FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telegram", "..\vermilion\Subsystems\Telegram\Telegram.csproj", "{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vermilion.Subsystems.Telegram", "..\vermilion\Subsystems\Telegram\Vermilion.Subsystems.Telegram.csproj", "{1D951E30-A3F5-4CB5-8C15-BBBC3590F002}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "..\vermilion\Core\Core.csproj", "{23231088-CE77-44F9-AFC5-24EEF164FD01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vermilion.Core", "..\vermilion\Core\Vermilion.Core.csproj", "{23231088-CE77-44F9-AFC5-24EEF164FD01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
