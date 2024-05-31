@@ -19,6 +19,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             options.EventColors.Add(Events.JobScheduled, "mediumspringgreen");
 
             options.DateTimeOffset = CommonValues.ServerTimeZoneShift;
+
+            options.ExceptionFormat = Spectre.Console.ExceptionFormats.ShortenEverything;
         }
     ))
     .ConfigureServices((context, services) => services
