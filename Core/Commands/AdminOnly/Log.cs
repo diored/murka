@@ -1,4 +1,3 @@
-using DioRed.Vermilion;
 using DioRed.Vermilion.Handling;
 using DioRed.Vermilion.Handling.Context;
 using DioRed.Vermilion.Interaction;
@@ -14,8 +13,6 @@ public class Log(
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/log",
-        HasTail = true,
-        RequiredRole = UserRole.SuperAdmin,
         LogHandling = false
     };
 
@@ -24,7 +21,12 @@ public class Log(
         Feedback feedback
     )
     {
-        logger.LogInformation("{Message}", context.Message.Tail);
+        logger.LogInformation(
+            "Message: {Message}, Sender: {Sender}, Chat: {Chat}",
+            context.Message.Tail,
+            (context.Sender.Id, context.Sender.Role, context.Sender.Name),
+            (context.Chat.Id, context.Chat.Title)
+        );
 
         return Task.FromResult(true);
     }

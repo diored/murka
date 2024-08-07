@@ -43,11 +43,11 @@ public static class MurkaServicesExtension
                 await logic.CleanupAsync();
 
                 await botCore.PostAsync(
-                    Receiver.Everyone,
-                    async chatId => new HtmlContent
+                    Receiver.Broadcast(chatInfo => !chatInfo.Tags.Contains("no-agenda")),
+                    async chatInfo => new HtmlContent
                     {
                         Html = await logic.BuildAgendaAsync(
-                            chatId,
+                            chatInfo.ChatId,
                             ServerDateTime.GetCurrent().Date
                         )
                     }

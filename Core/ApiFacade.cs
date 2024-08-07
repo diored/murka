@@ -23,7 +23,9 @@ internal interface IApiFacade
     Task UpdatePromocode(string code, string? validFrom, string? validTo, string content);
 }
 
-internal class ApiFacade(ApiRequestBuilder api) : IApiFacade
+internal class ApiFacade(
+    ApiRequestBuilder api
+) : IApiFacade
 {
     public async Task<Daily> GetDaily(string date)
     {

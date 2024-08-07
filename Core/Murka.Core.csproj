@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DioRed.Api.Client" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.2" />
+    <PackageReference Include="DioRed.Api.Client" Version="2.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-    <PackageReference Include="DioRed.Vermilion" Version="11.5.2" />
+    <PackageReference Include="DioRed.Vermilion" Version="12.0.0-preview.4" />
   </ItemGroup>
 
 </Project>

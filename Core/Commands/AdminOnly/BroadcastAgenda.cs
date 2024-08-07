@@ -23,10 +23,10 @@ public class BroadcastAgenda(
         Feedback feedback
     )
     {
-        Func<ChatId, Task<IContent>> buildAgenda = async (ChatId chatId) => new HtmlContent
+        async Task<IContent> buildAgenda(ChatInfo chatInfo) => new HtmlContent
         {
             Html = await logic.BuildAgendaAsync(
-                chatId,
+                chatInfo.ChatId,
                 ServerDateTime.GetCurrent().Date
             )
         };
@@ -34,7 +34,7 @@ public class BroadcastAgenda(
         if (context.Message.Args.Count > 0 &&
             long.TryParse(context.Message.Args[0], out long receiverId))
         {
-            await feedback.To(chatId => chatId.Id == receiverId).ContentAsync(buildAgenda);
+            await feedback.To(chatInfo => chatInfo.ChatId.Id == receiverId).ContentAsync(buildAgenda);
         }
         else
         {
