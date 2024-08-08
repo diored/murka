@@ -21,11 +21,28 @@ public class Log(
         Feedback feedback
     )
     {
+        string message = string.IsNullOrWhiteSpace(context.Message.Tail)
+            ? "<empty>"
+            : context.Message.Tail;
+
+        var sender = new
+        {
+            context.Sender.Name,
+            context.Sender.Id,
+            context.Sender.Role
+        };
+
+        var chat = new
+        {
+            context.Chat.Id,
+            context.Chat.Title
+        };
+
         logger.LogInformation(
             "Message: {Message}, Sender: {Sender}, Chat: {Chat}",
-            context.Message.Tail,
-            (context.Sender.Id, context.Sender.Role, context.Sender.Name),
-            (context.Chat.Id, context.Chat.Title)
+            message,
+            sender,
+            chat
         );
 
         return Task.FromResult(true);
