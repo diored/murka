@@ -1,3 +1,4 @@
+using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Handling;
 using DioRed.Vermilion.Handling.Context;
@@ -59,16 +60,16 @@ public class AddDayEvent(
             return false;
         }
 
-        string? occurrence = occurrenceString.ToLowerInvariant() switch
+        Occurrence? occurrence = occurrenceString.ToLowerInvariant() switch
         {
-            "daily" => "daily",
-            "mo" or "monday" or "1" => "weekly:1",
-            "tu" or "tuesday" or "2" => "weekly:2",
-            "we" or "wednesday" or "3" => "weekly:3",
-            "th" or "thursday" or "4" => "weekly:4",
-            "fr" or "friday" or "5" => "weekly:5",
-            "sa" or "saturday" or "6" => "weekly:6",
-            "su" or "sunday" or "7" or "0" => "weekly:0",
+            "daily" => Occurrence.Daily(time),
+            "mo" or "monday" or "1" => Occurrence.Weekly(DayOfWeek.Monday, time),
+            "tu" or "tuesday" or "2" => Occurrence.Weekly(DayOfWeek.Tuesday, time),
+            "we" or "wednesday" or "3" => Occurrence.Weekly(DayOfWeek.Wednesday, time),
+            "th" or "thursday" or "4" => Occurrence.Weekly(DayOfWeek.Thursday, time),
+            "fr" or "friday" or "5" => Occurrence.Weekly(DayOfWeek.Friday, time),
+            "sa" or "saturday" or "6" => Occurrence.Weekly(DayOfWeek.Saturday, time),
+            "su" or "sunday" or "7" or "0" => Occurrence.Weekly(DayOfWeek.Sunday, time),
             _ => null
         };
 
@@ -80,7 +81,6 @@ public class AddDayEvent(
         await logic.AddDayEventAsync(
             name,
             occurrence,
-            time,
             isGlobal ? null : context.Chat.Id
         );
 

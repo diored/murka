@@ -1,17 +1,19 @@
-using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion.Handling;
 using DioRed.Vermilion.Handling.Context;
+using DioRed.Vermilion.Handling.Templates;
 using DioRed.Vermilion.Interaction;
 
 namespace DioRed.Murka.Core.Commands;
 
-public class ShowAgenda(
-    ILogic logic
+public abstract class ShowAgendaBase(
+    ILogic logic,
+    Template template,
+    Func<DateOnly> getDateFunc
 ) : ICommandHandler
 {
     public CommandDefinition Definition { get; } = new()
     {
-        Template = new[] { "/daily", "сводка", "/tomorrow", "завтра" },
+        Template = template,
         HasTail = false,
         LogHandling = true
     };
@@ -21,9 +23,7 @@ public class ShowAgenda(
         Feedback feedback
     )
     {
-        DateOnly date = context.Message.Command is "/tomorrow" or "завтра"
-            ? ServerDateTime.GetCurrent().Date.AddDays(1)
-            : ServerDateTime.GetCurrent().Date;
+        DateOnly date = getDateFunc();
 
         string agenda = await logic.BuildAgendaAsync(
             context.Chat.Id,

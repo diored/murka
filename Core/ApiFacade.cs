@@ -6,7 +6,7 @@ namespace DioRed.Murka.Core;
 
 internal interface IApiFacade
 {
-    Task AddDayEvent(string name, string occurrence, string time, ChatId? chatId);
+    Task AddDayEvent(string name, string occurrenceString, string time, ChatId? chatId);
     Task AddEvent(string name, string? validFrom, string? validTo);
     Task AddPromocode(string code, string? validFrom, string? validTo, string content);
     Task CleanupEvents();
@@ -59,10 +59,10 @@ internal class ApiFacade(
         return await response.AsAsync<ICollection<DayEvent>>();
     }
 
-    public async Task AddDayEvent(string name, string occurrence, string time, ChatId? chatId)
+    public async Task AddDayEvent(string name, string occurrenceString, string time, ChatId? chatId)
     {
         var response = await api.Create("dayevents/add")
-            .WithBody(new { name, occurrence, time, chatId })
+            .WithBody(new { name, occurrence = occurrenceString, time, chatId })
             .PostAsync();
 
         response.EnsureSuccess();

@@ -15,7 +15,7 @@ public interface ILogic
     Task SetDailyAsync(int monthNumber, string dailies);
 
     Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId);
-    Task AddDayEventAsync(string name, string occurrence, TimeOnly time, ChatId? chatId);
+    Task AddDayEventAsync(string name, Occurrence occurrence, ChatId? chatId);
 
     Task<ICollection<Event>> GetActiveEventsAsync();
     Task AddEventAsync(Event newEvent);
@@ -208,12 +208,19 @@ internal class Logic(
         );
     }
 
-    public async Task AddDayEventAsync(string name, string occurrence, TimeOnly time, ChatId? chatId)
+    public async Task AddDayEventAsync(string name, Occurrence occurrence, ChatId? chatId)
     {
+        string occurrenceString = occurrence switch
+        {
+            DailyOccurrence => "daily",
+            WeeklyOccurrence wo => $"weekly:{(int)wo.DayOfWeek}",
+            _ => throw new InvalidOperationException("Unexpected occurrence value")
+        };
+
         await api.AddDayEvent(
             name,
-            occurrence,
-            time.ToString(CommonValues.TimeFormat),
+            occurrenceString,
+            occurrence.Time.ToString(CommonValues.TimeFormat),
             chatId
         );
     }
