@@ -1,10 +1,7 @@
-using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion.Hosting;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-Defaults.ConsoleLoggerTimeZone = CommonValues.ServerTimeZoneShift;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .BuildDefaultVermilionHost(
@@ -16,4 +13,3 @@ IHost host = Host.CreateDefaultBuilder(args)
 host.Services.SetupMurkaJobs();
 
 await host.RunAsync();
-return;
