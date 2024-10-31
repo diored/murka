@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="DioRed.Common.Logging" Version="4.5.2" />
-    <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.1.1" />
+    <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
   </ItemGroup>
 
