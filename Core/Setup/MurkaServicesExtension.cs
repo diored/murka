@@ -1,14 +1,10 @@
 using DioRed.Api.Client;
 using DioRed.Auth.Client;
-using DioRed.Murka.Core;
-using DioRed.Murka.Core.Entities;
-using DioRed.Vermilion;
-using DioRed.Vermilion.Interaction.Content;
-using DioRed.Vermilion.Interaction.Receivers;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace DioRed.Murka.Core.Setup;
 
 public static class MurkaServicesExtension
 {
@@ -29,34 +25,5 @@ public static class MurkaServicesExtension
             })
             .AddSingleton<IApiFacade, ApiFacade>()
             .AddSingleton<ILogic, Logic>();
-    }
-
-    public static IServiceProvider SetupMurkaJobs(
-        this IServiceProvider services
-    )
-    {
-        return services.SetupDailyJob(
-            async (services, botCore) =>
-            {
-                ILogic logic = services.GetRequiredService<ILogic>();
-
-                await logic.CleanupAsync();
-
-                await botCore.PostAsync(
-                    Receiver.Broadcast(chatInfo => !chatInfo.Tags.Contains("no-agenda")),
-                    async chatInfo => new HtmlContent
-                    {
-                        Html = await logic.BuildAgendaAsync(
-                            chatInfo.ChatId,
-                            ServerDateTime.GetCurrent().Date
-                        )
-                    }
-                );
-            },
-            timeOfDay: TimeOnly.MinValue,
-            timeZoneOffset: CommonValues.ServerTimeZoneShift,
-            repeatNumber: 0,
-            id: "Cleanup and agenda"
-        );
     }
 }

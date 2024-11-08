@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
-    <PackageReference Include="DioRed.Vermilion.ChatStorage.AzureTable" Version="12.1.2" />
-    <PackageReference Include="DioRed.Vermilion.Core" Version="12.1.1" />
-    <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.1.1" />
+    <PackageReference Include="DioRed.Vermilion.ChatStorage.AzureTable" Version="12.2.0-preview.1" />
+    <PackageReference Include="DioRed.Vermilion.Core" Version="12.2.0-preview.3" />
+    <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.2.0-preview.1" />
   </ItemGroup>
 
 </Project>
