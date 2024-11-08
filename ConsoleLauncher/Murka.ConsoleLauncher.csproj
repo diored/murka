@@ -8,6 +8,7 @@
     <AssemblyName>Murka</AssemblyName>
     <RootNamespace>DioRed.Murka.ConsoleLauncher</RootNamespace>
     <UserSecretsId>bb1f2a25-f1dd-43e4-8989-1d4b8e0dba0a</UserSecretsId>
+    <Configurations>Debug;Release;DebugEngine</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,12 +19,19 @@
 
   <ItemGroup>
     <PackageReference Include="DioRed.Common.Logging" Version="4.5.2" />
-    <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.2.0-preview.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Murka.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'DebugEngine' ">
+    <ProjectReference Include="..\..\vermilion\Hosting\Vermilion.Hosting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' != 'DebugEngine' ">
+    <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.2.0" />
   </ItemGroup>
 
 </Project>
