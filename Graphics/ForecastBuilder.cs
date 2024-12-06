@@ -1,4 +1,4 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 
 namespace DioRed.Murka.Graphics;
 
@@ -6,33 +6,48 @@ public static class ForecastBuilder
 {
     public static ReadOnlySpan<byte> BuildImage(ScheduleItem[] schedule)
     {
-        SKPaint dayNumberPaint = new()
+        using SKFont dayNumberFont = new()
+        {
+            Typeface = Constants.DayNumber.Typeface,
+            Size = Constants.DayNumber.FontSize
+        };
+
+        using SKPaint dayNumberPaint = new()
         {
             Color = Constants.DayNumber.Color,
             IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            TextAlign = SKTextAlign.Center,
-            Typeface = Constants.DayNumber.Typeface,
-            TextSize = Constants.DayNumber.FontSize
+            Style = SKPaintStyle.Fill
         };
 
-        SKPaint monthPaint = new()
+        using SKFont monthFont = new()
+        {
+            Typeface = Constants.Month.Typeface,
+            Size = Constants.Month.FontSize
+        };
+
+        using SKPaint monthPaint = new()
         {
             Color = Constants.Month.Color,
             IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            TextAlign = SKTextAlign.Center,
-            Typeface = Constants.Month.Typeface,
-            TextSize = Constants.Month.FontSize
+            Style = SKPaintStyle.Fill
         };
 
-        SKPaint legendPaint = new()
+        using SKFont legendFont = new()
+        {
+            Typeface = Constants.Legend.Typeface,
+            Size = Constants.Legend.FontSize
+        };
+
+        using SKPaint legendPaint = new()
         {
             Color = Constants.Legend.TextColor,
             IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Typeface = Constants.Legend.Typeface,
-            TextSize = Constants.Legend.FontSize
+            Style = SKPaintStyle.Fill
+        };
+
+        using SKPaint backgroundPaint = new()
+        {
+            Color = Constants.Today.Background
         };
 
         int width = Math.Max(Constants.Canvas.MinimumWidth, Constants.Canvas.ItemWidth * schedule.Length);
@@ -41,6 +56,7 @@ public static class ForecastBuilder
         SKImageInfo info = new(width, height);
 
         using var surface = SKSurface.Create(info);
+
         var canvas = surface.Canvas;
 
         canvas.Clear(Constants.Canvas.Background);
@@ -51,14 +67,33 @@ public static class ForecastBuilder
             Top = Constants.Today.VerticalPadding,
             Size = Constants.Today.Size
         };
-        canvas.DrawRoundRect(todayRect, new SKSize(4, 4), new SKPaint() { Color = Constants.Today.Background });
+
+        canvas.DrawRoundRect(
+            rect: todayRect,
+            r: new SKSize(4, 4),
+            paint: backgroundPaint
+        );
 
         for (int i = 0; i < schedule.Length; i++)
         {
             float x = Constants.Canvas.ItemWidth * (i + 0.5f);
 
-            canvas.DrawText(schedule[i].Day, x, Constants.DayNumber.Top, dayNumberPaint);
-            canvas.DrawText(schedule[i].Month, x, Constants.Month.Top, monthPaint);
+            canvas.DrawText(
+                text: schedule[i].Day,
+                x: x,
+                y: Constants.DayNumber.Top,
+                textAlign: SKTextAlign.Center,
+                font: dayNumberFont,
+                paint: dayNumberPaint);
+
+            canvas.DrawText(
+                text: schedule[i].Month,
+                x: x,
+                y: Constants.Month.Top,
+                textAlign: SKTextAlign.Center,
+                font: monthFont,
+                paint: monthPaint
+            );
 
             SKRect rect = new()
             {
@@ -87,12 +122,21 @@ public static class ForecastBuilder
 
         for (int i = 0; i < legendItems.Length; i++)
         {
-            canvas.DrawBitmap(legendItems[i].Icon, new SKRect
+            canvas.DrawBitmap(
+                bitmap: legendItems[i].Icon,
+                dest: new SKRect
             {
                 Location = Constants.Legend.Position + new SKPoint(0, i * (Constants.Legend.IconSize.Height + Constants.Legend.Margin)),
                 Size = Constants.Legend.IconSize
             });
-            canvas.DrawText(legendItems[i].Text, Constants.Legend.Position + Constants.Legend.TextOffset + new SKPoint(0, i * (Constants.Legend.IconSize.Height + Constants.Legend.Margin)), legendPaint);
+
+            canvas.DrawText(
+                text: legendItems[i].Text,
+                p: Constants.Legend.Position + Constants.Legend.TextOffset + new SKPoint(0, i * (Constants.Legend.IconSize.Height + Constants.Legend.Margin)),
+                textAlign: SKTextAlign.Left,
+                font: legendFont,
+                paint: legendPaint
+            );
         }
 
         using var image = surface.Snapshot();
