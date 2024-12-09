@@ -34,7 +34,7 @@
       </When>
       <Otherwise>
           <ItemGroup>
-              <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.3.1" />
+              <PackageReference Include="DioRed.Vermilion.Hosting" Version="12.3.2" />
           </ItemGroup>
       </Otherwise>
   </Choose>

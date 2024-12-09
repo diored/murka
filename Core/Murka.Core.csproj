@@ -29,7 +29,7 @@
           <ItemGroup>
               <PackageReference Include="DioRed.Vermilion.ChatStorage.AzureTable" Version="12.3.1" />
               <PackageReference Include="DioRed.Vermilion.Core" Version="12.3.1" />
-              <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.3.1" />
+              <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.3.2" />
           </ItemGroup>
       </Otherwise>
   </Choose>
