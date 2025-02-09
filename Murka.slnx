@@ -27,8 +27,4 @@
   <Project Path="Graphics/Murka.Graphics.csproj">
     <BuildType Solution="DebugEngine|*" Project="Debug" />
   </Project>
-  <Project Path="Manager/Murka.Manager.csproj">
-    <BuildType Solution="DebugEngine|*" Project="Debug" />
-    <Build Project="false" />
-  </Project>
 </Solution>

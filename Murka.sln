@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Core", "Core\Murka.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.ConsoleLauncher", "ConsoleLauncher\Murka.ConsoleLauncher.csproj", "{F5F73F0B-9038-45C1-842F-9D7CED620224}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Manager", "Manager\Murka.Manager.csproj", "{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Murka.Graphics", "Graphics\Murka.Graphics.csproj", "{12EB3238-738A-46C2-98CA-C524C7FE2B99}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vermilion", "Vermilion", "{5068464B-FF5E-4830-A8EC-E365332194BE}"
@@ -40,9 +38,6 @@ Global
 		{F5F73F0B-9038-45C1-842F-9D7CED620224}.DebugEngine|Any CPU.Build.0 = DebugEngine|Any CPU
 		{F5F73F0B-9038-45C1-842F-9D7CED620224}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5F73F0B-9038-45C1-842F-9D7CED620224}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}.DebugEngine|Any CPU.ActiveCfg = Debug|Any CPU
-		{79B9BE44-1FF8-4F31-A16C-9459C0507BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12EB3238-738A-46C2-98CA-C524C7FE2B99}.DebugEngine|Any CPU.ActiveCfg = Debug|Any CPU
