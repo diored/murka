@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="DioRed.Api.Client" Version="2.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,9 +27,9 @@
       </When>
       <Otherwise>
           <ItemGroup>
-              <PackageReference Include="DioRed.Vermilion.ChatStorage.AzureTable" Version="12.4.4" />
-              <PackageReference Include="DioRed.Vermilion.Core" Version="12.4.2" />
-              <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.4.2" />
+              <PackageReference Include="DioRed.Vermilion.ChatStorage.AzureTable" Version="12.4.5" />
+              <PackageReference Include="DioRed.Vermilion.Core" Version="12.4.3" />
+              <PackageReference Include="DioRed.Vermilion.Telegram" Version="12.4.3" />
           </ItemGroup>
       </Otherwise>
   </Choose>
