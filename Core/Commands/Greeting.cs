@@ -24,13 +24,13 @@ public partial class Greeting(
         Feedback feedback
     )
     {
-        if (context.Chat.Properties.GetValueOrDefault("LatestGreeting") is DateTimeOffset latestGreeting &&
+        if (context.Chat.RuntimeValues.GetValueOrDefault("LatestGreeting") is DateTimeOffset latestGreeting &&
             DateTimeOffset.UtcNow - latestGreeting < _greetingInterval)
         {
             return false;
         }
 
-        context.Chat.Properties["LatestGreeting"] = DateTimeOffset.UtcNow;
+        context.Chat.RuntimeValues["LatestGreeting"] = DateTimeOffset.UtcNow;
         string greeting = await logic.GetRandomGreetingAsync();
 
         await feedback.TextAsync(greeting);

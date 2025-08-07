@@ -12,7 +12,7 @@ public class ShowNorth(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/north", "север" },
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

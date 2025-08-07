@@ -51,7 +51,7 @@ internal class ApiFacade(
             .WithQueryArgs(new
             {
                 date,
-                chatSystem = chatId.System,
+                chatSystem = chatId.ConnectorKey,
                 chatId = chatId.Id
             })
             .GetAsync();

@@ -11,7 +11,7 @@ public class ShowCalendar(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/calendar", "календарь" },
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

@@ -14,7 +14,7 @@ public class ShowEvents(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/events", "ивенты" },
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

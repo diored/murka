@@ -11,7 +11,7 @@ public class ShowSeaSigns(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/sea", "море" },
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

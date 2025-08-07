@@ -9,20 +9,35 @@
       <Build Solution="Debug|*" Project="false" />
       <Build Solution="Release|*" Project="false" />
     </Project>
+    <Project Path="../vermilion/ChatStorage/InMemory/Vermilion.ChatStorage.InMemory.csproj">
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="../vermilion/ChatStorage/SqlServer/Vermilion.ChatStorage.SqlServer.csproj">
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="../vermilion/Complete/Vermilion.Complete.csproj">
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="../vermilion/Connectors/Telegram/Vermilion.Connectors.Telegram.csproj">
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Release|*" Project="false" />
+    </Project>
     <Project Path="../vermilion/Core/Vermilion.Core.csproj">
       <BuildType Solution="DebugEngine|*" Project="Debug" />
       <Build Solution="Debug|*" Project="false" />
       <Build Solution="Release|*" Project="false" />
     </Project>
     <Project Path="../vermilion/Hosting/Vermilion.Hosting.csproj">
-      <Build Solution="Release|*" Project="false" />
-    </Project>
-    <Project Path="../vermilion/Subsystems/Telegram/Vermilion.Subsystems.Telegram.csproj">
       <Build Solution="Debug|*" Project="false" />
       <Build Solution="Release|*" Project="false" />
     </Project>
   </Folder>
-  <Project Path="ConsoleLauncher/Murka.ConsoleLauncher.csproj" />
+  <Project Path="ConsoleLauncher/Murka.ConsoleLauncher.csproj">
+    <BuildType Solution="DebugEngine|*" Project="Debug" />
+  </Project>
   <Project Path="Core/Murka.Core.csproj" />
   <Project Path="Graphics/Murka.Graphics.csproj">
     <BuildType Solution="DebugEngine|*" Project="Debug" />

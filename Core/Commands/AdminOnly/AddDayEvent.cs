@@ -13,7 +13,7 @@ public class AddDayEvent(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/addDayEvent", "/addDayEvent!" },
-        HasTail = true,
+        TailPolicy = TailPolicy.HasTail,
         RequiredRole = UserRole.ChatAdmin,
         LogHandling = true
     };

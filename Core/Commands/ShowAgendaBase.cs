@@ -14,7 +14,7 @@ public abstract class ShowAgendaBase(
     public CommandDefinition Definition { get; } = new()
     {
         Template = template,
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

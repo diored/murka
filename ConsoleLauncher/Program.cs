@@ -5,10 +5,15 @@ using DioRed.Vermilion.Hosting;
 using Microsoft.Extensions.Hosting;
 
 IHost host = Host.CreateDefaultBuilder(args)
-    .BuildDefaultVermilionHost(
-        botName: "Murka",
-        configureServices: (context, services) => services.AddMurkaDependencies(context.Configuration),
-        assemblies: [typeof(Anchor).Assembly]
-    );
+    .ConfigureServices((context, services) => services.AddMurkaDependencies(context.Configuration))
+    .ConfigureVermilion(
+        "Murka",
+        builder => builder
+            .ConfigureChatStorage(c => c.UseAzureTable())
+            .ConfigureConnectors(c => c.AddTelegram())
+            .ConfigureCommandHandlers(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
+            .ConfigureDailyJobs(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
+    )
+    .Build();
 
 await host.RunAsync();

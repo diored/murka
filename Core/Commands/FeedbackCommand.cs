@@ -23,7 +23,7 @@ public class FeedbackCommand : ICommandHandler
             return true;
         }
 
-        await feedback.To(chatInfo => context.Chat.Subsystem.IsSuperAdmin(chatInfo.ChatId)).TextAsync(
+        await feedback.To(chatInfo => context.Chat.Connector.IsSuperAdmin(chatInfo.ChatId)).TextAsync(
             $"""
             Feedback from "{context.Sender.Name}" (id: #{context.Sender.Id}):
             {context.Message.Tail}

@@ -12,7 +12,7 @@ public class Cleanup(
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/cleanup",
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         RequiredRole = UserRole.SuperAdmin,
         LogHandling = true
     };

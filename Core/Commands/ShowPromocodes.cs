@@ -14,7 +14,7 @@ public class ShowPromocodes(
     public CommandDefinition Definition { get; } = new()
     {
         Template = new[] { "/promo", "промокоды" },
-        HasTail = false,
+        TailPolicy = TailPolicy.HasNoTail,
         LogHandling = true
     };
 

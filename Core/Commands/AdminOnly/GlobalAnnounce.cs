@@ -10,7 +10,7 @@ public class GlobalAnnounce : ICommandHandler
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/ga",
-        HasTail = true,
+        TailPolicy = TailPolicy.HasTail,
         RequiredRole = UserRole.SuperAdmin,
         LogHandling = true
     };

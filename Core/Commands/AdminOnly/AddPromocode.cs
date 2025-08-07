@@ -13,7 +13,7 @@ public class AddPromocode(
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/addPromocode",
-        HasTail = true,
+        TailPolicy = TailPolicy.HasTail,
         RequiredRole = UserRole.SuperAdmin,
         LogHandling = true
     };

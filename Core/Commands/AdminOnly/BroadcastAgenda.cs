@@ -23,10 +23,10 @@ public class BroadcastAgenda(
         Feedback feedback
     )
     {
-        async Task<IContent> buildAgenda(ChatInfo chatInfo) => new HtmlContent
+        async Task<IContent> buildAgenda(ChatMetadata chatMetadata) => new HtmlContent
         {
             Html = await logic.BuildAgendaAsync(
-                chatInfo.ChatId,
+                chatMetadata.ChatId,
                 ServerDateTime.GetCurrent().Date
             )
         };

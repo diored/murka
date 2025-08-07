@@ -13,7 +13,7 @@ public class AddEvent(
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/addEvent",
-        HasTail = true,
+        TailPolicy = TailPolicy.HasTail,
         RequiredRole = UserRole.SuperAdmin,
         LogHandling = true
     };

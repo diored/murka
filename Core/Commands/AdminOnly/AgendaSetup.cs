@@ -10,7 +10,7 @@ public class AgendaSetup : ICommandHandler
     public CommandDefinition Definition { get; } = new()
     {
         Template = "/agenda",
-        HasTail = true,
+        TailPolicy = TailPolicy.HasTail,
         RequiredRole = UserRole.ChatAdmin,
         LogHandling = true
     };
