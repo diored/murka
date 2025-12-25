@@ -5,7 +5,7 @@ using DioRed.Vermilion.Handling.Context;
 using DioRed.Vermilion.Interaction;
 using DioRed.Vermilion.Interaction.Content;
 
-namespace DioRed.Murka.Core.Commands;
+namespace DioRed.Murka.Core.Commands.AdminOnly;
 
 public class BroadcastAgenda(
     ILogic logic

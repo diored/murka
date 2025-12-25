@@ -1,3 +1,4 @@
+using DioRed.Common.Jobs;
 using DioRed.Murka.Core.Entities;
 using DioRed.Vermilion;
 using DioRed.Vermilion.Interaction.Content;
@@ -8,16 +9,18 @@ namespace DioRed.Murka.Core.DailyJobs;
 
 public class CleanupAndAgendaDailyJob(
     ILogic logic
-) : IDailyJob
+) : IScheduledJob
 {
-    public DailyJobDefinition Definition { get; } = new()
+    public ScheduledJobDefinition Definition { get; } = new()
     {
-        TimeOfDay = new TimeOnly(0, 0, 0),
-        TimeZoneOffset = CommonValues.ServerTimeZoneShift,
+        Schedule = new DailySchedule(
+            timeOfDay: new TimeSpan(0, 0, 0),
+            timeZoneOffset: CommonValues.ServerTimeZoneShift
+        ),
         Id = "Cleanup and agenda"
     };
 
-    public async Task Handle(IServiceProvider services, BotCore botCore)
+    public async Task Handle(IServiceProvider services, BotCore botCore, CancellationToken ct = default)
     {
         await logic.CleanupAsync();
 

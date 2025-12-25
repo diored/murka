@@ -1,0 +1,31 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="DebugEngine" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Vermilion/">
+    <Project Path="../vermilion/Abstractions/Vermilion.Abstractions.ProjectRefs.csproj">
+      <BuildType Solution="DebugEngine|*" Project="Debug" />
+    </Project>
+    <Project Path="../vermilion/ChatStorage/AzureTable/Vermilion.ChatStorage.AzureTable.ProjectRefs.csproj">
+      <BuildType Solution="DebugEngine|*" Project="Debug" />
+    </Project>
+    <Project Path="../vermilion/Connectors/Telegram/Vermilion.Connectors.Telegram.ProjectRefs.csproj">
+      <BuildType Solution="DebugEngine|*" Project="Debug" />
+    </Project>
+    <Project Path="../vermilion/Core/Vermilion.Core.ProjectRefs.csproj">
+      <BuildType Solution="DebugEngine|*" Project="Debug" />
+    </Project>
+    <Project Path="../vermilion/Hosting/Vermilion.Hosting.ProjectRefs.csproj">
+      <BuildType Solution="DebugEngine|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Project Path="ConsoleLauncher/Murka.ConsoleLauncher.VermilionProjectRefs.csproj">
+    <BuildType Solution="DebugEngine|*" Project="Debug" />
+  </Project>
+  <Project Path="Core/Murka.Core.VermilionProjectRefs.csproj" />
+  <Project Path="Graphics/Murka.Graphics.csproj">
+    <BuildType Solution="DebugEngine|*" Project="Debug" />
+  </Project>
+</Solution>

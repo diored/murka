@@ -12,7 +12,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             .ConfigureChatStorage(c => c.UseAzureTable())
             .ConfigureConnectors(c => c.AddTelegram())
             .ConfigureCommandHandlers(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
-            .ConfigureDailyJobs(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
+            .ConfigureScheduledJobs(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
     )
     .Build();
 

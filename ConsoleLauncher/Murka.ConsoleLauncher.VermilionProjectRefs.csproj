@@ -17,7 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Murka.Core.csproj" />
+    <ProjectReference Include="..\..\vermilion\ChatStorage\AzureTable\Vermilion.ChatStorage.AzureTable.ProjectRefs.csproj" />
+    <ProjectReference Include="..\..\vermilion\Connectors\Telegram\Vermilion.Connectors.Telegram.ProjectRefs.csproj" />
+    <ProjectReference Include="..\..\vermilion\Core\Vermilion.Core.ProjectRefs.csproj" />
+    <ProjectReference Include="..\..\vermilion\Hosting\Vermilion.Hosting.ProjectRefs.csproj" />
+    <ProjectReference Include="..\Core\Murka.Core.VermilionProjectRefs.csproj" />
   </ItemGroup>
 
 </Project>
