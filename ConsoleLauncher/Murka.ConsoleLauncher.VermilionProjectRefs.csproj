@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\vermilion\Core\Vermilion.Core.ProjectRefs.csproj" />
     <ProjectReference Include="..\..\vermilion\Hosting\Vermilion.Hosting.ProjectRefs.csproj" />
     <ProjectReference Include="..\Core\Murka.Core.VermilionProjectRefs.csproj" />
+    <ProjectReference Include="..\Infrastructure\Murka.Infrastructure.VermilionProjectRefs.csproj" />
   </ItemGroup>
 
 </Project>

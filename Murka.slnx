@@ -2,4 +2,5 @@
   <Project Path="ConsoleLauncher/Murka.ConsoleLauncher.csproj" />
   <Project Path="Core/Murka.Core.csproj" />
   <Project Path="Graphics/Murka.Graphics.csproj" />
+  <Project Path="Infrastructure/Murka.Infrastructure.csproj" />
 </Solution>

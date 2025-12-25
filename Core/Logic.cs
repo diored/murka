@@ -1,6 +1,7 @@
 using System.Text;
 
 using DioRed.Murka.Core.Entities;
+using DioRed.Murka.Core.Modules;
 using DioRed.Vermilion;
 
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,6 @@ public interface ILogic
     Task<string> GetRandomGreetingAsync();
 
     Task<Daily> GetDailyAsync(DateOnly date);
-    Task SetDailyAsync(int monthNumber, string dailies);
 
     Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId);
     Task AddDayEventAsync(string name, Occurrence occurrence, ChatId? chatId);
@@ -35,8 +35,14 @@ public interface ILogic
     string GetDaytimeGreeting(TimeOnly time);
 }
 
-internal class Logic(
-    IApiFacade api,
+public class Logic(
+    IDailyModule dailyModule,
+    IDayEventsModule dayEventsModule,
+    IEventsModule eventsModule,
+    IGreetingModule greetingModule,
+    ILinksModule linksModule,
+    INorthModule northModule,
+    IPromocodesModule promocodesModule,
     ILoggerFactory logger
 ) : ILogic
 {
@@ -47,8 +53,8 @@ internal class Logic(
         _logger.LogInformation(MurkaEvents.CleanupStarted, "Storage cleanup started");
         try
         {
-            await api.CleanupPromocodes();
-            await api.CleanupEvents();
+            promocodesModule.Cleanup();
+            eventsModule.Cleanup();
 
             _logger.LogInformation(MurkaEvents.CleanupFinished, "Storage cleanup finished");
         }
@@ -159,53 +165,42 @@ internal class Logic(
 
     public async Task<ICollection<Event>> GetActiveEventsAsync()
     {
-        return await api.GetActiveEvents();
+        return eventsModule.GetActiveEvents();
     }
 
     public async Task<ICollection<Promocode>> GetActivePromocodesAsync()
     {
-        return await api.GetActivePromocodes();
+        return promocodesModule.GetActive();
     }
 
     public async Task<Daily> GetDailyAsync(DateOnly date)
     {
-        return await api.GetDaily(date.ToString(CommonValues.DateFormat));
+        return dailyModule.Get(date.ToString(CommonValues.DateFormat));
     }
 
     public async Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId)
     {
-        return await api.GetDayEvents(date.ToString(CommonValues.DateFormat), chatId);
+        return dayEventsModule.Get(date.ToString(CommonValues.DateFormat), chatId);
     }
 
     public async Task<Northlands> GetNorthLandsAsync(DateOnly date)
     {
-        return await api.GetNorthlands(date.ToString(CommonValues.DateFormat));
+        return northModule.GetNorth(date.ToString(CommonValues.DateFormat));
     }
 
     public async Task<string> GetRandomGreetingAsync()
     {
-        return await api.GetRandomGreeting();
+        return greetingModule.GetRandomGreeting();
     }
 
-    public async Task AddEventAsync(
-        Event newEvent
-    )
+    public async Task AddEventAsync(Event newEvent)
     {
-        await api.AddEvent(
-            newEvent.Name,
-            newEvent.ValidFrom?.ToString(),
-            newEvent.ValidTo?.ToString()
-        );
+        eventsModule.AddEvent(newEvent);
     }
 
     public async Task AddPromocodeAsync(Promocode promocode)
     {
-        await api.AddPromocode(
-            promocode.Code,
-            promocode.ValidFrom?.ToString(),
-            promocode.ValidTo?.ToString(),
-            promocode.Content
-        );
+        promocodesModule.Add(promocode);
     }
 
     public async Task AddDayEventAsync(string name, Occurrence occurrence, ChatId? chatId)
@@ -217,36 +212,26 @@ internal class Logic(
             _ => throw new InvalidOperationException("Unexpected occurrence value")
         };
 
-        await api.AddDayEvent(
+        dayEventsModule.Add(new DayEvent(
             name,
-            occurrenceString,
-            occurrence.Time.ToString(CommonValues.TimeFormat),
-            chatId
-        );
-    }
-
-    public async Task SetDailyAsync(int month, string dailies)
-    {
-        await api.SetDailyMonth(month, dailies);
+            chatId,
+            occurrence.Time,
+            occurrenceString
+        ));
     }
 
     public async Task UpdatePromocodeAsync(Promocode promocode)
     {
-        await api.UpdatePromocode(
-            promocode.Code,
-            promocode.ValidFrom?.ToString(),
-            promocode.ValidTo?.ToString(),
-            promocode.Content
-        );
+        promocodesModule.Update(promocode);
     }
 
     public async Task RemovePromocodeAsync(string code)
     {
-        await api.RemovePromocode(code);
+        promocodesModule.Remove(code);
     }
 
     public async Task<string> GetLinkAsync(string id)
     {
-        return await api.GetLink(id);
+        return linksModule.Get(id) ?? throw new KeyNotFoundException("Link not found");
     }
 }

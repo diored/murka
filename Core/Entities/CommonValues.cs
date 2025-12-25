@@ -1,4 +1,4 @@
-﻿namespace DioRed.Murka.Core.Entities;
+namespace DioRed.Murka.Core.Entities;
 
 public static class CommonValues
 {
@@ -7,4 +7,6 @@ public static class CommonValues
     public const string DateTimeFormat = $"{DateFormat} {TimeFormat}";
 
     public static readonly TimeSpan ServerTimeZoneShift = TimeSpan.FromHours(3);
+
+    public const string DefaultPartitionKey = "RU";
 }

@@ -1,3 +1,5 @@
-﻿namespace DioRed.Murka.Core.Entities;
+using DioRed.Vermilion;
 
-public record DayEvent(string Name, string? ChatId, TimeOnly Time, string Occurrence);
+namespace DioRed.Murka.Core.Entities;
+
+public record DayEvent(string Name, ChatId? ChatId, TimeOnly Time, string Occurrence);

@@ -1,3 +1,4 @@
-﻿namespace DioRed.Murka.Core.Entities;
+namespace DioRed.Murka.Core.Entities;
 
-public record Promocode(string Code, string Content, ServerDateTime? ValidFrom, ServerDateTime? ValidTo);
+public record Promocode(string Code, string Content, ServerDateTime? ValidFrom, ServerDateTime? ValidTo)
+    : TimeLimitedEntity(ValidFrom, ValidTo);
