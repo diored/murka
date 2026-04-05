@@ -50,13 +50,13 @@ public class Daily(
                 })
         );
 
-        const string folder = "forecasts";
+        const string folder = "../shared/forecasts";
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
         }
 
-        string fileName = $"""{folder}\{serverTime.Date:yyyy_MM_dd}_{days}.png""";
+        string fileName = Path.Combine(folder, $"{serverTime.Date:yyyy_MM_dd}_{days}.png");
 
         if (!File.Exists(fileName))
         {
