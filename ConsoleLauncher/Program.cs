@@ -34,10 +34,10 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureVermilion(
         "Murka",
         builder => builder
-            .ConfigureChatStorage(c => c.UseAzureTable())
-            .ConfigureConnectors(c => c.AddTelegram())
-            .ConfigureCommandHandlers(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
-            .ConfigureScheduledJobs(c => c.LoadFromAssembly(typeof(Anchor).Assembly))
+            .UseAzureTableChatStorage()
+            .UseTelegram()
+            .LoadCommandHandlersFromAssembly(typeof(Anchor).Assembly)
+            .LoadScheduledJobsFromAssembly(typeof(Anchor).Assembly)
     )
     .Build();
 
