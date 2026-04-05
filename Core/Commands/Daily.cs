@@ -50,7 +50,11 @@ public class Daily(
                 })
         );
 
-        const string folder = "../../shared/forecasts";
+        string folder = Path.Combine(
+            GetAppRootDirectory(),
+            "shared",
+            "forecasts"
+        );
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
@@ -71,5 +75,25 @@ public class Daily(
         await feedback.ImageAsync(fileStream, ct);
 
         return true;
+    }
+
+    private static string GetAppRootDirectory()
+    {
+        DirectoryInfo baseDirectory = new(Path.GetFullPath(AppContext.BaseDirectory));
+        string normalizedName = baseDirectory.Name.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        if (string.Equals(normalizedName, "current", StringComparison.OrdinalIgnoreCase))
+        {
+            return baseDirectory.FullName;
+        }
+
+        if (baseDirectory.Parent is { } releasesDirectory &&
+            string.Equals(releasesDirectory.Name, "releases", StringComparison.OrdinalIgnoreCase) &&
+            releasesDirectory.Parent is { } appRootDirectory)
+        {
+            return appRootDirectory.FullName;
+        }
+
+        return baseDirectory.FullName;
     }
 }

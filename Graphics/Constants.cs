@@ -58,13 +58,22 @@ internal static class Constants
         public static SKBitmap Armor { get; } = LoadBitmapAsset("TankRole.png");
         public static SKBitmap Relic { get; } = LoadBitmapAsset("HealerRole.png");
 
-        private static SKBitmap LoadBitmapAsset(string assetName) => SKBitmap.Decode(
-#if DEBUG
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets\\{assetName}")
-#else
-            $"Assets\\{assetName}"
-#endif
+        private static SKBitmap LoadBitmapAsset(string assetName)
+        {
+            string assetPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Assets",
+                assetName
             );
+
+            if (!File.Exists(assetPath))
+            {
+                throw new FileNotFoundException($"Bitmap asset not found: {assetPath}", assetPath);
+            }
+
+            return SKBitmap.Decode(assetPath)
+                ?? throw new InvalidOperationException($"Failed to decode bitmap asset: {assetPath}");
+        }
     }
 
     public static class DailyDescription
