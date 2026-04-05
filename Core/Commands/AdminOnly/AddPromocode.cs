@@ -20,7 +20,8 @@ public class AddPromocode(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         if (context.Message.Args is not [{ } code, _, { } content])
@@ -56,7 +57,8 @@ public class AddPromocode(
             - Code: {code}
             - ValidTo: {validTo}
             - Content: {content}
-            """
+            """,
+            ct
         );
 
         return true;

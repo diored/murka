@@ -48,7 +48,7 @@ public class EventsStorage(
     {
         return new TableEntity
         {
-            PartitionKey = CommonValues.DefaultPartitionKey,
+            PartitionKey = "RU",
             RowKey = GenerateId(),
             Name = @event.Name,
             ValidFrom = @event.ValidFrom?.ToString(),

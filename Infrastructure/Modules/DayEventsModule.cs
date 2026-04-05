@@ -12,10 +12,8 @@ public class DayEventsModule(DayEventsStorage storage) : IDayEventsModule
         storage.AddNew(newDayEvent);
     }
 
-    public DayEvent[] Get(string date, ChatId chatId)
+    public DayEvent[] Get(DateOnly date, ChatId chatId)
     {
-        DateOnly dateOnly = DateOnly.ParseExact(date, CommonValues.DateFormat);
-
-        return storage.Get(dateOnly, chatId);
+        return storage.Get(date, chatId);
     }
 }

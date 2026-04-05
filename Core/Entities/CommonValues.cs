@@ -6,7 +6,5 @@ public static class CommonValues
     public const string TimeFormat = "HH:mm";
     public const string DateTimeFormat = $"{DateFormat} {TimeFormat}";
 
-    public static readonly TimeSpan ServerTimeZoneShift = TimeSpan.FromHours(3);
-
-    public const string DefaultPartitionKey = "RU";
+    public static readonly TimeZoneInfo ServerTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time");
 }

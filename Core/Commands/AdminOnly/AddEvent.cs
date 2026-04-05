@@ -20,7 +20,8 @@ public class AddEvent(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         if (context.Message.Args.Count is < 1 or > 3 ||
@@ -45,12 +46,14 @@ public class AddEvent(
             )
         );
 
-        await feedback.TextAsync($"""
+        await feedback.TextAsync(
+            $"""
             Event has been added:
             - Name: {eventName}
             - Starts: {starts}
             - Ends: {ends}
-            """
+            """,
+            ct
         );
 
         return true;

@@ -15,10 +15,11 @@ public class Echo : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
-        await feedback.TextAsync(context.Message.Text);
+        await feedback.TextAsync(context.Message.Text, ct);
 
         return true;
     }

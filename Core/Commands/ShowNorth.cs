@@ -18,18 +18,21 @@ public class ShowNorth(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         DateOnly date = ServerDateTime.GetCurrent().Date;
 
         Northlands northlands = await logic.GetNorthLandsAsync(date);
 
-        await feedback.TextAsync($"""
+        await feedback.TextAsync(
+            $"""
             Расписание ивентов в СЗ:
             — войско богов: {northlands.Gods}
             — армия севера: {northlands.North}
-            """
+            """,
+            ct
         );
 
         return true;

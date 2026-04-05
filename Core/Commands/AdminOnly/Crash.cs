@@ -16,10 +16,11 @@ public class Crash : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
-        await feedback.TextAsync("crashing");
+        await feedback.TextAsync("crashing", ct);
 
         throw new InvalidOperationException("Controlled crashing");
     }

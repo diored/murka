@@ -9,11 +9,9 @@ namespace DioRed.Murka.Infrastructure.Modules;
 
 public class DailyModule(ImagesStorage images, ParametersStorage parameters) : IDailyModule
 {
-    public Daily Get(string date)
+    public Daily Get(DateOnly date)
     {
-        DateOnly dateOnly = DateOnly.Parse(date);
-
-        Daily daily = ((dateOnly.DayNumber + parameters.GetInt32("DailyOffset")) % 3) switch
+        Daily daily = ((date.DayNumber + parameters.GetInt32("DailyOffset")) % 3) switch
         {
             0 => Daily.Weapon,
             1 => Daily.Armor,

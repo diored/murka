@@ -40,7 +40,8 @@ public class AddDayEvent(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         if (context.Message.Args is not [{ } name, { } timeString, { } occurrenceString])
@@ -89,7 +90,8 @@ public class AddDayEvent(
             - Name: {name}
             - Occurrence: {occurrence}
             - Time: {time}
-            """
+            """,
+            ct
         );
 
         return true;

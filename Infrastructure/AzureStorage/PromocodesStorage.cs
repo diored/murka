@@ -34,7 +34,7 @@ public class PromocodesStorage(
 
     public void Remove(string code)
     {
-        _tableClient.DeleteEntity(CommonValues.DefaultPartitionKey, code, Azure.ETag.All);
+        _tableClient.DeleteEntity("RU", code, Azure.ETag.All);
     }
 
     public string[] RemoveOutdated()
@@ -58,7 +58,7 @@ public class PromocodesStorage(
     {
         return new TableEntity
         {
-            PartitionKey = CommonValues.DefaultPartitionKey,
+            PartitionKey = "RU",
             RowKey = promocode.Code,
             Content = promocode.Content,
             ValidFrom = promocode.ValidFrom?.ToString(),

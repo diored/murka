@@ -15,7 +15,7 @@ public class CleanupAndAgendaDailyJob(
     {
         Schedule = new DailySchedule(
             timeOfDay: new TimeSpan(0, 0, 0),
-            timeZoneOffset: CommonValues.ServerTimeZoneShift
+            timeZone: CommonValues.ServerTimeZone
         ),
         Id = "Cleanup and agenda"
     };

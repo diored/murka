@@ -20,14 +20,15 @@ public class ShowPromocodes(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         ICollection<Promocode> activePromocodes = await logic.GetActivePromocodesAsync();
 
         if (activePromocodes.Count == 0)
         {
-            await feedback.TextAsync("Активных промокодов нет");
+            await feedback.TextAsync("Активных промокодов нет", ct);
             return true;
         }
 
@@ -52,7 +53,7 @@ public class ShowPromocodes(
                 """);
         }
 
-        await feedback.HtmlAsync(builder.ToString());
+        await feedback.HtmlAsync(builder.ToString(), ct);
 
         return true;
     }

@@ -22,7 +22,7 @@ public class EventsModule(EventsStorage storage, ILogger<EventsModule> logger) :
     {
         string[] removed = storage.RemoveOutdated();
 
-        if (removed.Length != 0)
+        if (removed.Length != 0 && logger.IsEnabled(LogLevel.Information))
         {
             logger.LogInformation(EventIDs.MurkaCleanup, "Outdated events [{Events}] were removed", string.Join(", ", removed));
         }

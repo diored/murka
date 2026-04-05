@@ -18,7 +18,8 @@ public class Daily(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         int days;
@@ -67,7 +68,7 @@ public class Daily(
 
         using Stream fileStream = File.OpenRead(fileName);
 
-        await feedback.ImageAsync(fileStream);
+        await feedback.ImageAsync(fileStream, ct);
 
         return true;
     }

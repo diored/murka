@@ -20,7 +20,8 @@ public class BroadcastAgenda(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         async Task<IContent> buildAgenda(ChatMetadata chatMetadata) => new HtmlContent
@@ -31,15 +32,12 @@ public class BroadcastAgenda(
             )
         };
 
-        if (context.Message.Args.Count > 0 &&
-            long.TryParse(context.Message.Args[0], out long receiverId))
-        {
-            await feedback.To(chatInfo => chatInfo.ChatId.Id == receiverId).ContentAsync(buildAgenda);
-        }
-        else
-        {
-            await feedback.ToEveryone().ContentAsync(buildAgenda);
-        }
+        Feedback receiver = context.Message.Args.Count > 0 &&
+            long.TryParse(context.Message.Args[0], out long receiverId)
+            ? feedback.To(chatInfo => chatInfo.ChatId.Id == receiverId)
+            : feedback.ToEveryone();
+
+        await receiver.ContentAsync(buildAgenda, ct);
 
         return true;
     }

@@ -20,7 +20,8 @@ public abstract class ShowAgendaBase(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         DateOnly date = getDateFunc();
@@ -30,7 +31,7 @@ public abstract class ShowAgendaBase(
             date
         );
 
-        await feedback.HtmlAsync(agenda);
+        await feedback.HtmlAsync(agenda, ct);
 
         return true;
     }

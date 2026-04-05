@@ -5,11 +5,9 @@ namespace DioRed.Murka.Infrastructure.Modules;
 
 public class NorthModule : INorthModule
 {
-    public Northlands GetNorth(string date)
+    public Northlands GetNorth(DateOnly date)
     {
-        DateOnly dateOnly = DateOnly.Parse(date);
-
-        DayOfWeek dayOfWeek = dateOnly.DayOfWeek;
+        DayOfWeek dayOfWeek = date.DayOfWeek;
 
         if (dayOfWeek == DayOfWeek.Tuesday)
         {

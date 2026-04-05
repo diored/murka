@@ -17,10 +17,11 @@ public class GlobalAnnounce : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
-        await feedback.ToEveryone().TextAsync(context.Message.Tail);
+        await feedback.ToEveryone().TextAsync(context.Message.Tail, ct);
 
         return true;
     }

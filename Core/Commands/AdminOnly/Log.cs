@@ -18,7 +18,8 @@ public class Log(
 
     public Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         string message = string.IsNullOrWhiteSpace(context.Message.Tail)
@@ -38,12 +39,15 @@ public class Log(
             context.Chat.Title
         };
 
-        logger.LogInformation(
-            "Message: {Message}, Sender: {Sender}, Chat: {Chat}",
-            message,
-            sender,
-            chat
-        );
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation(
+                "Message: {Message}, Sender: {Sender}, Chat: {Chat}",
+                message,
+                sender,
+                chat
+            );
+        }
 
         return Task.FromResult(true);
     }

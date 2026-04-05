@@ -5,6 +5,6 @@ namespace DioRed.Murka.Core.Modules;
 
 public interface IDailyModule
 {
-    Daily Get(string date);
+    Daily Get(DateOnly date);
     FileResult? GetCalendar();
 }

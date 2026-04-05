@@ -21,7 +21,8 @@ public partial class Greeting(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         if (context.Chat.RuntimeValues.GetValueOrDefault("LatestGreeting") is DateTimeOffset latestGreeting &&
@@ -33,7 +34,7 @@ public partial class Greeting(
         context.Chat.RuntimeValues["LatestGreeting"] = DateTimeOffset.UtcNow;
         string greeting = await logic.GetRandomGreetingAsync();
 
-        await feedback.TextAsync(greeting);
+        await feedback.TextAsync(greeting, ct);
 
         return true;
     }

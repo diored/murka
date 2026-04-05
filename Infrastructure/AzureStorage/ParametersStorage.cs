@@ -17,7 +17,7 @@ public class ParametersStorage(
     {
         return _tableClient
             .Query<TableEntity>()
-            .Where(e => e.PartitionKey == CommonValues.DefaultPartitionKey
+            .Where(e => e.PartitionKey == "RU"
                 && e.RowKey == key
                 && e.IntValue.HasValue)
             .Single()
@@ -28,7 +28,7 @@ public class ParametersStorage(
     {
         _tableClient.AddEntity(new TableEntity
         {
-            PartitionKey = CommonValues.DefaultPartitionKey,
+            PartitionKey = "RU",
             RowKey = key,
             IntValue = value
         });

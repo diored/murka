@@ -6,5 +6,5 @@ namespace DioRed.Murka.Core.Modules;
 public interface IDayEventsModule
 {
     void Add(DayEvent newDayEvent);
-    DayEvent[] Get(string date, ChatId chatId);
+    DayEvent[] Get(DateOnly date, ChatId chatId);
 }

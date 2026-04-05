@@ -14,23 +14,24 @@ public class FeedbackCommand : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         if (string.IsNullOrWhiteSpace(context.Message.Tail))
         {
-            await feedback.TextAsync("Добавьте текст обратной связи после команды /feedback, и админ получит ваше сообщение.");
+            await feedback.TextAsync("Добавьте текст обратной связи после команды /feedback, и админ получит ваше сообщение.", ct);
             return true;
         }
 
-        await feedback.To(chatInfo => context.Chat.Connector.IsSuperAdmin(chatInfo.ChatId)).TextAsync(
-            $"""
+        await feedback.To(chatInfo => context.Chat.Connector.IsSuperAdmin(chatInfo.ChatId))
+            .TextAsync($"""
             Feedback from "{context.Sender.Name}" (id: #{context.Sender.Id}):
             {context.Message.Tail}
-            """
-        );
+            """,
+            ct);
 
-        await feedback.TextAsync("Спасибо за обратную связь, сообщение отправлено админу!");
+        await feedback.TextAsync("Спасибо за обратную связь, сообщение отправлено админу!", ct);
 
         return true;
     }

@@ -175,17 +175,17 @@ public class Logic(
 
     public async Task<Daily> GetDailyAsync(DateOnly date)
     {
-        return dailyModule.Get(date.ToString(CommonValues.DateFormat));
+        return dailyModule.Get(date);
     }
 
     public async Task<ICollection<DayEvent>> GetDayEventsAsync(DateOnly date, ChatId chatId)
     {
-        return dayEventsModule.Get(date.ToString(CommonValues.DateFormat), chatId);
+        return dayEventsModule.Get(date, chatId);
     }
 
     public async Task<Northlands> GetNorthLandsAsync(DateOnly date)
     {
-        return northModule.GetNorth(date.ToString(CommonValues.DateFormat));
+        return northModule.GetNorth(date);
     }
 
     public async Task<string> GetRandomGreetingAsync()

@@ -17,14 +17,17 @@ public class NotSoGlobalAnnounce : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
-        await feedback.TextAsync($"""
+        await feedback.TextAsync(
+            $"""
             This will be announced:
 
             {context.Message.Tail}
-            """
+            """,
+            ct
         );
 
         return true;

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace DioRed.Murka.Core.Entities;
@@ -12,7 +12,7 @@ public record struct ServerDateTime(DateOnly Date, TimeOnly? Time = null)
 
     public static ServerDateTime FromDateTime(DateTime dateTime)
     {
-        var dt = dateTime.ToUniversalTime() + CommonValues.ServerTimeZoneShift;
+        var dt = dateTime.ToUniversalTime() + CommonValues.ServerTimeZone.GetUtcOffset(dateTime);
 
         return new ServerDateTime(dt);
     }
@@ -69,7 +69,7 @@ public record struct ServerDateTime(DateOnly Date, TimeOnly? Time = null)
 
     public readonly DateTime ToUtc()
     {
-        return DateTime.SpecifyKind(ToDateTime() - CommonValues.ServerTimeZoneShift, DateTimeKind.Utc);
+        return DateTime.SpecifyKind(ToDateTime() - CommonValues.ServerTimeZone.GetUtcOffset(Date.ToDateTime(TimeOnly.MinValue)), DateTimeKind.Utc);
     }
 
     public override readonly string ToString()

@@ -19,11 +19,12 @@ public class Cleanup(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         await logic.CleanupAsync();
-        await feedback.TextAsync("Cleanup done");
+        await feedback.TextAsync("Cleanup done", ct);
 
         return true;
     }

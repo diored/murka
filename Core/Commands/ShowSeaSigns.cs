@@ -17,11 +17,12 @@ public class ShowSeaSigns(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         string link = await logic.GetLinkAsync("sea");
-        await feedback.ImageAsync(link);
+        await feedback.ImageAsync(link, ct);
 
         return true;
     }

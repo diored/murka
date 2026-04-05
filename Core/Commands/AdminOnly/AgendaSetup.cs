@@ -17,19 +17,20 @@ public class AgendaSetup : ICommandHandler
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         bool status;
         switch (context.Message.Tail.ToUpper())
         {
             case "ON":
-                await feedback.RemoveTagAsync("no-agenda");
+                await feedback.RemoveTagAsync("no-agenda", ct);
                 status = true;
                 break;
 
             case "OFF":
-                await feedback.AddTagAsync("no-agenda");
+                await feedback.AddTagAsync("no-agenda", ct);
                 status = false;
                 break;
 
@@ -37,7 +38,7 @@ public class AgendaSetup : ICommandHandler
                 return false;
         }
 
-        await feedback.TextAsync($"Agenda subscription status: {(status ? "ON" : "OFF")}");
+        await feedback.TextAsync($"Agenda subscription status: {(status ? "ON" : "OFF")}", ct);
 
         return true;
     }

@@ -1,8 +1,8 @@
-﻿using DioRed.Murka.Core.Entities;
+using DioRed.Murka.Core.Entities;
 
 namespace DioRed.Murka.Core.Modules;
 
 public interface INorthModule
 {
-    Northlands GetNorth(string date);
+    Northlands GetNorth(DateOnly date);
 }

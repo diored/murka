@@ -20,14 +20,15 @@ public class ShowEvents(
 
     public async Task<bool> HandleAsync(
         MessageHandlingContext context,
-        Feedback feedback
+        Feedback feedback,
+        CancellationToken ct = default
     )
     {
         ICollection<Event> events = await logic.GetActiveEventsAsync();
 
         if (events.Count == 0)
         {
-            await feedback.TextAsync("На данный момент ивентов нет.");
+            await feedback.TextAsync("На данный момент ивентов нет.", ct);
 
             return true;
         }
@@ -65,7 +66,7 @@ public class ShowEvents(
             }
         }
 
-        await feedback.HtmlAsync(builder.ToString());
+        await feedback.HtmlAsync(builder.ToString(), ct);
 
         return true;
     }
