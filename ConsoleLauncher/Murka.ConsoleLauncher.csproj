@@ -5,7 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>Murka</AssemblyName>
+    <AssemblyName>Murka.ConsoleLauncher</AssemblyName>
     <RootNamespace>DioRed.Murka.ConsoleLauncher</RootNamespace>
     <UserSecretsId>bb1f2a25-f1dd-43e4-8989-1d4b8e0dba0a</UserSecretsId>
   </PropertyGroup>
