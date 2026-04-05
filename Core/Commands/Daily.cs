@@ -50,7 +50,7 @@ public class Daily(
                 })
         );
 
-        const string folder = "../shared/forecasts";
+        const string folder = "../../shared/forecasts";
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
